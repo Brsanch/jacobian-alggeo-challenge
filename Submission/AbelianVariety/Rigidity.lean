@@ -154,4 +154,45 @@ theorem isMonHom_of_pointed_of_isAlgClosed [IsAlgClosed K]
   (isMonHom_iff_pointedDiff_eq h hone).mpr
     (pointedDiff_eq_toUnit_η_of_isAlgClosed A B h hone)
 
+open scoped Obj in
+set_option backward.isDefEq.respectTransparency false in
+/-- **Rigidity, general base field** (descent of `pointedDiff_eq_toUnit_η_of_isAlgClosed`
+along `Spec k̄ → Spec k`): for abelian varieties `A`, `B` over an arbitrary field `k`
+with `A` geometrically integral, a pointed morphism `h : A ⟶ B` has constant
+pointed-difference map.  The descent mirrors
+`isCommMonObj_of_isProper_of_geometricallyIntegral`. -/
+theorem pointedDiff_eq_toUnit_η_of_geometricallyIntegral
+    (A B : Over (Spec (.of K))) [IsProper A.hom] [GrpObj A] [GeometricallyIntegral A.hom]
+    [IsProper B.hom] [GrpObj B] (h : A ⟶ B) (hone : η[A] ≫ h = η[B]) :
+    pointedDiff h = toUnit _ ≫ η := by
+  let fK := Spec.map (CommRingCat.ofHom <| algebraMap K (AlgebraicClosure K))
+  let F := Over.pullback fK
+  let A' := F.obj A
+  let B' := F.obj B
+  have : IsProper A'.hom := by dsimp [A', F]; infer_instance
+  have : IsProper B'.hom := by dsimp [B', F]; infer_instance
+  have : IsIntegral (A' ⊗ A').left := by dsimp [A', F]; infer_instance
+  let : GrpObj A' := Functor.grpObjObj
+  let : GrpObj B' := Functor.grpObjObj
+  have hone' : η[A'] ≫ F.map h = η[B'] := by
+    rw [Functor.obj.η_def, Category.assoc, ← Functor.map_comp, hone, ← Functor.obj.η_def]
+  have key := pointedDiff_eq_toUnit_η_of_isAlgClosed A' B' (F.map h) hone'
+  apply F.map_injective
+  rw [← cancel_epi (Functor.Monoidal.μIso F A A).hom]
+  dsimp only [pointedDiff] at key ⊢
+  simpa only [Functor.Monoidal.μIso_hom, Functor.map_mul, Functor.map_inv', Functor.map_comp,
+    comp_mul, GrpObj.comp_inv, Functor.Monoidal.μ_fst, Functor.Monoidal.μ_snd,
+    Functor.Monoidal.μ_fst_assoc, Functor.Monoidal.μ_snd_assoc, Functor.obj.μ_def, one_eq_one,
+    comp_one, Functor.map_one, Category.assoc] using key
+
+/-- **Pointed morphisms of abelian varieties are homomorphisms**, over an arbitrary
+field `k` (Mumford, *Abelian Varieties* §4).  This is the rigidity input hole 9's
+uniqueness consumes. -/
+theorem isMonHom_of_pointed_of_geometricallyIntegral
+    (A B : Over (Spec (.of K))) [IsProper A.hom] [GrpObj A] [GeometricallyIntegral A.hom]
+    [IsProper B.hom] [GrpObj B] (h : A ⟶ B) (hone : η[A] ≫ h = η[B]) :
+    IsMonHom h :=
+  (isMonHom_iff_pointedDiff_eq h hone).mpr
+    (pointedDiff_eq_toUnit_η_of_geometricallyIntegral A B h hone)
+
 end AbelianVariety
