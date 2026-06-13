@@ -381,3 +381,46 @@ hypotheses. The k-module H¹ route the NO-GO verdict called merely "definable" i
 has no mathlib foundation — the major sub-arc. And holes 2,3,5,6,7,8,9 (the Jacobian/
 Albanese) remain the FGA-grade bulk. Hole 1 filled is 1 of 9; the genus *value* is not
 certified until Segment 3.
+
+## TOWER A — Segment-3 finiteness obstruction map (compile-verified, 2026-06-13 parallel session)
+
+5-agent mathlib survey + compile-probes located the **exact** absent foundations between
+the submission's `H1 C = Ext (coeffSheaf) (structureSheafModule C) 1` (in
+`Sheaf (Opens.gt C.left) (ModuleCat k)`) and `FiniteDimensional k (H1 C)`. Two
+independent walls, both genuinely absent (not a grep miss — probed):
+
+**Wall 1 — H¹ finiteness proper = the local-to-global / derived↔Čech comparison.**
+mathlib HAS the finiteness *primitive* `ModuleCat.finite_ext` (`Ext` of f.g. modules over a
+Noetherian ring is f.g., `Algebra/Category/ModuleCat/Ext/Finite.lean`) and the quasi-coherent
+sheaf layer (`SheafOfModules.IsQuasicoherent/IsFiniteType/IsFinitePresentation`,
+`Scheme.Modules`, `IsLocallyNoetherian`). But `finite_ext` lives in `ModuleCat R` while `H1 C`
+is `Ext` in the *sheaf* category; the bridge (sheaf-`Ext` computed locally via module-`Ext`,
+glued) — i.e. derived↔Čech for an affine cover, or proper-pushforward finiteness — is
+**confirmed absent** (no comparison theorem, no Leray, no acyclic-cover theorem,
+`Sites/SheafCohomology/*`). This bridge *is* Serre finiteness; multi-month.
+
+**Wall 2 — even the "easy" h⁰ is blocked on `smooth/field ⇒ reduced`.** Compile-probe verified
+the whole `IsIntegral C.left ⇒ Γ(C,⊤) finite over k` chain INFERS at the pin
+(`finite_appTop_of_universallyClosed`, `isField_of_universallyClosed`, `Spec k` one-point,
+`IrreducibleSpace C.left` via `GeometricallyIrreducible.irreducibleSpace_of_subsingleton`,
+reduced+locally-Noetherian base) EXCEPT one link: **`GeometricallyReduced C.hom` from
+`Smooth`**, which needs **`smooth-over-a-field ⇒ reduced`** — absent at BOTH scheme and ring
+level (no `smooth⇒regular`, no `IsGeometricallyReduced` producer from smoothness; bottoms out
+in `Jacobian/standard-smooth ⇒ regular local ring` and `regular ⇒ domain`, both absent —
+`RegularLocalRing/Defs.lean` has only the criterion, not these producers). Deep CA sub-arc.
+
+**Plus** the k-linear cohomology layer (prerequisite for `finrank`/`FiniteDimensional` to be
+meaningful on `H⁰`): `Sheaf.Γ`/`constantSheaf` lacked `Functor.Linear k`, and
+`Adjunction.homLinearEquiv` was absent — all bounded *category-theory* gaps (not deep CA).
+
+**Built this session (green, sorry/axiom-free, vacuity-lint 0, fork-II upstreamable):**
+`Submission/Cohomology/LinearH0.lean` — `CategoryTheory.Adjunction.{homLinearEquiv,
+right_adjoint_linear, left_adjoint_linear}`, the `Functor.Linear` analogues of mathlib's
+additive adjunction lemmas. (The downstream `HZeroLinearEquivΓ` assembly is one
+`ModuleCat`-carrier `SMulCommClass` synth-quirk from landing; deferred.)
+
+**Verdict:** Tower A's genus-finiteness goal is a genuine multi-month CA/AG infrastructure
+program (Walls 1 + 2), NOT a single-session deliverable. Decisive-regime check: the decisive
+observable (a green `FiniteDimensional k (H1 C)`) is unreachable without building absent
+foundations. Leap-queue items: (i) `smooth/field ⇒ reduced` (⇐ `Jacobian ⇒ regular local
+ring` + `regular ⇒ domain`); (ii) derived↔Čech / proper-pushforward finiteness comparison.
