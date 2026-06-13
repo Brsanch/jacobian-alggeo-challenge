@@ -425,6 +425,45 @@ observable (a green `FiniteDimensional k (H1 C)`) is unreachable without buildin
 foundations. Leap-queue items: (i) `smooth/field ⇒ reduced` (⇐ `Jacobian ⇒ regular local
 ring` + `regular ⇒ domain`); (ii) derived↔Čech / proper-pushforward finiteness comparison.
 
+### TOWER A — round-2 brick: `regular ⇒ domain` in ALL dimensions (2026-06-13, `main` @ `5d3a8ed`, pushed)
+
+The `regular ⇒ domain` half of Wall 2's leap-queue item (i) is now **built in arbitrary
+dimension** — `Submission/Cohomology/RegularLocalDomainGeneral.lean` (336 LOC, green:
+`lake build` 8335 jobs exit 0; axioms = `propext`/`Classical.choice`/`Quot.sound` only;
+vacuity-lint 0; independently re-verified). Round 1's `RegularLocalDomain.lean` only did
+`dim ≤ 1` (principal-`𝔪` `tᵏ·unit` factorisation, which does not extend to `dim ≥ 2`).
+
+- **Theorem 1** `spanFinrank_maximalIdeal_quotient_span_singleton_add_one_le` — the cotangent /
+  embedding-dimension drop: `x ∈ 𝔪 \ 𝔪² ⇒ spanFinrank 𝔪(R/(x)) + 1 ≤ spanFinrank 𝔪(R)`. Route:
+  `CotangentSpace.span_image_eq_top_iff` generating-set criterion (complement of `κ·x̄`, lift a
+  basis, `Ideal.map_span`) — sidesteps residue-field rank-nullity. Independently reusable.
+- **Theorem 2** `isDomain_of_isRegularLocalRing` (Stacks 00NP) — strong induction on embedding
+  dim: prime avoidance (`Ideal.subset_union_prime_finite` over `Option (minimalPrimes R)`, `𝔪²`
+  the lone non-prime exception) for the parameter; `R/(x)` regular of dim −1 via Thm 1 + the
+  present `supportDim_quotSMulTop_succ_eq_…` parameter dim-drop; IH ⇒ `(x)` prime; Nakayama on a
+  minimal prime `q ≤ (x)` ⇒ `q = ⊥` ⇒ `⊥` prime ⇒ `IsDomain`.
+
+**This is foundation, NOT a hole-fill** (gates-honest): it closes the `regular ⇒ domain` leaf of
+Wall 2 but the *remaining* Wall-2 gap — **`smooth/standard-smooth ⇒ regular local`** — still
+bottoms out in two absent pieces, both compile-verified absent at the pin with the warm cache:
+1. **the finite-type-over-field dimension formula** (`ringKrullDim` of a standard-smooth local
+   `k`-algebra `= rel dim`). `MvPolynomial.ringKrullDim_of_isNoetherianRing` (`dim k[x₁..xₙ] = n`)
+   and the regular-sequence dim-drop (`ringKrullDim_add_length_eq_…_of_isRegular`) exist, but
+   `KrullDimension/Field.lean` has only `dim field = 0` — **no `dim = trdeg`, no dim of a
+   finite-type/essentially-finite-type local algebra over a field**. Assembling it for the
+   localized standard-smooth presentation is its own multi-piece arc.
+2. **the residue-field-aware cotangent (Zariski-tangent) computation** `finrank_κ(𝔪/𝔪²) = rel dim`
+   — needs the conormal sequence `𝔪/𝔪² → Ω_{S/k}⊗κ → Ω_{κ/k} → 0` with the `Ω_{κ/k}` correction
+   for `κ/k` non-separable/non-trivial (the genuine delicacy of `smooth ⇒ regular` over an
+   arbitrary base). `StandardSmoothCotangent` gives `rank_S Ω[S⁄R] = rel dim` (an `S`-module
+   fact), NOT the Zariski cotangent `finrank_κ`; the two `CotangentSpace` notions
+   (`IsLocalRing.CotangentSpace = 𝔪/𝔪²` vs `Extension.CotangentSpace = S⊗Ω`) are distinct.
+
+So the updated Wall-2 leap-queue item (i) is sharper: `smooth/field ⇒ reduced` now reduces to
+`smooth ⇒ regular`, which reduces to the two leaves above (`regular ⇒ domain` ✓ done). Wall 1
+(Serre finiteness / derived↔Čech) unchanged. All 9 holes remain OPEN — this brick certifies no
+hole; it is upstreamable mathlib content completing the regular-local-ring theory.
+
 ## 🅱️ TOWER B survey — Jacobian construction (holes 2,3,5,6,7,8): declaration-level inventory + priced Route-A-vs-B decision (2026-06-13)
 
 Tower B's mandate = **construct `Jacobian C` (= Pic⁰)** with group structure (hole 3),

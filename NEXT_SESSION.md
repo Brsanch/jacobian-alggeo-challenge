@@ -5,6 +5,16 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 (`…/jacobian-alggeo-parallel/jacobian`, branch `tower/jacobian-r2`) and Tower C
 (`…/abvar`, branch `tower/abelian-variety-r2`). Control room: `…/jacobian-alggeo-parallel/PARALLEL_PLAN.md`.
 
+> **ROUND-2 PROGRESS (2026-06-13, `main` @ `5d3a8ed`):** Tower-A landed `regular ⇒ domain` in
+> **ALL dimensions** (Stacks 00NP) — `Submission/Cohomology/RegularLocalDomainGeneral.lean`
+> (green, axiom-clean, vacuity 0, full build 8335 jobs, pushed). Closes the `regular ⇒ domain`
+> leaf of Wall 2. **Next reachable Tower-A leaf** = `smooth ⇒ regular local`, which needs ONE of:
+> (a) finite-type-over-field **dimension formula** (`dim` standard-smooth local k-alg = rel dim),
+> or (b) **residue-field cotangent sequence** `finrank_κ(𝔪/𝔪²) = rel dim`. Both compile-verified
+> absent at the pin. Integrator: no Tower B/C r2 branch pushed to origin yet (checked); Tower C is
+> mid-build on `SmoothGroupScheme`. See `OPEN.md` §"Tower-A foundation (round 2)" +
+> `docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER A — round-2 brick" + LEAP_QUEUE §5.
+
 ## 🟢 MANDATE: build the challenge to completion — mathlib work is IN-SCOPE
 Goal = comparator pass (all 9 holes), not banking bricks. Building absent mathlib infrastructure on
 the critical path — **Serre finiteness of coherent cohomology, Riemann–Roch, regular-local-ring

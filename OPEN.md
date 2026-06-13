@@ -66,6 +66,23 @@ projective), the open walls. Fork-II mathlib-PR material, not a hole-fill. Detai
 Current phase: **M1 (coherent cohomology canary)** — M0 done (scaffold + CI
 green + manifest, `3a3066d`). See `docs/ROUTE_RESEARCH_2026_06_13.md`.
 
+### ✅ Tower-A foundation (round 2): `regular ⇒ domain` in ALL dimensions (2026-06-13, `main` @ `5d3a8ed`, pushed)
+
+`Submission/Cohomology/RegularLocalDomainGeneral.lean` (336 LOC, full `lake build` green
+8335 jobs, axioms = `propext`/`Classical.choice`/`Quot.sound` only, vacuity 0, independently
+re-verified). Generalizes round-1's `RegularLocalDomain.lean` (dim ≤ 1 only).
+- **Thm 1** `spanFinrank_maximalIdeal_quotient_span_singleton_add_one_le` — cotangent /
+  embedding-dim drop (`x∈𝔪\𝔪² ⇒ spanFinrank 𝔪(R/(x))+1 ≤ spanFinrank 𝔪(R)`), reusable.
+- **Thm 2** `isDomain_of_isRegularLocalRing` (Stacks 00NP) — regular local ring, any dim ⇒ domain.
+
+**Foundation, NOT a hole-fill.** Closes the `regular ⇒ domain` leaf of Wall 2; the remaining
+Wall-2 gap **`smooth ⇒ regular local`** still bottoms out (compile-verified absent at the pin) in
+(1) the finite-type-over-field **dimension formula** (`dim` of a standard-smooth local `k`-algebra
+= rel dim; `KrullDimension/Field.lean` has only `dim field = 0`, no `dim=trdeg`), and (2) the
+**residue-field cotangent sequence** `finrank_κ(𝔪/𝔪²)=rel dim` (`StandardSmoothCotangent` gives
+`rank_S Ω`, a different `CotangentSpace`). Wall 1 (Serre finiteness) unchanged; all 9 holes OPEN.
+Detail: `docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER A — round-2 brick".
+
 ### ✅ Segment 1 DONE (2026-06-13, `Submission/SheafCohomologyModuleCat.lean`, full-build green)
 
 Derived-functor sheaf cohomology valued in `ModuleCat k` (build-target step 1,
