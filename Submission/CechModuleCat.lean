@@ -111,11 +111,13 @@ Identifying the two cofaces *in coordinates* (as the literal `Pi.lift` of the
 finer M1b-facing step. -/
 noncomputable def cechHZeroIsoEqualizer (U : ι → C) (P : Cᵒᵖ ⥤ ModuleCat.{w} k) :
     (cechH U 0).obj P ≅
-      equalizer ((cechCosimpl U P).δ 0) ((cechCosimpl U P).δ 1) :=
+      equalizer ((cechCosimpl U P).δ (0 : Fin 2)) ((cechCosimpl U P).δ (1 : Fin 2)) :=
   cechHZeroIsoKernel U P ≪≫
     kernelIsoOfEq (cechComplexMod_d_zero_one U P) ≪≫
       (Preadditive.isLimitForkOfKernelFork
-          (kernelIsKernel ((cechCosimpl U P).δ 0 - (cechCosimpl U P).δ 1))).conePointUniqueUpToIso
-        (limit.isLimit (parallelPair ((cechCosimpl U P).δ 0) ((cechCosimpl U P).δ 1)))
+          (kernelIsKernel
+            ((cechCosimpl U P).δ (0 : Fin 2) - (cechCosimpl U P).δ (1 : Fin 2)))).conePointUniqueUpToIso
+        (limit.isLimit
+          (parallelPair ((cechCosimpl U P).δ (0 : Fin 2)) ((cechCosimpl U P).δ (1 : Fin 2))))
 
 end JacobianAlggeo
