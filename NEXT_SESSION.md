@@ -4,7 +4,15 @@ Read in order: `OPEN.md` (authoritative hole status) → `CHIP_GATES.md` →
 `DEVELOPMENT.md` → `docs/ROUTE_RESEARCH_2026_06_13.md`. Do not re-audit; the
 next chip is named below.
 
-## Current phase: M1 (M0 done; M1 decomposed + encoding fork resolved)
+## Current phase: M1b (M0 + M1a-abstract done)
+
+**M1a abstract layer COMPLETE** (loop runs #2–#4): `cechComplexMod`, `cechH`,
+`cechHZeroIsoKernel`, `cechCosimpl`, `cechComplexMod_d_zero_one` (`d⁰=δ⁰−δ¹`),
+and now `cechHZeroIsoEqualizer` (`H⁰ ≅ equalizer(δ⁰,δ¹)` — the degree-0
+Čech/sheaf condition) are all merged + CI-green (`92a91be`, run `27454972985`).
+The remaining coface coordinate-unfold is folded into M1b (see sub-task B below).
+
+## (archive) M1 decomposition + encoding fork
 
 **M0:** DONE — scaffold + CI green + `lake-manifest.json` committed
 (commit `3a3066d`). M0 CI runs are green in 3–4 min, so the **CI-side
@@ -18,20 +26,29 @@ Headline: define `H¹ C 𝒪_C` as the degree-1 homology of the two-affine-cover
 `A`-generic) — the abelian-group `Sheaf.H` cannot carry the k-module
 structure the DONE WHEN needs. M1 is split into M1a/M1b/M1c (see route doc).
 
-### Next chip = **M1a-equalizer** (the SECOND differential-unfold)
+### Next chip = **M1b** (the curve's concrete two-affine cover + restriction maps)
 
-M1a's def layer, cocycle lemma, AND the **first** differential-unfold
-(`d⁰ = δ⁰ − δ¹`, `cechComplexMod_d_zero_one`) are DONE and merged
-(`55532a9`, `681626a`, `Submission/CechModuleCat.lean`, CI-green). The
-remaining M1a piece — the second, harder unfold:
+M1a's abstract layer is closed (see top of file). M1b makes the cover and
+presheaf concrete and is the gateway to M1c (Serre finiteness = go/no-go).
+Pick ONE sub-chip per run (DONE WHEN each):
 
-**Identify the two cofaces `(cechCosimpl U P).δ 0`, `.δ 1` concretely as the
-restriction maps onto pairwise intersections**, turning `kernel (δ⁰ − δ¹)`
-into the literal **equalizer of the two restriction maps = global sections of
-the cover**. **DONE WHEN:** a lemma stating Čech `H⁰` is the equalizer
-(`kernel (r₀ − r₁)`) of the two restriction maps, compiling at the pin.
+- **B-cover:** instantiate the abstract `cechH`/`cechHZeroIsoEqualizer` at the
+  curve `C`'s **two-affine cover** `U : Fin 2 → (the scheme's open/affine
+  category)` with `𝒪_C` as a `ModuleCat k`-valued presheaf. **DONE WHEN:** a
+  `def` producing the genus-relevant `cechH U 1` (resp. `cechHZeroIsoEqualizer`)
+  specialized to `(C, 𝒪_C, U)`, compiling at the pin. (First survey what
+  AlgebraicGeometry API in the pin gives an affine cover + the structure-sheaf
+  sections as `k`-modules — mathlib-first, per Gate 6.)
+- **B-coface (coordinate-unfold, optional refinement):** identify the abstract
+  cofaces `(cechCosimpl U P).δ 0`, `.δ 1` *concretely* as the `Pi.lift`-of-
+  `P.map` restriction maps onto pairwise intersections, so the equalizer of
+  `cechHZeroIsoEqualizer` reads literally as the equalizer of the two
+  restriction maps `∏ᵢ P(Uᵢ) ⇉ ∏_{i,j} P(Uᵢ∩Uⱼ)`. **DONE WHEN:** a lemma giving
+  `(cechCosimpl U P).δ a` componentwise (`≫ Pi.π _ j`) as `Pi.π _ (j∘δa) ≫ P.map …`.
+  Lower priority than B-cover (it is bookkeeping; the equalizer statement already
+  holds abstractly). Full recipe preserved below.
 
-#### Full recipe (worked out loop run #3 from the verbatim pinned sources)
+#### Coface coordinate-unfold recipe (worked out loop run #3 from the verbatim pinned sources)
 
 `X := cechCosimpl U P`. `X.δ a = X.map (SimplexCategory.δ a)` unfolds as (all
 `@[simps!]`/`@[simps]`, so simp lemmas exist):
@@ -69,11 +86,9 @@ index-0 → `r₁ − r₀` on the `U₀∩U₁` factor. So `kernel(δ⁰−δ¹
   bootstrap finishes** (see "Local checks" below), then per-file
   `LEAN_NUM_THREADS=1 lake env lean Submission/CechModuleCat.lean`.
 
-After M1a-equalizer: **M1b** (the curve's two-affine cover + restriction maps
-from the scheme's instances; wire in `𝒪_C` as a `ModuleCat k`-presheaf), then
-**M1c** (`FiniteDimensional k (cechH U 1 .obj 𝒪_C)` = Serre finiteness = the
-go/no-go datum). Record M1's actual LOC + wall-clock in the route doc when M1c
-lands; make the go/no-go call explicitly in `LOOP_LOG.md`.
+After M1b: **M1c** (`FiniteDimensional k ((cechH U 1).obj 𝒪_C)` = Serre
+finiteness = the go/no-go datum). Record M1's actual LOC + wall-clock in the
+route doc when M1c lands; make the go/no-go call explicitly in `LOOP_LOG.md`.
 
 ### Local checks (loop run #2 correction)
 
