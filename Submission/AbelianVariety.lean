@@ -2,6 +2,8 @@ import Submission.AbelianVariety.PointedDiff
 import Submission.AbelianVariety.Rigidity
 import Submission.AbelianVariety.Homomorphisms
 import Submission.AbelianVariety.SmoothFaithfullyFlatDescent
+import Submission.AbelianVariety.SmoothGroupScheme
+import Submission.AbelianVariety.AlbaneseUniqueness
 
 /-!
 # Tower C — abelian-variety theory + Albanese (aggregator)
