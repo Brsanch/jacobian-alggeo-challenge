@@ -64,4 +64,31 @@ noncomputable def cechHZeroIsoKernel (U : ι → C) (P : Cᵒᵖ ⥤ ModuleCat.{
     (K.cyclesIsKernel (i := 0) (j := 1) hnext).conePointUniqueUpToIso
       (limit.isLimit (parallelPair (K.d 0 1) 0))
 
+/-- The cosimplicial object in `ModuleCat k` underlying the Čech complex of `U`:
+`⦋n⦌ ↦ ∏ᵢ P(∏ₐ U (i a))` over `i : Fin (n+1) → ι`. By construction
+`(cechComplexMod U).obj P = alternatingCofaceMapComplex.obj (cechCosimpl U P)`, so the
+Čech coboundaries are the alternating sums of this object's coface maps. -/
+noncomputable def cechCosimpl (U : ι → C) (P : Cᵒᵖ ⥤ ModuleCat.{w} k) :
+    CosimplicialObject (ModuleCat.{w} k) :=
+  (FormalCoproduct.cosimplicialObjectFunctor (FormalCoproduct.mk _ U).cech).obj P
+
+/-- **The degree-`0` Čech coboundary is the difference of the two cofaces `δ⁰ - δ¹`.**
+This is the first of the two unfolds the equalizer identification needs: the abstract
+`d⁰ : Č⁰ ⟶ Č¹` of `cechComplexFunctor` (the alternating coface map complex of
+`cechCosimpl`) is `δ 0 - δ 1`, where `δ 0, δ 1 : Č⁰ ⟶ Č¹` are the cosimplicial coface
+maps. Identifying these two cofaces *concretely* as the restriction maps onto the
+pairwise intersections (via `evalOp`/`mapPower`) — turning `kernel (δ 0 - δ 1)` into the
+literal equalizer of the two restriction maps — is the remaining M1a step. -/
+lemma cechComplexMod_d_zero_one (U : ι → C) (P : Cᵒᵖ ⥤ ModuleCat.{w} k) :
+    ((cechComplexMod U).obj P).d 0 1 = (cechCosimpl U P).δ 0 - (cechCosimpl U P).δ 1 := by
+  show (AlgebraicTopology.AlternatingCofaceMapComplex.obj (cechCosimpl U P)).d 0 1
+      = (cechCosimpl U P).δ 0 - (cechCosimpl U P).δ 1
+  unfold AlgebraicTopology.AlternatingCofaceMapComplex.obj
+  erw [CochainComplex.of_d]
+  show (∑ i : Fin 2, (-1 : ℤ) ^ (i : ℕ) • (cechCosimpl U P).δ i) = _
+  rw [Fin.sum_univ_two]
+  simp only [Fin.isValue, Fin.val_zero, Fin.val_one, pow_zero, pow_one, one_zsmul,
+    neg_one_zsmul]
+  abel
+
 end JacobianAlggeo
