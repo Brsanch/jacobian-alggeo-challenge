@@ -267,3 +267,48 @@ The next investigation chip is a *survey*, not code: confirm `ModuleCat k`-value
 derived sheaf cohomology is expressible at the pin. If B is viable, M1a's
 `cechHZeroIsoEqualizer` is preserved as `H⁰` content but the H¹/genus route moves
 to derived functors.
+
+## 🛑 M1 GO/NO-GO VERDICT (2026-06-13) — NO-GO for a loopable chip sequence; the real wall is the coherent-cohomology stack
+
+Following the cover-gap finding, the deeper survey traced the genus to its true
+prerequisite and confirmed the wall across **all of mathlib** at the pin:
+
+- Hole 4 (`smoothOfRelativeDimension_genus`) forces `genus C = dim_k H¹(C, 𝒪_C)`,
+  i.e. the M1c DONE WHEN `FiniteDimensional k H¹` is unavoidable.
+- `FiniteDimensional k H¹(proper curve, 𝒪)` **is Serre's finiteness theorem** for
+  coherent cohomology of a proper scheme.
+- **Confirmed absent from the entire pinned mathlib (`5450b53e5ddc`):**
+  `QuasiCoherent` sheaves (zero occurrences anywhere), coherent sheaves, Serre
+  finiteness, scheme sheaf cohomology, and any `Ext`/cohomology wired on
+  `SheafOfModules`. The abstract substrate exists (`Sheaf.Γ J A` general global
+  sections; `ModuleCat k` Grothendieck-abelian with enough injectives;
+  Grothendieck-abelian ⇒ `HasExt`), so H¹ can be *defined* as a `k`-module via
+  fork B — but **finiteness** has no foundation to stand on.
+
+**Verdict.** The alggeo Jacobian challenge is reachable only after building the
+coherent-cohomology-of-schemes stack: quasi-coherent → coherent sheaves →
+cohomology → Serre finiteness → (for dim = g) Riemann–Roch-grade results. That is
+a major, multi-month **mathlib-infrastructure program**, not a chip sequence an
+autonomous 7-minute loop can close. The decisive-regime-reachability check
+(`feedback_decisive_regime_reachability`) therefore returns **NO-GO for the loop**;
+escalate the scope decision to Bryan.
+
+**Forks for Bryan (scope decision, not a Lean chip):**
+- **(I) Commit to the infrastructure arc** — build quasi-coherent/coherent
+  sheaves + cohomology + Serre finiteness as a real program. Every piece is prime
+  mathlib-PR material (large upstream value; `feedback_mathlib_work_is_in_scope`).
+  Months, human-architected, not loopable.
+- **(II) Incremental upstream** — land the bounded, already-clean pieces as
+  standalone mathlib PRs now (the M1a Čech-in-`ModuleCat k` layer; `underToModuleCat`),
+  building toward the challenge without committing to finish it soon.
+- **(III) Shelve** the alggeo challenge; record it as gated on the coherent-cohomology
+  milestone.
+
+**Salvage (already verified, compile-clean, upstreamable — the few hours were not
+wasted):** `Submission/CechModuleCat.lean` (abstract Čech cohomology valued in a
+preadditive/`ModuleCat k` target + `H⁰ ≅ equalizer` sheaf condition) and
+`Submission/StructureSheafModule.lean` (`underToModuleCat`, the `Under R ⥤ ModuleCat R`
+forgetful absent from mathlib). ~170 LOC of genuine infrastructure.
+
+The loop is DISABLED and a `LOOP_HALT` is in place pointing here, so no autonomous
+run thrashes against this wall.

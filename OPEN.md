@@ -4,7 +4,17 @@
 > lint gate (mechanical, baseline-ratcheted) + the anti-paraphrase gates —
 > and `DEVELOPMENT.md` (panic-safe build rules, eval submission mechanics).
 
-## Authoritative current state (2026-06-13: scaffold, all 9 holes OPEN)
+## 🛑 GO/NO-GO VERDICT (2026-06-13): NO-GO for the loop — gated on coherent-cohomology infrastructure
+
+The genus (hole 4) forces `FiniteDimensional k H¹(C,𝒪_C)` = Serre finiteness of
+coherent cohomology. Confirmed absent from ALL of mathlib at the pin: quasi-coherent
+sheaves, coherent sheaves, scheme cohomology, Serre finiteness. The challenge is a
+multi-month mathlib-infrastructure program, not a loopable chip sequence. Loop is
+DISABLED + `LOOP_HALT` in place. Scope fork (commit infra arc / incremental PRs /
+shelve) escalated to Bryan. Full verdict + salvage list:
+`docs/ROUTE_RESEARCH_2026_06_13.md` ("M1 GO/NO-GO VERDICT"). All 9 holes remain OPEN.
+
+## (pre-verdict) current state (2026-06-13: scaffold, all 9 holes OPEN)
 
 Target: the official lean-eval problem
 [`jacobian_challenge_alggeo`](https://lean-lang.org/eval/problems/jacobian_challenge_alggeo/)

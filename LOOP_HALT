@@ -1,0 +1,4 @@
+M1 GO/NO-GO = NO-GO for the loop (2026-06-13).
+The genus (hole 4) needs Serre finiteness of coherent cohomology; mathlib at the pin has NO quasi-coherent/coherent sheaves, cohomology, or finiteness. This is a multi-month mathlib-infrastructure arc, not a loopable chip sequence. Scope decision is escalated to Bryan.
+See docs/ROUTE_RESEARCH_2026_06_13.md "M1 GO/NO-GO VERDICT". Salvage: CechModuleCat.lean + StructureSheafModule.lean are clean/upstreamable.
+To resume the loop on a DIFFERENT (bounded) target, delete this file and reset NEXT_SESSION.md.
