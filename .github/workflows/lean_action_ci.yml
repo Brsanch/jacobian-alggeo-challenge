@@ -1,0 +1,71 @@
+name: Lean Action CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Opt in to Node 24 for JavaScript actions ahead of the June 2026
+      # Node 20 removal deadline (see jacobian-lean-challenge for detail).
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+    steps:
+      - uses: actions/checkout@v6
+      # Initial-bootstrap step: if lake-manifest.json is not committed yet,
+      # generate it IN CI. The local machine never runs `lake update` /
+      # `lake exe cache get` (M3 Ultra apfsd kernel-panic policy, see
+      # DEVELOPMENT.md). After the first successful CI run, download the
+      # artifact, commit the manifest, and this step becomes a no-op.
+      - name: Bootstrap lake-manifest.json if missing
+        id: bootstrap_manifest
+        run: |
+          if [ ! -f lake-manifest.json ]; then
+            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+            export PATH="$HOME/.elan/bin:$PATH"
+            lake update
+            echo "generated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "generated=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Upload lake-manifest.json artifact (only when freshly generated)
+        if: steps.bootstrap_manifest.outputs.generated == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lake-manifest
+          path: lake-manifest.json
+          if-no-files-found: error
+          retention-days: 7
+      - uses: leanprover/lean-action@v1
+
+  # Keep only the newest Actions cache; lean-action keys caches by commit
+  # SHA so per-key dedupe never fires. Keeps the repo under the 10 GB quota.
+  dedupe-caches:
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+    permissions:
+      actions: write
+    steps:
+      - name: Prune caches (keep newest, drop rest)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ids=$(gh api "/repos/$REPO/actions/caches?per_page=100" \
+            --jq '.actions_caches | sort_by(.created_at) | reverse | .[1:] | .[].id')
+          if [ -z "$ids" ]; then
+            echo "No caches to prune (≤1 present)."
+            exit 0
+          fi
+          echo "$ids" | while read id; do
+            echo "Deleting cache id=$id"
+            gh api -X DELETE "/repos/$REPO/actions/caches/$id" || true
+          done

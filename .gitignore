@@ -1,0 +1,13 @@
+/.lake
+.metadata_never_index
+
+# Internal scratch — not part of the submission surface
+**/scratch/
+**/drafts/
+
+# Editor / OS
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
