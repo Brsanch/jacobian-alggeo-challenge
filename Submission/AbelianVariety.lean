@@ -1,4 +1,5 @@
 import Submission.AbelianVariety.PointedDiff
+import Submission.AbelianVariety.Rigidity
 
 /-!
 # Tower C — abelian-variety theory + Albanese (aggregator)

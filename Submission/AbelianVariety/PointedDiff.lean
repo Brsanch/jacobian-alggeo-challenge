@@ -91,4 +91,38 @@ lemma lift_one_id_pointedDiff (h : A ⟶ B) (hone : η[A] ≫ h = η[B]) :
     rw [← Category.assoc, lift_snd, Category.id_comp]
   rw [e1, e2, e3, ← Hom.one_def, _root_.one_mul, _root_.mul_inv_cancel]
 
+/-- General `{e} × A` axis vanishing: precomposing `pointedDiff h` with the
+map `(e, g·) : X ⟶ A ⊗ A` (first coordinate the unit) yields the constant unit,
+provided `h` is pointed.  Specialises both `lift_one_id_pointedDiff` (`X = A`,
+`g = 𝟙`) and `lift_unit_pointedDiff` (`X = 𝟙_`). -/
+lemma lift_one_comp_pointedDiff (h : A ⟶ B) (hone : η[A] ≫ h = η[B]) {X : C} (g : X ⟶ A) :
+    lift (toUnit X ≫ η) g ≫ pointedDiff h = toUnit _ ≫ η := by
+  rw [pointedDiff, comp_mul, GrpObj.comp_inv, comp_mul]
+  have e1 : lift (toUnit X ≫ η[A]) g ≫ (μ[A] ≫ h) = g ≫ h := by
+    rw [← Category.assoc, ← Hom.mul_def, ← Hom.one_def, _root_.one_mul]
+  have e2 : lift (toUnit X ≫ η[A]) g ≫ (fst A A ≫ h) = toUnit _ ≫ η := by
+    rw [← Category.assoc, lift_fst, Category.assoc, hone]
+  have e3 : lift (toUnit X ≫ η[A]) g ≫ (snd A A ≫ h) = g ≫ h := by
+    rw [← Category.assoc, lift_snd]
+  rw [e1, e2, e3, ← Hom.one_def, _root_.one_mul, _root_.mul_inv_cancel]
+
+/-- `{e} × A` axis vanishing over the monoidal unit: for any `g : 𝟙_ ⟶ A`,
+`lift η[A] g ≫ pointedDiff h = η[B]`, provided `h` is pointed.  This is the
+form Mumford's rigidity argument consumes on closed `K`-points. -/
+lemma lift_unit_pointedDiff (h : A ⟶ B) (hone : η[A] ≫ h = η[B]) (g : 𝟙_ C ⟶ A) :
+    lift η[A] g ≫ pointedDiff h = η[B] := by
+  have key := lift_one_comp_pointedDiff h hone g
+  simpa only [toUnit_unique (toUnit (𝟙_ C)) (𝟙 _), Category.id_comp] using key
+
+/-- `A × {e}` axis vanishing in whiskering form: `A ◁ η[A] ≫ pointedDiff h` is the
+constant unit, provided `h` is pointed.  Analog of mathlib's
+`GrpObj.whiskerLeft_η_commutator`; this is the form the rigidity argument's
+fibre-constancy step consumes. -/
+lemma whiskerLeft_η_pointedDiff (h : A ⟶ B) (hone : η[A] ≫ h = η[B]) :
+    A ◁ η[A] ≫ pointedDiff h = toUnit _ ≫ η := by
+  have e : A ◁ η[A] = (ρ_ A).hom ≫ lift (𝟙 A) (toUnit A ≫ η[A]) := by
+    ext <;> simp [rightUnitor_hom, toUnit_unique (snd A (𝟙_ C)) (toUnit (A ⊗ 𝟙_ C))]
+  rw [e, Category.assoc, lift_id_one_pointedDiff h hone]
+  simp
+
 end AbelianVariety
