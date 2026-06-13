@@ -114,6 +114,29 @@ Wall-2 gap **`smooth ⇒ regular local`** still bottoms out (compile-verified ab
 `rank_S Ω`, a different `CotangentSpace`). Wall 1 (Serre finiteness) unchanged; all 9 holes OPEN.
 Detail: `docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER A — round-2 brick".
 
+### 🟡 Shared-foundation brick I.1 (2026-06-13): `MonoidalCategory (SheafOfModules R)` — scaffold + reduction to ONE classical theorem
+
+A-vs-B route leap **deferred** (Bryan, 2026-06-13): build the foundation BOTH routes need
+first (`docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`). The bottom brick is the tensor structure
+on sheaves of modules (Route B represents `Pic⁰`; Route A needs line bundles for ample —
+nothing in Stack I builds without it). `Submission/Cohomology/SheafOfModulesMonoidal.lean`
+(163 LOC, full build green 8340 jobs, axioms = `propext`/`Classical.choice`/`Quot.sound`,
+vacuity 0, independently re-verified):
+- Builds `SheafOfModules.monoidalCategory α : MonoidalCategory (SheafOfModules R)` by transporting
+  `PresheafOfModules.monoidalCategory` through the sheafification localization
+  (`CategoryTheory.Localization.Monoidal`; defeq type-synonym transport, no equivalence machinery).
+- **Honest status — this is scaffold + a precise REDUCTION, NOT a usable monoidal structure yet.**
+  The instance is **conditional on `[(sheafificationW J R₀).IsMonoidal]`** (mathlib's own class,
+  in exact analogy with mathlib's `CategoryTheory.Sheaf.monoidalCategory`; NOT an invented
+  named-hypothesis, NOT vacuous — vacuity gate confirms). The undischarged hypothesis is the
+  genuine remaining content: **`W.IsMonoidal` = "sheafification commutes with the tensor product"**
+  (Stacks 17.16 / EGA 0_I.4.1), traced to its leaf — absent at the pin (no
+  `MonoidalClosed (PresheafOfModules)`, no sheafification-preserves-tensor lemma; `IsLeftAdjoint`
+  alone is insufficient). **It is a genuine, separate, strictly-foundational classical theorem —
+  NOT circular with the conclusion.** Discharging it (a multi-hundred-LOC sub-arc: build
+  `MonoidalClosed (PresheafOfModules)` or the direct sheaf tensor) makes the monoidal structure
+  unconditional and unblocks I.2 (invertible sheaves → `Pic X`). **This is the next concrete brick.**
+
 ### ✅ Segment 1 DONE (2026-06-13, `Submission/SheafCohomologyModuleCat.lean`, full-build green)
 
 Derived-functor sheaf cohomology valued in `ModuleCat k` (build-target step 1,
