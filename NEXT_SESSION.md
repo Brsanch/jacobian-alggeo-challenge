@@ -11,9 +11,17 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > leaf of Wall 2. **Next reachable Tower-A leaf** = `smooth ⇒ regular local`, which needs ONE of:
 > (a) finite-type-over-field **dimension formula** (`dim` standard-smooth local k-alg = rel dim),
 > or (b) **residue-field cotangent sequence** `finrank_κ(𝔪/𝔪²) = rel dim`. Both compile-verified
-> absent at the pin. Integrator: no Tower B/C r2 branch pushed to origin yet (checked); Tower C is
-> mid-build on `SmoothGroupScheme`. See `OPEN.md` §"Tower-A foundation (round 2)" +
+> absent at the pin. See `OPEN.md` §"Tower-A foundation (round 2)" +
 > `docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER A — round-2 brick" + LEAP_QUEUE §5.
+>
+> **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
+> foundation first** (`docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`: Stack I sheaves→Pic→ample,
+> Stack II cohomology→Serre→RR; bottom brick I.1 = `SheafOfModules` monoidal, **scaffold DONE**,
+> reduced to I.1a = `W.IsMonoidal` = sheafification⊗tensor = Stacks 17.16, the next concrete brick).
+> Top-down roadmap from the COMPLETED Riemann-surface challenge (rkirov, solved end-to-end):
+> `docs/ROADMAP_FROM_COMPLETED_CHALLENGE_2026_06_13.md` — confirms the 9-hole shape + downstream
+> ordering (holes 3,4,5,6 fall out of hole 2's construction), but is **silent at hole 2** (the RS
+> solution used the analytic `ℂᵍ/Λ` shortcut; no algebraic analogue — the construction is the gate).
 
 ## 🟢 MANDATE: build the challenge to completion — mathlib work is IN-SCOPE
 Goal = comparator pass (all 9 holes), not banking bricks. Building absent mathlib infrastructure on
