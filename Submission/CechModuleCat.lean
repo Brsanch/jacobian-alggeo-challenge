@@ -88,6 +88,7 @@ lemma cechComplexMod_d_zero_one (U : ι → C) (P : Cᵒᵖ ⥤ ModuleCat.{w} k)
   show (∑ i : Fin 2, (-1 : ℤ) ^ (i : ℕ) • (cechCosimpl U P).δ i) = _
   rw [Fin.sum_univ_two]
   simp only [Fin.isValue, Fin.val_zero, Fin.val_one, pow_zero, pow_one, one_zsmul,
-    neg_one_zsmul, sub_eq_add_neg]
+    neg_one_zsmul]
+  abel
 
 end JacobianAlggeo
