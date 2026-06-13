@@ -63,6 +63,37 @@ projective/curve case needs P3 (invariant affine cover of `C^d`) + P5 (`Sym^d C`
 projective), the open walls. Fork-II mathlib-PR material, not a hole-fill. Detail:
 `docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER B build".
 
+**✅ Tower B round 2 extension (2026-06-13, commit `05bf19d`, branch `tower/jacobian-r2`, pushed;
+CI run `27476042173`; full `lakelock lake build` green 8336 jobs, vacuity 0, sorry/axiom-free):**
+the affine core now carries its **structure over the base** and the **degree-1 identification** —
+the pieces the projective construction consumes on every route.
+- `Submission/Jacobian/AffineQuotientBase.lean` — `Spec(B^G) ⟶ Spec R` (`structureMorphism`);
+  `quotientMap_comp_structureMorphism` (the quotient map descends to `Over (Spec R)`).
+- `Submission/Jacobian/AffineSymmetricPowerStructure.lean` — `Sym^d(Spec A)` as an
+  `Over (Spec R)` object (`affineSymmetricPowerOver`); **`Sym^1(Spec A) ≅ Spec A`**
+  (`affineSymOneIso`, the Abel–Jacobi base case) via `finOneTensorAlgEquiv` (`A^{⊗1} ≃ₐ[R] A`,
+  upgrading mathlib's `LinearEquiv`-only `subsingletonEquiv`) + `symOneAlgEquiv`
+  (`(A^{⊗1})^{S_1} ≃ₐ[R] A`); **`affineSymOneIso_hom_comp_base`** (the iso is over `Spec R`);
+  and **`Sym^0(Spec A) ≅ Spec R`** (`affineSymZeroIso`, the divisor-monoid unit) via
+  `finZeroTensorAlgEquiv` (`A^{⊗0} ≃ₐ[R] R`) + `symZeroAlgEquiv`.
+- **STILL affine-model foundation, NOT a hole-fill** — holes 2,3,5,6,7,8 OPEN.
+- **Globalization leaf-obstruction (verified by mathlib grep at the pin):** **no
+  `IsProjective`/`QuasiProjective`/projective-morphism for schemes, no ample line bundles**
+  (only `AmpleSet`, the h-principle notion). ⇒ **P5** (`Sym^d C` projective) is *not statable*;
+  **P3** (orbit-in-affine-open) has no ample-bundle anchor. The deepest, highest-leverage next
+  infra target is the **projective-morphism + ample-line-bundle foundation** itself.
+- Next reachable affine-side brick (named, resolved): the **addition / monoid map**
+  `Sym^d × Sym^e → Sym^{d+e}` — a multi-step sub-arc (not a one-shot): needs (a) the AlgEquiv
+  `A^{⊗(d+e)} ≅ A^{⊗d} ⊗ A^{⊗e}` (`Fin.sumFinEquiv`-reindex; mathlib has `tmulEquiv` only as a
+  `LinearEquiv`), equivariant for `S_d × S_e ↪ S_{d+e}`, and (b) `(M ⊗ N)^{G×H} = M^G ⊗ N^H`
+  (invariants commute with `⊗`), **free over a field** (`⊗_k` exact) but a genuine mathlib gap
+  in general. Build it over `R = k` (the challenge base). This is the algebraic heart of the
+  group law (hole 3); the birational group-law extension then needs RR (Tower A).
+- Lean note (for the next session): `Spec.map_comp`/`CommRingCat.ofHom_comp` rewriting does NOT
+  fire under `rw`/`simp only` when a factor's codomain is `CommRingCat.of ↥(subalgebra)` (the
+  `Sym^d` invariant ring); **`erw [← Spec.map_comp, ← CommRingCat.ofHom_comp]` works** (matches up
+  to defeq). Used in `affineSymOneIso_hom_comp_base`.
+
 Current phase: **M1 (coherent cohomology canary)** — M0 done (scaffold + CI
 green + manifest, `3a3066d`). See `docs/ROUTE_RESEARCH_2026_06_13.md`.
 
