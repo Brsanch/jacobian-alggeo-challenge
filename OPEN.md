@@ -73,16 +73,26 @@ the pieces the projective construction consumes on every route.
   `Over (Spec R)` object (`affineSymmetricPowerOver`); **`Sym^1(Spec A) ≅ Spec A`**
   (`affineSymOneIso`, the Abel–Jacobi base case) via `finOneTensorAlgEquiv` (`A^{⊗1} ≃ₐ[R] A`,
   upgrading mathlib's `LinearEquiv`-only `subsingletonEquiv`) + `symOneAlgEquiv`
-  (`(A^{⊗1})^{S_1} ≃ₐ[R] A`).
+  (`(A^{⊗1})^{S_1} ≃ₐ[R] A`); **`affineSymOneIso_hom_comp_base`** (the iso is over `Spec R`);
+  and **`Sym^0(Spec A) ≅ Spec R`** (`affineSymZeroIso`, the divisor-monoid unit) via
+  `finZeroTensorAlgEquiv` (`A^{⊗0} ≃ₐ[R] R`) + `symZeroAlgEquiv`.
 - **STILL affine-model foundation, NOT a hole-fill** — holes 2,3,5,6,7,8 OPEN.
 - **Globalization leaf-obstruction (verified by mathlib grep at the pin):** **no
   `IsProjective`/`QuasiProjective`/projective-morphism for schemes, no ample line bundles**
   (only `AmpleSet`, the h-principle notion). ⇒ **P5** (`Sym^d C` projective) is *not statable*;
   **P3** (orbit-in-affine-open) has no ample-bundle anchor. The deepest, highest-leverage next
   infra target is the **projective-morphism + ample-line-bundle foundation** itself.
-- Immediate reachable affine-side next bricks: (i) `affineSymOneIso` over-`Spec R` compat;
-  (ii) `Sym^0(Spec A) ≅ Spec R` (divisor-monoid unit); (iii) addition map
-  `Sym^d × Sym^e → Sym^{d+e}` over a field (`(M⊗N)^{G×H}=M^G⊗N^H` is free over a field).
+- Next reachable affine-side brick (named, resolved): the **addition / monoid map**
+  `Sym^d × Sym^e → Sym^{d+e}` — a multi-step sub-arc (not a one-shot): needs (a) the AlgEquiv
+  `A^{⊗(d+e)} ≅ A^{⊗d} ⊗ A^{⊗e}` (`Fin.sumFinEquiv`-reindex; mathlib has `tmulEquiv` only as a
+  `LinearEquiv`), equivariant for `S_d × S_e ↪ S_{d+e}`, and (b) `(M ⊗ N)^{G×H} = M^G ⊗ N^H`
+  (invariants commute with `⊗`), **free over a field** (`⊗_k` exact) but a genuine mathlib gap
+  in general. Build it over `R = k` (the challenge base). This is the algebraic heart of the
+  group law (hole 3); the birational group-law extension then needs RR (Tower A).
+- Lean note (for the next session): `Spec.map_comp`/`CommRingCat.ofHom_comp` rewriting does NOT
+  fire under `rw`/`simp only` when a factor's codomain is `CommRingCat.of ↥(subalgebra)` (the
+  `Sym^d` invariant ring); **`erw [← Spec.map_comp, ← CommRingCat.ofHom_comp]` works** (matches up
+  to defeq). Used in `affineSymOneIso_hom_comp_base`.
 
 Current phase: **M1 (coherent cohomology canary)** — M0 done (scaffold + CI
 green + manifest, `3a3066d`). See `docs/ROUTE_RESEARCH_2026_06_13.md`.

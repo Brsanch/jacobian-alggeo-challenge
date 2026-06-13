@@ -89,4 +89,60 @@ noncomputable def affineSymOneIso :
     affineSymmetricPower R A 1 ≅ Spec (CommRingCat.of A) :=
   Scheme.Spec.mapIso (symOneAlgEquiv R A).toRingEquiv.toCommRingCatIso.symm.op
 
+/-- The `Sym^1(Spec A) ≅ Spec A` isomorphism is a morphism **over the base `Spec R`**: its `hom`
+followed by the structure morphism of `Spec A` is the structure morphism of `Sym^1(Spec A)`. So
+`affineSymOneIso` is an isomorphism of `Over (Spec R)`-objects (it dualizes to `e.symm` commuting
+with `algebraMap R`, `e = symOneAlgEquiv`). -/
+theorem affineSymOneIso_hom_comp_base :
+    (affineSymOneIso R A).hom ≫ AffineQuotient.baseStructureMorphism R A
+      = symPowStructureMorphism R A 1 := by
+  simp only [affineSymOneIso, symPowStructureMorphism, AffineQuotient.structureMorphism,
+    AffineQuotient.baseStructureMorphism, Functor.mapIso_hom, Iso.op_hom, Iso.symm_hom,
+    RingEquiv.toCommRingCatIso_inv, Scheme.Spec_map, Quiver.Hom.unop_op]
+  erw [← Spec.map_comp, ← CommRingCat.ofHom_comp]
+  congr 1
+  apply CommRingCat.hom_ext
+  apply RingHom.ext
+  intro r
+  exact (symOneAlgEquiv R A).symm.commutes r
+
+/-! ### The degree-zero identification `Sym^0(Spec A) ≅ Spec R` (the divisor-monoid unit) -/
+
+/-- The empty tensor power `A^{⊗0} = ⨂[R] (_ : Fin 0), A` is `R`-algebra isomorphic to `R`
+(mathlib provides only the underlying `LinearEquiv` `PiTensorProduct.isEmptyEquiv`). -/
+noncomputable def finZeroTensorAlgEquiv : TensorPow R A 0 ≃ₐ[R] R :=
+  AlgEquiv.ofLinearEquiv (PiTensorProduct.isEmptyEquiv (Fin 0))
+    (by simp [PiTensorProduct.one_def])
+    (by
+      intro x y
+      induction x using PiTensorProduct.induction_on with
+      | smul_tprod r f =>
+        induction y using PiTensorProduct.induction_on with
+        | smul_tprod s g =>
+          simp only [map_smul, smul_mul_smul_comm, tprod_mul_tprod,
+            PiTensorProduct.isEmptyEquiv_apply_tprod, smul_eq_mul, mul_one]
+        | add y₁ y₂ h₁ h₂ => rw [mul_add, map_add, map_add, mul_add, h₁, h₂]
+      | add x₁ x₂ h₁ h₂ => rw [add_mul, map_add, map_add, add_mul, h₁, h₂])
+
+/-- `S_0 = Equiv.Perm (Fin 0)` is trivial, so the invariant subalgebra `(A^{⊗0})^{S_0}` is all
+of `A^{⊗0}`. -/
+theorem fixedPoints_perm_fin_zero_eq_top :
+    FixedPoints.subalgebra R (TensorPow R A 0) (Equiv.Perm (Fin 0)) = ⊤ := by
+  refine le_antisymm le_top fun x _ => ?_
+  show ∀ g : Equiv.Perm (Fin 0), g • x = x
+  intro g
+  rw [Subsingleton.elim g 1, one_smul]
+
+/-- `(A^{⊗0})^{S_0} ≃ₐ[R] R`: the degree-0 invariants are the base ring `R` itself. -/
+noncomputable def symZeroAlgEquiv :
+    ↥(FixedPoints.subalgebra R (TensorPow R A 0) (Equiv.Perm (Fin 0))) ≃ₐ[R] R :=
+  (Subalgebra.equivOfEq _ _ (fixedPoints_perm_fin_zero_eq_top R A)).trans
+    (Subalgebra.topEquiv.trans (finZeroTensorAlgEquiv R A))
+
+/-- **`Sym^0(Spec A) ≅ Spec R`** as schemes: the degree-0 symmetric power is the base `Spec R`.
+This is the unit of the graded monoid `⊔_d Sym^d(Spec A)` of effective divisors. -/
+noncomputable def affineSymZeroIso :
+    affineSymmetricPower R A 0 ≅ Spec (CommRingCat.of R) :=
+  Scheme.Spec.mapIso (symZeroAlgEquiv R A).toRingEquiv.toCommRingCatIso.symm.op
+
 end AlgebraicGeometry.JacobianChallenge.SymmetricPower
