@@ -62,6 +62,6 @@ noncomputable def cechHZeroIsoKernel (U : ι → C) (P : Cᵒᵖ ⥤ ModuleCat.{
     (ComplexShape.up ℕ).next_eq' (by simp [ComplexShape.up_Rel])
   (CochainComplex.isoHomologyπ₀ K).symm ≪≫
     (K.cyclesIsKernel (i := 0) (j := 1) hnext).conePointUniqueUpToIso
-      (kernelIsKernel (K.d 0 1))
+      (limit.isLimit (parallelPair (K.d 0 1) 0))
 
 end JacobianAlggeo
