@@ -41,6 +41,42 @@ comparator and audited by the maintainer. Status board: Kim Morrison's
 Current phase: **M1 (coherent cohomology canary)** — M0 done (scaffold + CI
 green + manifest, `3a3066d`). See `docs/ROUTE_RESEARCH_2026_06_13.md`.
 
+### ✅ Segment 1 DONE (2026-06-13, `Submission/SheafCohomologyModuleCat.lean`, full-build green)
+
+Derived-functor sheaf cohomology valued in `ModuleCat k` (build-target step 1,
+the fork-B route that sidesteps the M1b explicit-cover gap). Compiles sorry-free
++ axiom-clean (`propext`/`Classical.choice`/`Quot.sound` only); vacuity-lint 0;
+throttled full `lake build` green (8319 jobs, exit 0).
+- `coeffSheaf J k : Sheaf J (ModuleCat k)` — constant sheaf with value `k`.
+- `H J k n F := Ext (coeffSheaf J k) F n` — degree-`n` cohomology, a **`k`-module**
+  by `Ext.instModule` (`Sheaf J (ModuleCat k)` is `k`-linear), so
+  `FiniteDimensional k (H J k 1 F)` is type-correct.
+- `HZeroAddEquivΓ : H J k 0 F ≃+ (Sheaf.Γ J (ModuleCat k)).obj F` — **degree-0
+  cohomology = global sections** (as abelian groups). This is the `ModuleCat k`
+  analogue of the `H⁰ ≅ Γ` that mathlib's `Sheaf.H` only lists as a *TODO*. New
+  supporting lemma: `Functor.const_additive` (additivity of `Functor.const Cᵒᵖ`,
+  missing from mathlib).
+
+**Two material corrections to the route doc / NEXT_SESSION (Gate-6 survey, warm cache):**
+1. **The feared "first real content" is already in mathlib.** NEXT_SESSION said
+   there is *no* `IsGrothendieckAbelian (Sheaf J A)` instance at the pin and that
+   building it (⇒ `HasExt`) was segment 1's first task. False: the instance IS at
+   the pin (`Abelian/GrothendieckAxioms/Sheaf.lean`), so `HasExt (Sheaf J (ModuleCat k))`,
+   `Linear k (Sheaf J (ModuleCat k))`, and `Module k (Ext …)` all resolve
+   automatically. Segment 1 was assembly, not foundation-building. (The earlier
+   survey was at the GitHub pin before the local cache was warm.)
+2. **The genus hole has NO required equation.** `genus C : ℕ` (hole 1) is a bare
+   `def`; hole 4 only needs `SmoothOfRelativeDimension (genus C) (Jacobian C).hom`.
+   So genus is pinned by the *math* (= dim of the Albanese, forced via hole 9's
+   universal property) but the *formalization* never forces `genus := dim_k H¹`.
+   ⇒ **the cohomology stack serves only hole 1.** Even a complete coherent-
+   cohomology + Serre-finiteness build leaves holes 2,3,5,6,7,8,9 — the Jacobian/
+   Albanese construction with its universal property — untouched. Those are the
+   FGA-grade wall with zero mathlib foundation (no Picard scheme, no abelian
+   varieties, no Albanese). **The arc's true bulk is the Jacobian construction,
+   not the cohomology stack.** This is the decisive-regime-reachability datum for
+   Bryan's scope decision (see `NEXT_SESSION.md` "Scope reality").
+
 M1 declaration-level mathlib inventory + k-module **encoding decision** done
 in loop run #1 (2026-06-13): `H¹ C 𝒪_C` will be the degree-1 homology of the
 two-affine-cover Čech complex **in `ModuleCat k`** (`cechComplexFunctor` is

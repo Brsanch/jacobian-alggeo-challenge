@@ -1,6 +1,7 @@
 import Challenge
 import Submission.CechModuleCat
 import Submission.StructureSheafModule
+import Submission.SheafCohomologyModuleCat
 
 /-!
 # Submission root

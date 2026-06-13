@@ -50,31 +50,53 @@ The genus (hole 4) needs `FiniteDimensional k H¹(C, 𝒪_C)`; we build up to it
 
 ## Current segment
 
-**Segment 1 = build target step 1** (`Hⁿ` valued in `ModuleCat k`), file
-`Submission/SheafCohomologyModuleCat.lean`.
+**Segment 1 = build target step 1** (`Hⁿ` valued in `ModuleCat k`) — ✅ **DONE
+2026-06-13**, `Submission/SheafCohomologyModuleCat.lean`, sorry/axiom-clean,
+vacuity-lint 0, full `lake build` green (8319 jobs). See `OPEN.md` "Segment 1
+DONE" for the decls (`coeffSheaf`, `H`, `HZeroAddEquivΓ`).
 
-**Gating question RESOLVED (2026-06-13):** mathlib does NOT hand us `HasExt`
-for sheaf categories — `Sheaf.H` (`Sites/SheafCohomology/Basic.lean:54-55`)
-takes `[HasSheafify J AddCommGrpCat]` AND `[HasExt (Sheaf J AddCommGrpCat)]` as
-**instance hypotheses**, and there is no `IsGrothendieckAbelian (Sheaf J A)`
-instance at the pin. So segment 1's first concrete task is to establish
-`HasExt (Sheaf J (ModuleCat.{w} k))` — mathematically true (sheaves valued in a
-Grothendieck-abelian category over a site with sheafification form a
-Grothendieck-abelian category ⇒ `HasExt` via
-`Abelian/GrothendieckCategory/HasExt.lean`), but it needs:
-`HasSheafify J (ModuleCat k)` + transferring `IsGrothendieckAbelian` from
-`ModuleCat k` to `Sheaf J (ModuleCat k)` (generator + AB5; check
-`Sites/Abelian.lean`, `Sites/LeftExact.lean`, the `GrothendieckCategory`
-files). This Grothendieck-abelian-of-sheaves lemma is itself likely a
-sub-segment — it is the real first piece of content, not boilerplate.
+**The gating question was WRONG.** mathlib DOES hand us `HasExt` for
+`Sheaf J (ModuleCat k)`: the `IsGrothendieckAbelian (Sheaf J A)` instance is at
+the pin (`Abelian/GrothendieckAxioms/Sheaf.lean`), so `HasExt`, `Linear k`, and
+`Module k (Ext …)` all resolve automatically. (The earlier "no such instance"
+note was a GitHub-pin survey before the local cache was warm — Gate 6 caught it.)
+Segment 1 was a few hours of *assembly*, not the feared homological-algebra build.
 
-Then: `Hⁿ(F) := Ext (constantSheaf J (ModuleCat k)).obj (𝟭_k) F n` mirroring
-`Sheaf.H`, with `H⁰ ≅ Γ` from `Sheaf.Γ`/`constantSheafΓAdj`. DONE WHEN: those
-compile sorry-free.
+**Segment 2 (build target step 2) = next.** Present `𝒪_C` as a sheaf of
+`k`-modules and feed it to `H` to get `H¹(C, 𝒪_C)` as a `k`-module. Substrate:
+`Submission/StructureSheafModule.lean` (`underToModuleCat`, `Under R ⥤ ModuleCat R`)
++ `AlgebraicGeometry/Sites/SmallAffineZariski.lean` (`Scheme.AffineZariskiSite`,
+`sheafEquiv`). The universe/`HasSheafify J (ModuleCat k)` discharge for the
+actual curve's site is the real work here (the abstract module carries
+`[HasSheafify …]` as a hypothesis, mathlib-`Sheaf.H`-style; instantiation must
+supply it — the site is `EssentiallySmall`, so the bridge is
+`Sheaf.isGrothendieckAbelian_of_essentiallySmall`, not the `SmallCategory`
+instance Segment 1 used).
 
-⚠️ This is hard homological-algebra infra — drive it with a FRESH full context
-window (that is the "clear context and keep going" step). Starting it from an
-already-loaded session is the anti-pattern the segment model avoids.
+**Segment 3 = the wall:** `FiniteDimensional k (H¹ C 𝒪_C)` (Serre finiteness),
+no mathlib foundation — its own major sub-arc.
+
+## ⚠️ Scope reality (READ before committing more sessions — 2026-06-13)
+
+The cohomology stack (Segments 1–3) serves **only hole 1 (`genus`)**. Two facts:
+- `genus C : ℕ` is a bare `def` with **no required equation**; hole 4 only needs
+  `SmoothOfRelativeDimension (genus C) (Jacobian C).hom`. The math pins `genus` =
+  dim of the Albanese (forced by hole 9's universal property), but nothing forces
+  the *formalization* to route genus through `H¹`.
+- Holes 2,3,5,6,7,8,9 = constructing `Jacobian C` (= Pic⁰) as an abelian variety
+  with group structure, properness, geometric irreducibility, the Abel–Jacobi
+  map, and the **universal property of the Albanese**. This is FGA-grade and has
+  **zero mathlib foundation** (no Picard scheme, no abelian varieties, no
+  Albanese, no representability of Pic). It is the overwhelming bulk of the arc.
+
+So even a *perfect* Segment 1–3 build closes at most hole 1 and contributes to
+hole 4's statement. **The GO decision should be re-weighed against this**: the arc
+is reachable only after the Jacobian-representability program, which dwarfs the
+cohomology stack. Forks for Bryan unchanged from the route doc's NO-GO verdict
+((I) commit to the infra program / (II) land bounded pieces upstream as mathlib
+PRs / (III) shelve) — but now with Segment 1 already a clean, upstreamable piece
+under fork (II). Per `feedback_obstruction_then_human_leap`, this is stated for
+the human leap, not ground past solo.
 
 ## Arc DONE WHEN
 

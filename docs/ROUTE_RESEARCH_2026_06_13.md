@@ -312,3 +312,40 @@ forgetful absent from mathlib). ~170 LOC of genuine infrastructure.
 
 The loop is DISABLED and a `LOOP_HALT` is in place pointing here, so no autonomous
 run thrashes against this wall.
+
+## ✅ Segment 1 results + route corrections (2026-06-13, continuous-driving session, full-build green)
+
+Built `Submission/SheafCohomologyModuleCat.lean` (derived-functor / fork-B route):
+`H J k n F := Ext (coeffSheaf J k) F n` valued in `ModuleCat k` (a `k`-module via
+`Ext.instModule`), with `HZeroAddEquivΓ : H J k 0 F ≃+ Γ(F)` (degree-0 cohomology =
+global sections, the `H⁰ ≅ Γ` mathlib lists as a TODO for `Sheaf.H`). New helper:
+`Functor.const_additive`. Sorry/axiom-clean, vacuity-lint 0, throttled full `lake
+build` green (8319 jobs).
+
+**Correction 1 — the cohomology foundation is ALREADY in mathlib at the pin.**
+The Gate-6 warm-cache survey found `Abelian/GrothendieckAxioms/Sheaf.lean` gives
+`IsGrothendieckAbelian (Sheaf J A)` (small site, `A` Grothendieck-abelian,
+`[HasSheafify J A]`), and `Abelian/GrothendieckCategory/HasExt.lean` gives
+Grothendieck ⇒ `HasExt`. So `HasExt (Sheaf J (ModuleCat k))`, `Linear k (Sheaf J
+(ModuleCat k))`, and `Module k (Ext …)` all resolve with no new content. The
+NO-GO verdict's "the abstract substrate exists … but finiteness has no
+foundation" was right about finiteness but understated how much of the *defining*
+layer is free: segment 1's "first real content" (build Grothendieck-abelian-of-
+sheaves) did not need building. The k-module structure on cohomology is likewise
+free (no need to land in a bundled `ModuleCat k` object; the bare `Ext` type's
+`Module k` suffices for `FiniteDimensional k`).
+
+**Correction 2 — genus has no required equation; cohomology serves only hole 1.**
+`genus C : ℕ` (hole 1) is a bare `def`; hole 4 only consumes it as
+`SmoothOfRelativeDimension (genus C) (Jacobian C).hom`. Holes 2,3,5,6,7,8,9 (the
+Jacobian/Albanese construction + universal property) are the FGA-grade bulk with
+no mathlib foundation. The cohomology stack does not touch them. This sharpens the
+NO-GO/decisive-regime point: the arc's wall is Jacobian representability, not
+Serre finiteness. See `OPEN.md` / `NEXT_SESSION.md` "Scope reality".
+
+**Residual on Segment 1 (precise):** `HZeroAddEquivΓ` is an `AddEquiv`, not a
+`k`-`LinearEquiv`. The linear upgrade needs `Functor.Linear k (Sheaf.Γ J (ModuleCat
+k))`, for which mathlib has no off-the-shelf "right adjoint is linear" lemma
+(`Adjunction.right_adjoint_additive` exists but only additive; `lim` is not a
+registered `Functor.Linear`). Tractable but its own small piece; not needed for
+the genus (which uses `H¹` finrank, not `H⁰`).
