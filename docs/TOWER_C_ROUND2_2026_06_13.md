@@ -28,12 +28,18 @@ Three genuine, general pieces, each discharged on arbitrary data:
   a finite sum `∏ᵢ aᵢ` to `∏ᵢ (aᵢ ≫ g)`.
 - **`albanese_uniqueness`**: assembles them — if the iterated sums of the Abel–Jacobi map
   `φ` generate `J` (a dominant sum-morphism `∏ᵢ (cᵢ ≫ φ)`, the geometric **generation**
-  input), then two homomorphisms `g₁ g₂ : J ⟶ A` agreeing after `φ` coincide.
-- **Wiring for hole 9**: round-1 rigidity (`isMonHom_of_pointed_of_geometricallyIntegral`)
-  forces the factoring map to be a homomorphism (existence-side `IsMonHom`); this file
-  gives uniqueness.  The integrator instantiates `W = Cⁿ`, `cᵢ =` projections, and supplies
-  `IsDominant (∏ᵢ projᵢ ≫ ofCurve P)` from Tower B (Jacobi inversion / Riemann–Roch — the
-  curve generates `Pic⁰`).
+  input), then two *homomorphisms* `g₁ g₂ : J ⟶ A` agreeing after `φ` coincide.
+- **`albanese_uniqueness_of_pointed_factorization`** — *the full hole-9 `∃!` uniqueness, for
+  arbitrary morphisms.*  The hole's `∃! g, f = ofCurve P ≫ g` ranges over **all** morphisms
+  `g`, not only homomorphisms.  But every `g` satisfying the factorization is automatically
+  *pointed* (`η[J] ≫ g = P ≫ f = η[A]`, from `comp_ofCurve` (hole 8) + `hf`), hence a
+  homomorphism by **round-1 Mumford rigidity** (`isMonHom_of_pointed_of_geometricallyIntegral`);
+  `albanese_uniqueness` then closes it.  So this single theorem is the entire uniqueness side
+  of hole 9.
+- **Wiring for hole 9**: the integrator instantiates `J = Jacobian C`, `φ = ofCurve P`,
+  `W = Cⁿ`, `cᵢ =` projections, and supplies the one remaining input — `IsDominant
+  (∏ᵢ projᵢ ≫ ofCurve P)` from Tower B (Jacobi inversion / Riemann–Roch: the curve generates
+  `Pic⁰`) — plus `hφ = comp_ofCurve` (hole 8).  Everything else is discharged here.
 
 ## Obstruction (stated at maximum resolution, NOT ground through)
 
@@ -85,6 +91,6 @@ uniqueness brick above is the reachable Tower-C half.
 ## Status of the brief's three next bricks
 | Brief brick | This round |
 |---|---|
-| 1. hole 9 — `exists_unique_ofCurve_comp` | **Uniqueness half DELIVERED** (`AlbaneseUniqueness.lean`); existence half = theorem-of-the-cube wall (stated). |
+| 1. hole 9 — `exists_unique_ofCurve_comp` | **Full uniqueness side DELIVERED** (`AlbaneseUniqueness.lean`, `albanese_uniqueness_of_pointed_factorization` — handles *bare* morphisms via rigidity); existence half = theorem-of-the-cube wall (stated). |
 | 2. hole 4 — `smoothOfRelativeDimension_genus` | **Smoothness half DELIVERED** (`SmoothGroupScheme.lean`); dimension half = `Locally`-codescent + Tower-B wall (stated above). |
 | 3. hole 3's hom structure | Round-1 rigidity/hom corollaries already cover it; the `GrpObj (Jacobian C)` *construction* is Tower B's. |
