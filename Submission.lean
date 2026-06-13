@@ -3,6 +3,8 @@ import Submission.CechModuleCat
 import Submission.StructureSheafModule
 import Submission.SheafCohomologyModuleCat
 import Submission.StructureSheafCohomology
+import Submission.Cohomology.LinearH0
+import Submission.Cohomology.RegularLocalDomain
 import Submission.Jacobian.InvariantFiniteness
 import Submission.Jacobian.AffineInvariants
 import Submission.Jacobian.AffineQuotient
@@ -10,6 +12,7 @@ import Submission.Jacobian.SchemeGroupAction
 import Submission.Jacobian.TensorPowerPermAction
 import Submission.Jacobian.AffineSymmetricPower
 import Submission.Jacobian.TensorPowerFiniteType
+import Submission.AbelianVariety
 
 /-!
 # Submission root
