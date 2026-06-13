@@ -86,3 +86,23 @@ theorem Smooth.codescendsAlong_faithfullyFlat :
   exact Algebra.Smooth.of_faithfullyFlat_tensorProduct S
 
 end RingHom
+
+namespace AlgebraicGeometry
+
+open CategoryTheory MorphismProperty
+
+/-- **Smoothness satisfies fpqc descent** — the scheme-level lift of
+`RingHom.Smooth.codescendsAlong_faithfullyFlat` through
+`HasRingHomProperty.descendsAlong`.  Smoothness of a morphism descends along a
+surjective flat quasi-compact (i.e. faithfully-flat) base change.  Applied to
+`Spec k̄ → Spec k`, this upgrades `smooth_of_grpObj_of_isAlgClosed` to a general
+base field. -/
+instance Smooth.descendsAlong_surjective_inf_flat_inf_quasicompact :
+    DescendsAlong @Smooth (@Surjective ⊓ @Flat ⊓ @QuasiCompact) := by
+  apply HasRingHomProperty.descendsAlong (P := @Smooth) (P' := @Surjective ⊓ @Flat)
+    (Q := RingHom.Smooth) (hQQ' := RingHom.Smooth.codescendsAlong_faithfullyFlat)
+  · rw [inf_comm]
+    exact inf_le_inf le_rfl (IsLocalIso.le_of_isZariskiLocalAtSource _)
+  · exact fun {_ _ f} h ↦ (flat_and_surjective_SpecMap_iff f).mp ⟨h.2, h.1⟩
+
+end AlgebraicGeometry

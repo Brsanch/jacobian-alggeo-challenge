@@ -64,12 +64,19 @@ Tower C's remaining pieces are blocked as follows.
    `Module.Flat.of_flat_tensorProduct` (flat descent) + `projective_of_finitePresentation`;
    the subsingleton half via `Algebra.tensorH1CotangentOfFlat` (cotangent flat base
    change) + `Module.FaithfullyFlat.subsingleton_tensorProduct_iff_right`.
-   **Delivered: `RingHom.Smooth.codescendsAlong_faithfullyFlat`** (sorry/axiom-free,
-   upstreamable). Remaining to close hole-4's smoothness half: lift this ring
-   codescent to the scheme-level `Smooth.DescendsAlong` (via
-   `HasRingHomProperty.descendsAlong`) and apply to `Spec k̄ → Spec k` + the group
-   scheme — a much shorter follow-up than the (previously feared multi-week) descent
-   itself.
+   **Delivered (both sorry/axiom-free, `lake build` green, upstreamable):**
+   - `RingHom.Smooth.codescendsAlong_faithfullyFlat` — the ring-level codescent;
+   - `AlgebraicGeometry.Smooth.descendsAlong_surjective_inf_flat_inf_quasicompact`
+     — the **scheme-level** lift (smoothness satisfies fpqc descent), via
+     `HasRingHomProperty.descendsAlong` (`H₁` from `IsLocalIso.le_of_isZariskiLocalAtSource`,
+     `H₂` from `flat_and_surjective_SpecMap_iff`), mirroring mathlib's own
+     `FlatDescent.lean` pattern.
+
+   The *only* remaining step to close hole-4's smoothness half is the one-line
+   *application*: `Spec k̄ → Spec k` is `Surjective ⊓ Flat ⊓ QuasiCompact`, so for a
+   geometrically-reduced lfp group scheme `G`, `Smooth (G_{k̄} → Spec k̄)`
+   (`smooth_of_grpObj_of_isAlgClosed`) descends to `Smooth (G → Spec k)`. The
+   previously-feared multi-week wall is gone.
 
 2. **Hole 9 wiring.** `isMonHom_of_pointed_of_geometricallyIntegral` is the rigidity
    *input*; instantiating it at `A := Jacobian C` and packaging the `∃!` needs
