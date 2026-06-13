@@ -50,10 +50,31 @@ The genus (hole 4) needs `FiniteDimensional k H¹(C, 𝒪_C)`; we build up to it
 
 ## Current segment
 
-**Segment 1 = build target step 1** (`Hⁿ` valued in `ModuleCat k`). Start
-`Submission/SheafCohomologyModuleCat.lean`. First concrete question to resolve
-in-code: does the pin give `IsGrothendieckAbelian (Sheaf J (ModuleCat k))` (⇒
-`HasExt`), or must it be assumed/built? Drive from there.
+**Segment 1 = build target step 1** (`Hⁿ` valued in `ModuleCat k`), file
+`Submission/SheafCohomologyModuleCat.lean`.
+
+**Gating question RESOLVED (2026-06-13):** mathlib does NOT hand us `HasExt`
+for sheaf categories — `Sheaf.H` (`Sites/SheafCohomology/Basic.lean:54-55`)
+takes `[HasSheafify J AddCommGrpCat]` AND `[HasExt (Sheaf J AddCommGrpCat)]` as
+**instance hypotheses**, and there is no `IsGrothendieckAbelian (Sheaf J A)`
+instance at the pin. So segment 1's first concrete task is to establish
+`HasExt (Sheaf J (ModuleCat.{w} k))` — mathematically true (sheaves valued in a
+Grothendieck-abelian category over a site with sheafification form a
+Grothendieck-abelian category ⇒ `HasExt` via
+`Abelian/GrothendieckCategory/HasExt.lean`), but it needs:
+`HasSheafify J (ModuleCat k)` + transferring `IsGrothendieckAbelian` from
+`ModuleCat k` to `Sheaf J (ModuleCat k)` (generator + AB5; check
+`Sites/Abelian.lean`, `Sites/LeftExact.lean`, the `GrothendieckCategory`
+files). This Grothendieck-abelian-of-sheaves lemma is itself likely a
+sub-segment — it is the real first piece of content, not boilerplate.
+
+Then: `Hⁿ(F) := Ext (constantSheaf J (ModuleCat k)).obj (𝟭_k) F n` mirroring
+`Sheaf.H`, with `H⁰ ≅ Γ` from `Sheaf.Γ`/`constantSheafΓAdj`. DONE WHEN: those
+compile sorry-free.
+
+⚠️ This is hard homological-algebra infra — drive it with a FRESH full context
+window (that is the "clear context and keep going" step). Starting it from an
+already-loaded session is the anti-pattern the segment model avoids.
 
 ## Arc DONE WHEN
 
