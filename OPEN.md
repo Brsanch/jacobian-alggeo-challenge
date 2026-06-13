@@ -4,15 +4,17 @@
 > lint gate (mechanical, baseline-ratcheted) + the anti-paraphrase gates —
 > and `DEVELOPMENT.md` (panic-safe build rules, eval submission mechanics).
 
-## 🛑 GO/NO-GO VERDICT (2026-06-13): NO-GO for the loop — gated on coherent-cohomology infrastructure
+## Approach (reframed 2026-06-13): GO — continuous-driving build of the coherent-cohomology stack
 
-The genus (hole 4) forces `FiniteDimensional k H¹(C,𝒪_C)` = Serre finiteness of
-coherent cohomology. Confirmed absent from ALL of mathlib at the pin: quasi-coherent
-sheaves, coherent sheaves, scheme cohomology, Serre finiteness. The challenge is a
-multi-month mathlib-infrastructure program, not a loopable chip sequence. Loop is
-DISABLED + `LOOP_HALT` in place. Scope fork (commit infra arc / incremental PRs /
-shelve) escalated to Bryan. Full verdict + salvage list:
-`docs/ROUTE_RESEARCH_2026_06_13.md` ("M1 GO/NO-GO VERDICT"). All 9 holes remain OPEN.
+The genus (hole 4) needs `FiniteDimensional k H¹(C,𝒪_C)` = Serre finiteness;
+mathlib at the pin has no quasi-coherent/coherent sheaves or scheme cohomology.
+The earlier "NO-GO, escalate" framing was an over-escalation: per "mathlib work
+is in scope", this infrastructure IS the work. We build it via continuous Claude
+segments (see `NEXT_SESSION.md` working model + build order), NOT the retired
+cron loop. Abstract substrate that exists (`Sheaf.Γ` general global sections,
+`ModuleCat k` Grothendieck-abelian, Grothendieck⇒HasExt) makes the fork-B
+cohomology route viable; finiteness (step 3) is the major sub-arc. All 9 holes
+remain OPEN. Detail: `docs/ROUTE_RESEARCH_2026_06_13.md`.
 
 ## (pre-verdict) current state (2026-06-13: scaffold, all 9 holes OPEN)
 
