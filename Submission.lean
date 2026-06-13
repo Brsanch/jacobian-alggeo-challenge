@@ -1,5 +1,6 @@
 import Challenge
 import Submission.CechModuleCat
+import Submission.StructureSheafModule
 
 /-!
 # Submission root
