@@ -6,8 +6,10 @@ import Submission.StructureSheafCohomology
 import Submission.Jacobian.InvariantFiniteness
 import Submission.Jacobian.AffineInvariants
 import Submission.Jacobian.AffineQuotient
+import Submission.Jacobian.SchemeGroupAction
 import Submission.Jacobian.TensorPowerPermAction
 import Submission.Jacobian.AffineSymmetricPower
+import Submission.Jacobian.TensorPowerFiniteType
 
 /-!
 # Submission root
