@@ -37,9 +37,15 @@ k-module structure). M1 split into:
 
 | M1 sub | content | status |
 |---|---|---|
-| M1a | two-object Čech complex of `𝒪_C` in `ModuleCat k` + `H1 C 𝒪_C` def + H⁰=equalizer lemma | OPEN — **next chip** |
+| M1a | abstract Čech complex in `ModuleCat k` + `cechH` def + H⁰≅ker(d⁰) | **PARTIAL** (`55532a9`) — def layer + cocycle lemma done; equalizer-as-restriction-difference is the residual |
 | M1b | the curve's two-affine cover + restriction/intersection maps | OPEN |
 | M1c | `FiniteDimensional k (H1 C 𝒪_C)` (Serre finiteness; go/no-go datum) | OPEN |
+
+**M1a progress (loop run #2, 2026-06-13, `Submission/CechModuleCat.lean`, CI-green, merged `55532a9`):**
+- `cechComplexMod (U : ι → C) : (Cᵒᵖ ⥤ ModuleCat k) ⥤ CochainComplex (ModuleCat k) ℕ` — `cechComplexFunctor` specialized to the preadditive target `ModuleCat.{w} k` with `ι : Type w`. **This compiles → the route-doc encoding decision is sound** (universe/instance resolution works at `A := ModuleCat.{w} k`, `ι : Type w`).
+- `cechH (U) (n) : (Cᵒᵖ ⥤ ModuleCat k) ⥤ ModuleCat k` := `cechComplexMod U ⋙ homologyFunctor _ _ n`. So `FiniteDimensional k _` (M1c) is type-correct on `(cechH U n).obj P`.
+- `cechHZeroIsoKernel : (cechH U 0).obj P ≅ kernel ((cechComplexMod U).obj P).d 0 1` — Čech H⁰ ≅ kernel of the first Čech coboundary (cocycle description; via `CochainComplex.isoHomologyπ₀` + `cyclesIsKernel`).
+- **Residual (next M1a chip):** identify `d⁰` explicitly with the *difference of the two restriction maps* so the kernel becomes the literal *equalizer of the restriction maps / global sections of the cover*. This needs unfolding the brand-new (zero-downstream-use) `cechComplexFunctor` differential = `alternatingCofaceMapComplex` of the `evalOp`-evaluated `FormalCoproduct.cech` cosimplicial object. Abstract `ι`; the geometric `𝒪_C` + concrete 2-cover are M1b.
 
 ⚠️ Env flag (run #1): the local bootstrap `lake build` was running lean
 **v4.29.0** while the pin is **v4.30.0-rc2** — verify the toolchain before

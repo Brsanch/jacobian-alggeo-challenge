@@ -200,3 +200,13 @@ deferred to its own milestone (only genus/RR need it).
   pinned toolchain (`elan show` in-repo, check `.lake` olean target) before
   trusting any local build; if it built 4.29.0 oleans, they are unusable and
   the bootstrap must be re-launched under 4.30.0-rc2.
+- **CORRECTION (loop run #2, 2026-06-13):** the above flag was a
+  misattribution. pid 59568 (`lsof` cwd) is the **ns-lean-proofs** repo's
+  mathlib bootstrap (that repo pins v4.29.0) — *not* alggeo's. In-repo
+  `elan show` confirms alggeo is correctly overridden to `v4.30.0-rc2`.
+  alggeo's mathlib package dir holds only `.git` (source never checked out),
+  so its local bootstrap had simply never started. Run #2 launched a chained
+  background bootstrap (waits for pid 59568 to exit — never two concurrent
+  `lake build`s — then throttled `lake build` in alggeo, logs `bootstrap.log`).
+  Until it finishes, CI on a branch is the gate; jacobian-lean-challenge's
+  oleans are NOT reusable (its pin = v4.30.0-**rc1** / mathlib `8e3c9891`).
