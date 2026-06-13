@@ -81,9 +81,8 @@ pairwise intersections (via `evalOp`/`mapPower`) — turning `kernel (δ 0 - δ 
 literal equalizer of the two restriction maps — is the remaining M1a step. -/
 lemma cechComplexMod_d_zero_one (U : ι → C) (P : Cᵒᵖ ⥤ ModuleCat.{w} k) :
     ((cechComplexMod U).obj P).d 0 1 = (cechCosimpl U P).δ 0 - (cechCosimpl U P).δ 1 := by
-  have e : (cechComplexMod U).obj P
-      = AlgebraicTopology.AlternatingCofaceMapComplex.obj (cechCosimpl U P) := rfl
-  rw [e]
+  show (AlgebraicTopology.AlternatingCofaceMapComplex.obj (cechCosimpl U P)).d 0 1
+      = (cechCosimpl U P).δ 0 - (cechCosimpl U P).δ 1
   unfold AlgebraicTopology.AlternatingCofaceMapComplex.obj
   rw [CochainComplex.of_d]
   show (∑ i : Fin 2, (-1 : ℤ) ^ (i : ℕ) • (cechCosimpl U P).δ i) = _
