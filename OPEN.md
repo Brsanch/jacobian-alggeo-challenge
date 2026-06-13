@@ -63,6 +63,27 @@ projective/curve case needs P3 (invariant affine cover of `C^d`) + P5 (`Sym^d C`
 projective), the open walls. Fork-II mathlib-PR material, not a hole-fill. Detail:
 `docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER B build".
 
+**✅ Tower B round 2 extension (2026-06-13, commit `05bf19d`, branch `tower/jacobian-r2`, pushed;
+CI run `27476042173`; full `lakelock lake build` green 8336 jobs, vacuity 0, sorry/axiom-free):**
+the affine core now carries its **structure over the base** and the **degree-1 identification** —
+the pieces the projective construction consumes on every route.
+- `Submission/Jacobian/AffineQuotientBase.lean` — `Spec(B^G) ⟶ Spec R` (`structureMorphism`);
+  `quotientMap_comp_structureMorphism` (the quotient map descends to `Over (Spec R)`).
+- `Submission/Jacobian/AffineSymmetricPowerStructure.lean` — `Sym^d(Spec A)` as an
+  `Over (Spec R)` object (`affineSymmetricPowerOver`); **`Sym^1(Spec A) ≅ Spec A`**
+  (`affineSymOneIso`, the Abel–Jacobi base case) via `finOneTensorAlgEquiv` (`A^{⊗1} ≃ₐ[R] A`,
+  upgrading mathlib's `LinearEquiv`-only `subsingletonEquiv`) + `symOneAlgEquiv`
+  (`(A^{⊗1})^{S_1} ≃ₐ[R] A`).
+- **STILL affine-model foundation, NOT a hole-fill** — holes 2,3,5,6,7,8 OPEN.
+- **Globalization leaf-obstruction (verified by mathlib grep at the pin):** **no
+  `IsProjective`/`QuasiProjective`/projective-morphism for schemes, no ample line bundles**
+  (only `AmpleSet`, the h-principle notion). ⇒ **P5** (`Sym^d C` projective) is *not statable*;
+  **P3** (orbit-in-affine-open) has no ample-bundle anchor. The deepest, highest-leverage next
+  infra target is the **projective-morphism + ample-line-bundle foundation** itself.
+- Immediate reachable affine-side next bricks: (i) `affineSymOneIso` over-`Spec R` compat;
+  (ii) `Sym^0(Spec A) ≅ Spec R` (divisor-monoid unit); (iii) addition map
+  `Sym^d × Sym^e → Sym^{d+e}` over a field (`(M⊗N)^{G×H}=M^G⊗N^H` is free over a field).
+
 Current phase: **M1 (coherent cohomology canary)** — M0 done (scaffold + CI
 green + manifest, `3a3066d`). See `docs/ROUTE_RESEARCH_2026_06_13.md`.
 
