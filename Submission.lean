@@ -4,6 +4,10 @@ import Submission.StructureSheafModule
 import Submission.SheafCohomologyModuleCat
 import Submission.StructureSheafCohomology
 import Submission.Jacobian.InvariantFiniteness
+import Submission.Jacobian.AffineInvariants
+import Submission.Jacobian.AffineQuotient
+import Submission.Jacobian.TensorPowerPermAction
+import Submission.Jacobian.AffineSymmetricPower
 
 /-!
 # Submission root
