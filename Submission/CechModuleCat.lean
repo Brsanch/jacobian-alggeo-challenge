@@ -43,4 +43,25 @@ noncomputable def cechH (U : ι → C) (n : ℕ) :
     (Cᵒᵖ ⥤ ModuleCat.{w} k) ⥤ ModuleCat.{w} k :=
   cechComplexMod U ⋙ HomologicalComplex.homologyFunctor (ModuleCat.{w} k) _ n
 
+@[simp]
+lemma cechH_obj (U : ι → C) (n : ℕ) (P : Cᵒᵖ ⥤ ModuleCat.{w} k) :
+    (cechH U n).obj P = ((cechComplexMod U).obj P).homology n :=
+  rfl
+
+/-- **Čech `H⁰` is the module of Čech `0`-cocycles.** The degree-`0` Čech cohomology
+of a `ModuleCat k`-valued presheaf is canonically the kernel of the first Čech
+coboundary `d⁰ : Č⁰ ⟶ Č¹`. Because the complex is `ℕ`-indexed there is no incoming
+differential at degree `0`, so `H⁰` coincides with the cocycles, and the cocycles are
+the kernel of `d⁰`. Identifying `d⁰` explicitly with the difference of the two
+restriction maps (turning this kernel into the *equalizer of the restriction maps*,
+i.e. the global sections of the cover) is the next M1a step. -/
+noncomputable def cechHZeroIsoKernel (U : ι → C) (P : Cᵒᵖ ⥤ ModuleCat.{w} k) :
+    (cechH U 0).obj P ≅ kernel (((cechComplexMod U).obj P).d 0 1) :=
+  let K := (cechComplexMod U).obj P
+  have hnext : (ComplexShape.up ℕ).next 0 = 1 :=
+    (ComplexShape.up ℕ).next_eq' (by simp [ComplexShape.up_Rel])
+  (CochainComplex.isoHomologyπ₀ K).symm ≪≫
+    (K.cyclesIsKernel (i := 0) (j := 1) hnext).conePointUniqueUpToIso
+      (kernelIsKernel (K.d 0 1))
+
 end JacobianAlggeo
