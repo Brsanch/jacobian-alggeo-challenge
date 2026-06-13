@@ -37,7 +37,7 @@ k-module structure). M1 split into:
 
 | M1 sub | content | status |
 |---|---|---|
-| M1a | abstract Čech complex in `ModuleCat k` + `cechH` def + H⁰≅ker(d⁰) | **PARTIAL** (`55532a9`) — def layer + cocycle lemma done; equalizer-as-restriction-difference is the residual |
+| M1a | abstract Čech complex in `ModuleCat k` + `cechH` def + H⁰≅ker(d⁰) + d⁰=δ⁰−δ¹ | **PARTIAL** (`55532a9`, `681626a`) — def layer + cocycle lemma + **first equalizer-unfold (`d⁰ = δ⁰ − δ¹`)** done; concrete restriction-map identification of the cofaces is the residual |
 | M1b | the curve's two-affine cover + restriction/intersection maps | OPEN |
 | M1c | `FiniteDimensional k (H1 C 𝒪_C)` (Serre finiteness; go/no-go datum) | OPEN |
 
@@ -45,7 +45,10 @@ k-module structure). M1 split into:
 - `cechComplexMod (U : ι → C) : (Cᵒᵖ ⥤ ModuleCat k) ⥤ CochainComplex (ModuleCat k) ℕ` — `cechComplexFunctor` specialized to the preadditive target `ModuleCat.{w} k` with `ι : Type w`. **This compiles → the route-doc encoding decision is sound** (universe/instance resolution works at `A := ModuleCat.{w} k`, `ι : Type w`).
 - `cechH (U) (n) : (Cᵒᵖ ⥤ ModuleCat k) ⥤ ModuleCat k` := `cechComplexMod U ⋙ homologyFunctor _ _ n`. So `FiniteDimensional k _` (M1c) is type-correct on `(cechH U n).obj P`.
 - `cechHZeroIsoKernel : (cechH U 0).obj P ≅ kernel ((cechComplexMod U).obj P).d 0 1` — Čech H⁰ ≅ kernel of the first Čech coboundary (cocycle description; via `CochainComplex.isoHomologyπ₀` + `cyclesIsKernel`).
-- **Residual (next M1a chip):** identify `d⁰` explicitly with the *difference of the two restriction maps* so the kernel becomes the literal *equalizer of the restriction maps / global sections of the cover*. This needs unfolding the brand-new (zero-downstream-use) `cechComplexFunctor` differential = `alternatingCofaceMapComplex` of the `evalOp`-evaluated `FormalCoproduct.cech` cosimplicial object. Abstract `ι`; the geometric `𝒪_C` + concrete 2-cover are M1b.
+- **First equalizer-unfold DONE (loop run #3, 2026-06-13, `681626a`, CI-green run `27454466919`):**
+  - `cechCosimpl (U) (P) : CosimplicialObject (ModuleCat k)` := `(FormalCoproduct.cosimplicialObjectFunctor (FormalCoproduct.mk _ U).cech).obj P`. By construction `(cechComplexMod U).obj P = alternatingCofaceMapComplex.obj (cechCosimpl U P)` (defeq).
+  - `cechComplexMod_d_zero_one : ((cechComplexMod U).obj P).d 0 1 = (cechCosimpl U P).δ 0 − (cechCosimpl U P).δ 1`. Proof: `show` to `AlternatingCofaceMapComplex.obj`, `unfold` it to `CochainComplex.of`, `erw [CochainComplex.of_d]` (literal `1` vs `0+1`), `objD`/`Fin.sum_univ_two`, `abel`. This is the **first** of the two uncharted differential-unfolds the equalizer needs.
+- **Residual (next M1a chip = M1a-equalizer, the SECOND unfold):** identify the two cofaces `(cechCosimpl U P).δ 0`, `.δ 1` *concretely* as the restriction maps onto pairwise intersections, turning `kernel (δ⁰ − δ¹)` into the literal *equalizer of the two restriction maps*. Full recipe in `NEXT_SESSION.md`. Abstract `ι`; the geometric `𝒪_C` + concrete 2-cover are M1b.
 
 ⚠️ Env flag (run #1): the local bootstrap `lake build` was running lean
 **v4.29.0** while the pin is **v4.30.0-rc2** — verify the toolchain before

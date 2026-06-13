@@ -18,35 +18,58 @@ Headline: define `H¹ C 𝒪_C` as the degree-1 homology of the two-affine-cover
 `A`-generic) — the abelian-group `Sheaf.H` cannot carry the k-module
 structure the DONE WHEN needs. M1 is split into M1a/M1b/M1c (see route doc).
 
-### Next chip = **M1a-residual** (the equalizer identification)
+### Next chip = **M1a-equalizer** (the SECOND differential-unfold)
 
-M1a's def layer + cocycle lemma are DONE and merged (`55532a9`,
-`Submission/CechModuleCat.lean`, CI-green). The remaining M1a piece:
+M1a's def layer, cocycle lemma, AND the **first** differential-unfold
+(`d⁰ = δ⁰ − δ¹`, `cechComplexMod_d_zero_one`) are DONE and merged
+(`55532a9`, `681626a`, `Submission/CechModuleCat.lean`, CI-green). The
+remaining M1a piece — the second, harder unfold:
 
-**Identify the degree-0 Čech coboundary `d⁰` with the difference of the two
-restriction maps**, turning `cechHZeroIsoKernel`'s `kernel (d⁰)` into the
-literal **equalizer of the two restriction maps = global sections of the
-cover**. Concretely, for `ι := Fin 2` (or a general 2-element index): exhibit
-`((cechComplexMod U).obj P).d 0 1` (post-composed with the natural product
-identifications of `Č⁰ ≅ P(U₀) ⊓ P(U₁)` and `Č¹`'s `U₀∩U₁` factor) as
-`r₀ - r₁` where `r₀, r₁` are the two restriction maps `P(Uᵢ) ⟶ P(U₀∩U₁)`,
-sorry-free. **DONE WHEN:** a lemma stating Čech `H⁰` is the equalizer
-(`kernel (r₀ - r₁)`) of the two restriction maps, compiling at the pin.
+**Identify the two cofaces `(cechCosimpl U P).δ 0`, `.δ 1` concretely as the
+restriction maps onto pairwise intersections**, turning `kernel (δ⁰ − δ¹)`
+into the literal **equalizer of the two restriction maps = global sections of
+the cover**. **DONE WHEN:** a lemma stating Čech `H⁰` is the equalizer
+(`kernel (r₀ − r₁)`) of the two restriction maps, compiling at the pin.
 
-- **The wall (state precisely if stuck):** `cechComplexFunctor` is brand-new
-  (Joël Riou, 2026) with **zero downstream uses in mathlib** — no precedent
-  for unfolding its differential. The differential is the
-  `alternatingCofaceMapComplex` of the `cosimplicialObjectFunctor` (=`evalOp ⋙
-  whiskeringLeft E.rightOp`) of `(FormalCoproduct.mk _ U).cech`. Degree-0
-  object via `evalOp_obj_obj`: `∏ᶜ_{i : Fin 1 → ι} P.obj(op(∏ᶜ_{Fin 1} U∘i))`;
-  the Fin-1 product/reindex collapse + the alternating-coface d⁰ are the two
-  uncharted unfolds. The `@[simps!]` on `cosimplicialObjectFunctor`,
-  `cochainComplexFunctor`, `evalOp`, `power`, `cech` are the levers.
+#### Full recipe (worked out loop run #3 from the verbatim pinned sources)
+
+`X := cechCosimpl U P`. `X.δ a = X.map (SimplexCategory.δ a)` unfolds as (all
+`@[simps!]`/`@[simps]`, so simp lemmas exist):
+- `X = (evalOp P) ⋙ E.rightOp`, `E := (mk _ U).cech`; so
+  `X.obj ⦋n⦌ = (evalOp.obj P).obj (op (E.obj ⦋n⦌))`.
+- `evalOp.obj P` (`FC/Basic.lean:383`, `@[simps!]`):
+  `.obj V = ∏ᶜ_{i : V.unop.I} P.obj(op(V.unop.obj i))`,
+  `.map f = Pi.lift fun i ↦ Pi.π _ (f.unop.f i) ≫ P.map (f.unop.φ i).op`.
+- `E.obj ⦋n⦌ = (mk U).power (Fin (n+1))` (`FC/Cech.lean:186`, `@[simps]`):
+  `.I = Fin(n+1) → ι`, `.obj i = ∏ᶜ (U ∘ i)` (`power`, `FC/Cech.lean:34`).
+- `E.map g = (mk U).mapPower g.unop.toOrderHom.toFun`; `mapPower`
+  (`FC/Cech.lean:122`, `@[simps -fullyApplied]`): `.f i = i ∘ f`,
+  `.φ _ = Pi.lift (fun _ ↦ Pi.π _ _)`. `E.rightOp.map (δ a) = (E.map (δ a).op).op`.
+
+For `a : Fin 2` (the two cofaces of `δ⁰`): `δ a : ⦋0⦌ ⟶ ⦋1⦌` is the order-hom
+`Fin 1 ↪ Fin 2` skipping `a`. So `X.δ a : X⁰ = ∏_{i:Fin 1→ι} P(∏ᶜ U∘i) ⟶
+X¹ = ∏_{j:Fin 2→ι} P(∏ᶜ U∘j)` is, via `evalOp.map`'s `Pi.lift`/`Pi.π`, the map
+whose `j`-component projects onto the `(j ∘ δa)`-factor of `X⁰` then applies `P`
+of the `mapPower`-`Pi.lift` inclusion `∏ᶜ U∘(j∘δa) ⟶ ∏ᶜ U∘j` (= restriction
+`P(U_{j∘δa}) ⟶ P(U_j)`). For `ι = Fin 2`: the four `j : Fin 2 → Fin 2` factors
+split into the diagonal (`j` const → both cofaces agree → cancels in `δ⁰−δ¹`)
+and the off-diagonal `U₀∩U₁` factors where `δ⁰` keeps index-1 and `δ¹` keeps
+index-0 → `r₁ − r₀` on the `U₀∩U₁` factor. So `kernel(δ⁰−δ¹) ≅ equalizer(r₀,r₁)`.
+
+- **Levers:** the `@[simps!]` of `cosimplicialObjectFunctor`, `evalOp`,
+  `power`, `mapPower`, `cech`, plus `Pi.lift_π`, `limit.lift_π`,
+  `Fin.sum_univ_two`. Expect a much larger chip than the first unfold (4-factor
+  `X¹` reindex bookkeeping) — consider splitting (state `X.δ a` componentwise
+  first, then assemble the equalizer).
+- **Tactic notes from the first unfold (reuse):** switching the complex object
+  inside `.d` breaks the motive (dependent type) — use `show`/defeq not `rw`;
+  `CochainComplex.of_d` needs `erw` (`1` vs `0+1`); finish sign algebra with
+  `abel`.
 - Gate: CI on a `loop/<ts>-m1a-equalizer` branch **until the local mathlib
   bootstrap finishes** (see "Local checks" below), then per-file
   `LEAN_NUM_THREADS=1 lake env lean Submission/CechModuleCat.lean`.
 
-After M1a-residual: **M1b** (the curve's two-affine cover + restriction maps
+After M1a-equalizer: **M1b** (the curve's two-affine cover + restriction maps
 from the scheme's instances; wire in `𝒪_C` as a `ModuleCat k`-presheaf), then
 **M1c** (`FiniteDimensional k (cechH U 1 .obj 𝒪_C)` = Serre finiteness = the
 go/no-go datum). Record M1's actual LOC + wall-clock in the route doc when M1c
