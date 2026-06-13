@@ -26,10 +26,25 @@ comparator and audited by the maintainer. Status board: Kim Morrison's
 | 8 | `Jacobian.comp_ofCurve` | theorem | OPEN |
 | 9 | `Jacobian.exists_unique_ofCurve_comp` | theorem | OPEN |
 
-Current phase: **route research** — see
-`docs/ROUTE_RESEARCH_2026_06_13.md` (mathlib-support inventory at the pin +
-candidate construction routes + phase-1 DONE WHEN). No construction work
-starts before that doc's go/no-go check is met.
+Current phase: **M1 (coherent cohomology canary)** — M0 done (scaffold + CI
+green + manifest, `3a3066d`). See `docs/ROUTE_RESEARCH_2026_06_13.md`.
+
+M1 declaration-level mathlib inventory + k-module **encoding decision** done
+in loop run #1 (2026-06-13): `H¹ C 𝒪_C` will be the degree-1 homology of the
+two-affine-cover Čech complex **in `ModuleCat k`** (`cechComplexFunctor` is
+preadditive-generic; the abelian-group `Sheaf.H` can't carry the needed
+k-module structure). M1 split into:
+
+| M1 sub | content | status |
+|---|---|---|
+| M1a | two-object Čech complex of `𝒪_C` in `ModuleCat k` + `H1 C 𝒪_C` def + H⁰=equalizer lemma | OPEN — **next chip** |
+| M1b | the curve's two-affine cover + restriction/intersection maps | OPEN |
+| M1c | `FiniteDimensional k (H1 C 𝒪_C)` (Serre finiteness; go/no-go datum) | OPEN |
+
+⚠️ Env flag (run #1): the local bootstrap `lake build` was running lean
+**v4.29.0** while the pin is **v4.30.0-rc2** — verify the toolchain before
+trusting local oleans (route doc "Environment flags"). CI (warm, ~3–4 min)
+is the working gate meanwhile.
 
 ## Rules inherited from the diffgeo challenge post-mortems
 
