@@ -1,5 +1,6 @@
 import Submission.AbelianVariety.PointedDiff
 import Submission.AbelianVariety.Rigidity
+import Submission.AbelianVariety.Homomorphisms
 
 /-!
 # Tower C — abelian-variety theory + Albanese (aggregator)
