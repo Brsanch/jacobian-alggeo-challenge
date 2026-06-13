@@ -54,13 +54,25 @@ projective + RR".
 
 ## Ordered brick sequence (build the shared foundation)
 
-**Bottom brick (started this session):** **I.1 `MonoidalCategory (SheafOfModules R)`** —
-transport `PresheafOfModules` monoidal (I.0) through the sheafification localization, via
-`CategoryTheory.Localization.Monoidal`. Key risk = showing the sheafification-local-iso
-class is compatible with `⊗` (so `Localization.Monoidal` applies); if that compatibility
-needs real work it becomes its own sub-arc. **Everything in Stack I sits on this.**
+**Bottom brick I.1 `MonoidalCategory (SheafOfModules R)` — SCAFFOLD DONE + REDUCED**
+(`Submission/Cohomology/SheafOfModulesMonoidal.lean`, `main` @ `fa4f350`, green/axiom-clean/
+vacuity-0). Transported `PresheafOfModules` monoidal (I.0) through the sheafification
+localization (`CategoryTheory.Localization.Monoidal`, defeq type-synonym transport). The
+predicted risk landed exactly: the instance is **conditional on `[W.IsMonoidal]`** (mathlib's
+`MorphismProperty.IsMonoidal`, mirroring mathlib's own `Sheaf.monoidalCategory`). So I.1 is now
+*reduced to one classical theorem*:
 
-Then, in dependency order: I.2 invertible sheaves + `Pic X` → (fork point: A-vs-B can be
+> **I.1a (the genuine remaining content, = next concrete brick):** `(sheafificationW J R₀).IsMonoidal`
+> = **"sheafification of presheaves of modules commutes with the tensor product"** (Stacks 17.16 /
+> EGA 0_I.4.1) = its two whiskering fields (`tensorLeft X ⋙ sheafification` and `tensorRight Y ⋙
+> sheafification` invert `W`). Absent at pin (no `MonoidalClosed (PresheafOfModules)`,
+> no sheafification-preserves-tensor; `IsLeftAdjoint` insufficient). Multi-hundred-LOC sub-arc:
+> **build `MonoidalClosed (PresheafOfModules (R₀ ⋙ forget₂ …))`** (then the internal-hom proof
+> that gives `J.W.whiskerLeft` in `Sites/Monoidal.lean` ports), **or** develop the sheaf tensor
+> directly and identify it with the localized tensor. Discharging I.1a makes I.1 unconditional and
+> unblocks I.2.
+
+Once I.1a lands, in dependency order: I.2 invertible sheaves + `Pic X` → (fork point: A-vs-B can be
 revisited here, since `Pic` now exists) → I.3 Proj `𝒪(n)` / II.1 Serre finiteness (parallel)
 → I.4 ample / II.2 RR → I.5 projective morphisms. Stack II (Serre finiteness) is the harder
 of the two and gates RR + cohomology-and-base-change for both routes.
