@@ -53,6 +53,16 @@ decision is a leap-queue item for Bryan** (`noethersolve/docs/LEAP_QUEUE.md §4`
   (`Submission/Jacobian/InvariantFiniteness.lean`) — route-independent mathlib-PR
   material, NOT a Route-A commitment, NOT a renamed sorry.
 
+**✅ Tower B BUILT the AFFINE core of M3 (2026-06-13, commits `d61c7c0`, `92205b2`, pushed):**
+7 modules under `Submission/Jacobian/` (565 LOC, sorry-free, axiom-clean, vacuity 0, full
+`lake build` green, 8327 jobs) — the **affine finite-group quotient `Spec(B^G)`** (generic,
+with integral/finite/proper/universally-closed/G-invariant/categorical-quotient-UP) + the
+**`S_d`-action on `A^{⊗d}`** (mathlib TODO) + **`Sym^d(Spec A)`** + unconditional finiteness +
+Noether invariant finiteness. Holes 2,3,5,6,7,8 STILL OPEN — this is the affine model; the
+projective/curve case needs P3 (invariant affine cover of `C^d`) + P5 (`Sym^d C` smooth, `C`
+projective), the open walls. Fork-II mathlib-PR material, not a hole-fill. Detail:
+`docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER B build".
+
 Current phase: **M1 (coherent cohomology canary)** — M0 done (scaffold + CI
 green + manifest, `3a3066d`). See `docs/ROUTE_RESEARCH_2026_06_13.md`.
 

@@ -477,3 +477,43 @@ Artin–Tate + integrality + `integral+finite-type⇒module-finite` lemmas. It d
 commit the challenge to Route A and is **not** a renamed sorry (gate 7(c): a substantive
 classical lemma milestone M3 consumes; gate 5: substantive plain-math statement). P3/P5 and
 the route decision are stated above for the human leap, not ground past solo.
+
+## ✅ TOWER B build — the AFFINE core of M3 (finite-group quotient + symmetric power), 2026-06-13
+
+Following the survey, the **affine** model of milestone M3 was built in full (route-independent,
+fork-II, upstreamable). 7 modules under `Submission/Jacobian/`, **565 LOC**, all sorry-free +
+axiom-clean (`propext`/`Classical.choice`/`Quot.sound` only) + vacuity-lint 0, full throttled
+`lake build` green (8327 jobs). Commits `a4bff85`, `d61c7c0`, `92205b2` on
+`tower/jacobian-construction` (pushed; CI cross-check).
+
+- `InvariantFiniteness.lean` — **Noether finiteness of invariants** (P1): for finite `G` on a
+  finite-type `R`-algebra `B`, `B` is module-finite over `B^G`, and (R Noetherian) `B^G` is
+  finite-type over `R`. (Artin–Tate + `Algebra.IsInvariant.isIntegral` + `Algebra.IsIntegral.finite`.)
+- `AffineInvariants.lean` — `B^G` as the equalizer of the `G`-action (mem characterization,
+  injectivity of `B^G ↪ B`, the ring-level universal factorization `exists_lift_of_invariant`).
+- `AffineQuotient.lean` — **the affine finite-group quotient `Spec(B^G)` of `Spec B`** (generic in
+  `(R, B, G)`, `G` in its own universe): the quotient morphism `π`, with `π` integral (⇒
+  `UniversallyClosed`), finite (⇒ `IsProper`) when `B` finite-type, **`G`-invariant**
+  (`specAction g ≫ π = π`), and the **categorical-quotient universal property for affine targets**
+  (`exists_unique_lift_of_invariant`) — built by hand through the `Γ ⊣ Spec` adjunction since
+  `Scheme` has no coequalizers.
+- `SchemeGroupAction.lean` — the lifted `specAction g` form a genuine functorial `G`-action
+  (`specAction_one`, `specAction_mul`, each `specAction g` an `IsIso`).
+- `TensorPowerPermAction.lean` — **`MulSemiringAction (Equiv.Perm (Fin d)) (A^{⊗d})`** by `R`-algebra
+  automorphisms permuting tensor factors (multiplicativity proved by induction on pure tensors) +
+  `SMulCommClass`. This is the permutation action mathlib lists as a **TODO**
+  (`LinearAlgebra/TensorPower/Symmetric.lean`).
+- `TensorPowerFiniteType.lean` — `A^{⊗d}` is finite-type over `R` when `A` is (slot inclusions
+  `singleAlgHom k` + `tprod f = ∏ k singleAlgHom k (f k)` + pure tensors span), a global instance
+  ⇒ the symmetric-power finiteness is **unconditional**.
+- `AffineSymmetricPower.lean` — **`Sym^d(Spec A) = Spec((A^{⊗d})^{S_d})`**, by instantiating
+  `AffineQuotient` at `B = A^{⊗d}`, `G = S_d`: integral / universally-closed / finite / proper /
+  `S_d`-invariant / universal-property, all inherited.
+
+**Scope honesty (unchanged).** This is the AFFINE model. None of holes 2,3,5,6,7,8 is filled: the
+challenge curve `C` is **projective, not affine**, so `Jacobian C` still needs the two route-doc
+walls that remain genuinely open at the pin — **P3** (an `S_d`-invariant *affine cover* of the
+quasi-projective `C^d`, ⇐ "an orbit lies in an affine open", absent) and **P5** (`Sym^d C` smooth +
+`C` projective), then the birational group law (RR) and the no-rational-point descent. The affine
+stack is the foundation those glue onto, and is prime mathlib-PR material on its own (esp. the
+`S_d`-on-`A^{⊗d}` action and the affine finite-group quotient). Recorded for the human leap.
