@@ -62,19 +62,26 @@ the pin (`Abelian/GrothendieckAxioms/Sheaf.lean`), so `HasExt`, `Linear k`, and
 note was a GitHub-pin survey before the local cache was warm — Gate 6 caught it.)
 Segment 1 was a few hours of *assembly*, not the feared homological-algebra build.
 
-**Segment 2 (build target step 2) = next.** Present `𝒪_C` as a sheaf of
-`k`-modules and feed it to `H` to get `H¹(C, 𝒪_C)` as a `k`-module. Substrate:
-`Submission/StructureSheafModule.lean` (`underToModuleCat`, `Under R ⥤ ModuleCat R`)
-+ `AlgebraicGeometry/Sites/SmallAffineZariski.lean` (`Scheme.AffineZariskiSite`,
-`sheafEquiv`). The universe/`HasSheafify J (ModuleCat k)` discharge for the
-actual curve's site is the real work here (the abstract module carries
-`[HasSheafify …]` as a hypothesis, mathlib-`Sheaf.H`-style; instantiation must
-supply it — the site is `EssentiallySmall`, so the bridge is
-`Sheaf.isGrothendieckAbelian_of_essentiallySmall`, not the `SmallCategory`
-instance Segment 1 used).
+**Segment 2 (build target step 2) = ✅ DONE 2026-06-13**,
+`Submission/StructureSheafCohomology.lean`. `H¹(C, 𝒪_C)` as a `k`-module +
+**hole 1 (`genus`) filled** (`Submission.genus = Module.finrank k (H1 C)`,
+sig byte-compatible, sorry/axiom-clean). See `OPEN.md` "Segment 2 DONE".
 
-**Segment 3 = the wall:** `FiniteDimensional k (H¹ C 𝒪_C)` (Serre finiteness),
-no mathlib foundation — its own major sub-arc.
+The handoff's feared blockers evaporated: the curve's *opens site*
+(`Opens.grothendieckTopology C.left`) is `SmallCategory` and
+`HasSheafify (Opens.gt) (ModuleCat k)` **resolves automatically** — so no
+`EssentiallySmall` bridge and no `HasSheafify` discharge were needed. The sheaf
+condition transports from `C.left.IsSheaf` for free (defeq underlying `Type`-presheaf
++ `forget (ModuleCat k)` reflects limits). The structure-sheaf `k`-algebra lift goes
+through Segment-1b's `underToModuleCat`.
+
+**Segment 3 = THE WALL (current segment):** `FiniteDimensional k (H1 C)` — Serre
+finiteness for the proper curve. `H1 C` is *type-correct* for it (a `k`-module), but
+mathlib at the pin has **no** quasi-coherent/coherent sheaves, no proper-pushforward
+finiteness, no Serre finiteness to stand on. This is the major sub-arc the route doc
+flagged — needs its own route doc when started. Until it lands, `genus C`'s *value* is
+the `finrank` junk-`0` on the (unproven-finite) `H¹` rather than the honest genus; the
+def is filled but the value is not yet certified.
 
 ## ⚠️ Scope reality (READ before committing more sessions — 2026-06-13)
 

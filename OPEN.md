@@ -28,7 +28,7 @@ comparator and audited by the maintainer. Status board: Kim Morrison's
 
 | # | Hole | Kind | Status |
 |---|------|------|--------|
-| 1 | `genus` | def | OPEN |
+| 1 | `genus` | def | **FILLED** (`Submission.genus`, 2026-06-13) — `dim_k H¹(C,𝒪_C)`; sig byte-compatible (`@Submission.genus = @JacobianChallenge.genus` typechecks), sorry/axiom-clean. Value honest pending Segment-3 finiteness; correctness gated by hole 4. |
 | 2 | `Jacobian` | def | OPEN |
 | 3 | `Jacobian.instGrpObj` | def | OPEN |
 | 4 | `Jacobian.smoothOfRelativeDimension_genus` | theorem | OPEN |
@@ -56,6 +56,30 @@ throttled full `lake build` green (8319 jobs, exit 0).
   analogue of the `H⁰ ≅ Γ` that mathlib's `Sheaf.H` only lists as a *TODO*. New
   supporting lemma: `Functor.const_additive` (additivity of `Functor.const Cᵒᵖ`,
   missing from mathlib).
+
+### ✅ Segment 2 DONE + hole 1 filled (2026-06-13, `Submission/StructureSheafCohomology.lean`, full-build green)
+
+`H¹(C, 𝒪_C)` as a `k`-module + the genus. Sorry/axiom-clean, vacuity-lint 0,
+throttled full `lake build` green (8320 jobs).
+- `kStruct C : const k ⟶ 𝒪_C` — the `k`-algebra structure on the structure sheaf,
+  from the structure morphism `C.hom : C.left ⟶ Spec k` (`k ≅ Γ(Spec k) →⟮appTop⟯
+  Γ(C.left,⊤) →⟮restrict⟯ 𝒪_C(U)`).
+- `structurePresheafUnder C : (Opens C.left)ᵒᵖ ⥤ Under (CommRingCat.of k)` — `𝒪_C`
+  as a presheaf of `k`-algebras; `… ⋙ underToModuleCat` ⇒ `structurePresheafModule C`
+  valued in `ModuleCat k`.
+- `structureSheafModule C : Sheaf (Opens.grothendieckTopology C.left) (ModuleCat k)`
+  — the sheaf condition **transports for free**: the `ModuleCat k` version's
+  underlying `Type`-presheaf is *defeq* to the `CommRingCat` structure sheaf's, and
+  `forget (ModuleCat k)` reflects limits (`isSheaf_of_isSheaf_comp`). The whole
+  construction reuses `C.left.IsSheaf` — no new sheaf-gluing.
+- `H1 C := H _ k 1 (structureSheafModule C)` — `H¹(C,𝒪_C)`, a `k`-module (Segment 1).
+- `genusH1 C := Module.finrank k (H1 C)`; **`Submission.genus`** fills hole 1 with it.
+
+**Gate-6 wins (no hypotheses to discharge):** `HasSheafify (Opens.grothendieckTopology
+C.left) (ModuleCat k)` resolves *automatically* at the pin (general instance for a
+target whose `forget` preserves limits + small covers) — so the curve's opens site
+feeds `H` directly. Combined with Segment 1's auto-`HasExt`/`Linear k`/`Module k (Ext)`,
+the entire fork-B cohomology of the curve needed **zero** carried typeclass hypotheses.
 
 **Two material corrections to the route doc / NEXT_SESSION (Gate-6 survey, warm cache):**
 1. **The feared "first real content" is already in mathlib.** NEXT_SESSION said

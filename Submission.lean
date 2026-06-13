@@ -2,6 +2,7 @@ import Challenge
 import Submission.CechModuleCat
 import Submission.StructureSheafModule
 import Submission.SheafCohomologyModuleCat
+import Submission.StructureSheafCohomology
 
 /-!
 # Submission root
@@ -16,5 +17,22 @@ No `sorry`, no `axiom`, no `ω` as a binder name (Lean v4.30 reserves it).
 -/
 
 namespace Submission
+
+open CategoryTheory AlgebraicGeometry
+
+universe u
+
+variable {k : Type u} [Field k]
+
+/-- **Hole 1 — `genus`.** The genus of a smooth proper curve `C` over `k`, defined as
+`dim_k H¹(C, 𝒪_C)` (`JacobianAlggeo.genusH1`, the derived-functor sheaf cohomology of
+the structure sheaf valued in `ModuleCat k` — Segments 1–2). Signature matches
+`AlgebraicGeometry.JacobianChallenge.genus`. The `IsProper`/`Smooth`/`GeometricallyIrreducible`
+instances are mandated by the challenge signature; the `Module.finrank` definition is
+total and does not consume them (its honest *value* needs Serre finiteness, Segment 3,
+and its *correctness* is enforced through hole 4 `smoothOfRelativeDimension_genus`). -/
+noncomputable def genus (C : Over (Spec (CommRingCat.of k))) [IsProper C.hom]
+    [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom] : ℕ :=
+  JacobianAlggeo.genusH1 C
 
 end Submission

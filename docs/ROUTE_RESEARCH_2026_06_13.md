@@ -349,3 +349,35 @@ k))`, for which mathlib has no off-the-shelf "right adjoint is linear" lemma
 (`Adjunction.right_adjoint_additive` exists but only additive; `lim` is not a
 registered `Functor.Linear`). Tractable but its own small piece; not needed for
 the genus (which uses `H¹` finrank, not `H⁰`).
+
+## ✅ Segment 2 results + hole 1 filled (2026-06-13, continuous-driving session, full-build green)
+
+Built `Submission/StructureSheafCohomology.lean`: `𝒪_C` presented as a sheaf valued
+in `ModuleCat k` on the *opens site* of `C.left`, fed to Segment 1's `H` to give
+`H1 C = H¹(C, 𝒪_C)` as a `k`-module; `genusH1 C := Module.finrank k (H1 C)`; and
+`Submission.genus` fills `Challenge.lean` hole 1 with it (signature byte-compatible —
+`@Submission.genus = @JacobianChallenge.genus` typechecks — sorry/axiom-clean,
+vacuity-lint 0, full `lake build` green, 8320 jobs).
+
+**The handoff's feared Segment-2 blockers did not materialise** (Gate-6, warm cache):
+- The curve's opens site `Opens.grothendieckTopology C.left` is a `SmallCategory`
+  (preorder) and `HasSheafify (Opens.gt) (ModuleCat k)` **resolves automatically**
+  (general instance: `forget` preserves limits + small covers). So neither an
+  `EssentiallySmall` bridge nor a `HasSheafify` hypothesis-discharge was needed — the
+  opens site feeds `H` directly. (`SmallAffineZariski`/`sheafEquiv` were not needed.)
+- The `ModuleCat k`-valued sheaf condition transports from `C.left.IsSheaf` for free:
+  `structurePresheafModule C ⋙ forget (ModuleCat k)` is *defeq* to `C.left.presheaf ⋙
+  forget CommRingCat` (same underlying `Type`-presheaf), and `forget (ModuleCat k)`
+  reflects limits (`isSheaf_of_isSheaf_comp`). No bespoke gluing.
+- The structure-sheaf `k`-algebra lift is `Under.mk (kStruct.app U) ⋙ underToModuleCat`,
+  reusing Segment 1b's forgetful. `kStruct` is the only genuinely new geometric content
+  (`const k ⟶ 𝒪_C` from the structure morphism + restriction).
+
+**Net:** the entire fork-B cohomology of the curve carries **zero** typeclass
+hypotheses. The k-module H¹ route the NO-GO verdict called merely "definable" is now
+*defined and wired to the challenge* (hole 1).
+
+**Remaining (unchanged):** Segment 3 = `FiniteDimensional k (H1 C)` (Serre finiteness)
+has no mathlib foundation — the major sub-arc. And holes 2,3,5,6,7,8,9 (the Jacobian/
+Albanese) remain the FGA-grade bulk. Hole 1 filled is 1 of 9; the genus *value* is not
+certified until Segment 3.
