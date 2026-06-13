@@ -52,20 +52,24 @@ The arc is FGA-grade; all three parallel towers independently hit deep walls.
 Tower C's remaining pieces are blocked as follows.
 
 1. **Smoothness over a general field `k`** (brief core item #1; hole 4's smoothness
-   half). mathlib has `smooth_of_grpObj_of_isAlgClosed` (group scheme over `k̄`,
-   reduced, lfp ⇒ smooth). The general-`k` upgrade funnels — for *every* route
-   (base-change descent; direct translation à la the alg-closed proof; geometric
-   reducedness ⇒ smooth) — through **faithfully-flat descent of (formal)
-   smoothness**: `RingHom.FormallySmooth` (or `RingHom.Smooth`) **codescends along
-   faithfully-flat ring maps**. Verified absent at the pin: `RingHom.Smooth`/
-   `FormallySmooth` have `isStableUnderBaseChange`, `localizationPreserves`,
-   `propertyIsLocal`, `holdsForLocalizationAway`, `OfLocalizationSpanTarget` — but
-   **no codescent**; `AlgebraicGeometry/Morphisms/Descent.lean`'s own TODO confirms
-   even affine-morphism faithfully-flat descent is unbuilt. This is a genuine,
-   deep, classical theorem (fpqc-locality of smoothness on the base, via the
-   cotangent complex / lifting-criterion descent) — a multi-week mathlib PR, not a
-   session bridge. **Single missing lemma to unblock: `RingHom.FormallySmooth`
-   codescends along faithfully-flat.**
+   half) — **the ring-theoretic core is now BUILT**, see `SmoothFaithfullyFlatDescent.lean`.
+   mathlib has `smooth_of_grpObj_of_isAlgClosed` (group scheme over `k̄`, reduced,
+   lfp ⇒ smooth); the general-`k` upgrade funnels — for *every* route — through
+   **faithfully-flat descent of smoothness** (`RingHom.Smooth` codescends along
+   faithfully-flat). This was absent at the pin (`Smooth`/`FormallySmooth` have
+   base-change-stability/locality/span-target but no codescent). It turned out
+   **assemblable** from existing mathlib because `Algebra.FormallySmooth R S` is, at
+   the pin, defined by `Module.Projective S Ω[S⁄R]` ∧ `Subsingleton (H1Cotangent R S)`,
+   and both descend: the projective half via `tensorKaehlerEquiv` +
+   `Module.Flat.of_flat_tensorProduct` (flat descent) + `projective_of_finitePresentation`;
+   the subsingleton half via `Algebra.tensorH1CotangentOfFlat` (cotangent flat base
+   change) + `Module.FaithfullyFlat.subsingleton_tensorProduct_iff_right`.
+   **Delivered: `RingHom.Smooth.codescendsAlong_faithfullyFlat`** (sorry/axiom-free,
+   upstreamable). Remaining to close hole-4's smoothness half: lift this ring
+   codescent to the scheme-level `Smooth.DescendsAlong` (via
+   `HasRingHomProperty.descendsAlong`) and apply to `Spec k̄ → Spec k` + the group
+   scheme — a much shorter follow-up than the (previously feared multi-week) descent
+   itself.
 
 2. **Hole 9 wiring.** `isMonHom_of_pointed_of_geometricallyIntegral` is the rigidity
    *input*; instantiating it at `A := Jacobian C` and packaging the `∃!` needs
