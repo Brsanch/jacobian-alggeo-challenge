@@ -381,3 +381,99 @@ hypotheses. The k-module H¹ route the NO-GO verdict called merely "definable" i
 has no mathlib foundation — the major sub-arc. And holes 2,3,5,6,7,8,9 (the Jacobian/
 Albanese) remain the FGA-grade bulk. Hole 1 filled is 1 of 9; the genus *value* is not
 certified until Segment 3.
+
+## 🅱️ TOWER B survey — Jacobian construction (holes 2,3,5,6,7,8): declaration-level inventory + priced Route-A-vs-B decision (2026-06-13)
+
+Tower B's mandate = **construct `Jacobian C` (= Pic⁰)** with group structure (hole 3),
+properness (5), geometric irreducibility (6), Abel–Jacobi `ofCurve` (7), `comp_ofCurve`
+(8), the def itself (2). Per the brief: survey mathlib for the independent core (finite-
+group quotient of a quasi-projective scheme → `Sym^d C`), price Route A vs B, and STOP +
+state the obstruction if the core blows past ~5k LOC. This section is that survey, run at
+**declaration level** against the warm pinned mathlib (`5450b53e5ddc`, read-only canonical
+tree). It is the decisive-regime datum; the construction is a multi-month program and the
+A-vs-B choice is a leap-queue item for Bryan (see `noethersolve/docs/LEAP_QUEUE.md §4`).
+
+### Declaration-level mathlib inventory for the construction
+
+**Present (usable substrate):**
+- `GrpObj` group objects: `CategoryTheory/Monoidal/Cartesian/Grp_.lean` (hole-3 target type).
+- **Some abelian-variety theory already exists:** `AlgebraicGeometry/Group/Abelian.lean` —
+  `isCommMonObj_of_isProper_of_geometricallyIntegral` (**stacks 0BFD**: a proper
+  geometrically-integral group object is commutative) and `η[G].left` is a closed
+  immersion. `Group/Smooth.lean` likewise. (Mostly Tower C's lane, but it means holes
+  5/6 + commutativity are *consumers* of, not blocked by, this file.)
+- Scheme **coproducts** `HasColimitsOfShape (Discrete σ) Scheme` (`Limits.lean:187`),
+  **gluing** (`Gluing.lean`), `AffineScheme`, `Proj ℬ` + `mapAffineOpenCover`,
+  `FunctionField`, `Geometrically/*`, `Morphisms/{Flat,Descent,…}`.
+- Invariant-ring substrate: `FixedPoints.subalgebra A B H` / `FixedPoints.subring`
+  (`FieldTheory/Fixed.lean`, `Algebra/Ring/Action/Invariant.lean`), the finite-group
+  **characteristic polynomial** + **integrality** `Algebra.IsInvariant.isIntegral`
+  (`RingTheory/Invariant/Basic.lean:138,175`: `B` integral over its invariants for finite
+  `G`), and **Artin–Tate** `Algebra.fg_of_fg_of_fg [IsNoetherianRing A]`
+  (`RingTheory/Adjoin/Tower.lean:145`).
+
+**Absent (the construction layer — ALL on us, zero matches at the pin):**
+- **`Sym^d` / symmetric power of a scheme** — `grep symmetricPower|symmetricProduct` over
+  `AlgebraicGeometry/` = **0 hits**.
+- **Quotient of a scheme by a finite group action** — no `geometricQuotient` /
+  `categoricalQuotient` / GIT; the only `MulAction`-on-AG hits are
+  `EllipticCurve/VariableChange` (change-of-coords group on Weierstrass *data*, not a
+  quotient scheme).
+- **`Scheme` has NO coequalizers** — `Limits.lean` registers only `Discrete σ` colimits;
+  so a quotient `X → X/G` **cannot** be obtained as a categorical colimit and must be
+  hand-built (Spec-of-invariants, glued).
+- Noether **finiteness of invariants** (`B^G` finite-type over `k`; `B` module-finite over
+  `B^G`) — mathlib has only the NT-Galois-of-integers `Algebra.IsInvariant` flavor and the
+  `Rep`-module `invariants` (`RepresentationTheory/Invariants.lean` = `Submodule`, not a
+  subalgebra-finiteness). The integrality half IS present; the FG/module-finite half is the gap.
+- "complement of a finite set / orbit lies in an affine open" for a quasi-projective scheme
+  (the `S_d`-invariant affine cover of `C^d`); curve **divisors / Riemann–Roch**;
+  **birational group law** extension; Picard functor/scheme; representability of Pic⁰.
+
+### First foundational gap (Route A core) decomposed — the ≥5k-LOC wall, reached immediately
+
+`Sym^d C := C^d / S_d` as a **smooth projective scheme** factors into, in dependency order:
+
+| Piece | Statement | mathlib at pin | Cost class |
+|---|---|---|---|
+| P1 | **Noether finiteness of invariants**: finite `G` on finite-type `k`-algebra `B` ⇒ `B^G` finite-type/`k`, `B` module-finite/`B^G` | integrality ✓, FG-half ✗ | **bounded** (~100–300 LOC; Artin–Tate + integral+FT⇒finite both present) |
+| P2 | **Affine quotient scheme** `Spec(B^G)` + universal property = categorical quotient of `Spec B` by `G` among *all* schemes | ✗ (no coequalizers) | medium (Γ⊣Spec + factorization gluing) |
+| P3 | **`G`-invariant affine cover** of a quasi-projective `X` (⇐ every orbit lies in an affine open ⇐ quasi-projectivity) | ✗ (no orbit-in-affine, no ample/embedding scaffolding) | **hard** (mathlib-PR-scale on its own) |
+| P4 | glue affine quotients → quotient scheme `X/G` with quotient map | ✗ | medium (needs P2+P3) |
+| P5 | `Sym^d C` smooth + projective (`C` proper smooth curve ⇒ projective; `Sym^d` smooth via the discriminant / étale-local `Sym^d 𝔸¹ ≅ 𝔸^d`) | ✗ | **hard** |
+
+Even with P1 free, **P3 and P5 are each independent multi-arc mathlib gaps**, and `Sym^d C`
+is only the *input* to the birational group law (hole 3) and Abel–Jacobi (hole 7). The
+decisive-regime threshold ("core blows far past ~5k LOC ⇒ STOP") is crossed at P3 — i.e. at
+the *first* foundational gap, before any of the six holes is touched.
+
+### Priced Route A vs Route B (critical paths)
+
+- **Route A (Weil / `Sym^d`, Milne JV §§2–7):** P1→P5 above **+** curve Riemann–Roch (for
+  the birational group law) **+** the birational-group-law extension theorem (BLR ch.5 /
+  Serre GACC §V) **+** the **no-rational-point gap** (the challenge curve carries no assumed
+  `k`-point for the *construction*; Route A's birational arguments classically need a point
+  or work over `k̄` + Galois descent — a genuine extra arc). ≈ 6–7 hard sub-arcs.
+- **Route B (FGA Pic⁰ representability, Kleiman ch.9):** Hilbert/Quot (FGA ch.5–7) +
+  flattening stratification + cohomology-and-base-change (Mumford AV §5) + representability
+  of Pic⁰ + deformation theory (smoothness + `dim = g`). Deeper trunk, but **native over
+  general `k`** (no rational-point gap, no `Sym^d`, no finite-quotient infra), and maximally
+  reusable / PR-able. ≈ 5 very deep sub-arcs.
+
+**Verdict (Tower B).** Both routes are multi-month, human-architected mathlib-infrastructure
+programs; **neither closes any of holes 2,3,5,6,7,8 in a single session.** The construction
+is NOT reachable at subscription budget without first building either the finite-quotient
+stack (A) or the Hilbert/Quot + base-change stack (B). The Route-A-vs-B decision is itself
+the leap-queue datum: lean **B** if the goal is the reusable trunk + no-point robustness;
+lean **A** only if a rational point can be assumed/added and RR lands cheaply from Tower A.
+
+### Fork-II action taken this session (bounded, route-independent, upstreamable)
+
+Per "land the bounded clean pieces as standalone mathlib PRs rather than grinding": **P1
+(Noether finiteness of invariants)** is built as `Submission/Jacobian/InvariantFiniteness.lean`
+— it is independently valuable to mathlib (a missing classical theorem, Emmy Noether 1926),
+route-independent (a PR even if the challenge takes Route B), and bounded by the present
+Artin–Tate + integrality + `integral+finite-type⇒module-finite` lemmas. It does **not**
+commit the challenge to Route A and is **not** a renamed sorry (gate 7(c): a substantive
+classical lemma milestone M3 consumes; gate 5: substantive plain-math statement). P3/P5 and
+the route decision are stated above for the human leap, not ground past solo.

@@ -3,6 +3,7 @@ import Submission.CechModuleCat
 import Submission.StructureSheafModule
 import Submission.SheafCohomologyModuleCat
 import Submission.StructureSheafCohomology
+import Submission.Jacobian.InvariantFiniteness
 
 /-!
 # Submission root
