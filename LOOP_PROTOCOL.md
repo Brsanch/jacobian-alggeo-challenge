@@ -6,8 +6,17 @@ scheduled routine's prompt just points here.
 
 ## Per-run procedure (exactly one iteration)
 
+0. **Lock check (serialization).** The cron fires every 30 minutes so runs
+   chain back-to-back; the lock makes overlap impossible. If `LOOP_LOCK`
+   exists at the repo root AND its mtime is < 3 hours old, another run is
+   active — exit immediately and silently (this is a cheap no-op firing,
+   not an error). If it is ≥ 3 hours old, the previous run died — note
+   that in your report, delete it, and proceed. Otherwise write
+   `LOOP_LOCK` (one line: UTC timestamp + chip target). **Always delete
+   `LOOP_LOCK` before exiting, on every path — DONE, STUCK, and halt.**
+   `LOOP_LOCK` is gitignored: never commit it.
 1. **Halt check.** If a file named `LOOP_HALT` exists at the repo root, do
-   nothing and exit immediately (report its contents).
+   nothing (delete your lock) and exit immediately (report its contents).
 2. **Load state, don't re-plan.** Read, in order: `NEXT_SESSION.md`
    (names the current chip + DONE WHEN) → `OPEN.md` (authoritative status)
    → `CHIP_GATES.md` → `DEVELOPMENT.md` → tail of `LOOP_LOG.md`. Do NOT

@@ -11,3 +11,6 @@
 *.swo
 .idea/
 .vscode/
+
+# Loop serialization lock (local-only, never committed)
+LOOP_LOCK
