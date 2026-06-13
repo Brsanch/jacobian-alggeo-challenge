@@ -108,4 +108,22 @@ theorem isDomain_of_isRegularLocalRing_of_ringKrullDim_eq_one
   haveI : NoZeroDivisors R := ⟨fun {a b} hab => hnzd a b hab⟩
   exact { }
 
+/-- **A regular local ring of Krull dimension `0` or `1` is reduced.** (dim 0 ⇒ field,
+dim 1 ⇒ domain, both reduced.) This is exactly the local-ring input needed to prove a smooth
+curve's structure sheaf is reduced — its stalks are regular local rings of dimension `≤ 1`. -/
+theorem isReduced_of_isRegularLocalRing_of_ringKrullDim_le_one
+    [IsRegularLocalRing R] (h : ringKrullDim R = 0 ∨ ringKrullDim R = 1) : IsReduced R := by
+  rcases h with h | h
+  · -- dim 0 ⇒ field ⇒ reduced: a nilpotent unit would force `1 = 0`.
+    have hf := isField_of_isRegularLocalRing_of_ringKrullDim_eq_zero h
+    refine ⟨fun x ⟨n, hn⟩ => ?_⟩
+    by_contra hx0
+    obtain ⟨y, hy⟩ := hf.mul_inv_cancel hx0
+    exact one_ne_zero (α := R) (by
+      calc (1 : R) = (x * y) ^ n := by rw [hy, one_pow]
+        _ = x ^ n * y ^ n := mul_pow x y n
+        _ = 0 := by rw [hn, zero_mul])
+  · haveI := isDomain_of_isRegularLocalRing_of_ringKrullDim_eq_one h
+    infer_instance
+
 end JacobianAlggeo
