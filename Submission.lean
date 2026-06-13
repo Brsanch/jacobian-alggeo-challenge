@@ -1,4 +1,5 @@
 import Challenge
+import Submission.CechModuleCat
 
 /-!
 # Submission root
