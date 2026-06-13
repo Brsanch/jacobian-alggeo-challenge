@@ -17,3 +17,5 @@ LOOP_LOCK
 
 # Local mathlib bootstrap log (local-only)
 bootstrap.log
+bootstrap.log
+cacheget.log
