@@ -4,7 +4,30 @@ Read in order: `OPEN.md` (authoritative hole status) → `CHIP_GATES.md` →
 `DEVELOPMENT.md` → `docs/ROUTE_RESEARCH_2026_06_13.md`. Do not re-audit; the
 next chip is named below.
 
-## Current phase: M1b (M0 + M1a-abstract done)
+## ⛔ ROUTE FORK PENDING (2026-06-13) — do NOT write M1b-cover code until resolved
+
+The Gate-6 mathlib survey (route doc, "M1b survey result") **falsified the M1b
+premise**: mathlib at the pin has NO "curve minus a point is affine", no Serre
+affineness criterion, no finite affine cover of an abstract proper curve. So
+"instantiate the abstract Čech layer at the curve's two-affine cover" is blocked
+behind a major AG sub-arc. **Next chip is a SURVEY, not code** (fork B below).
+
+- **(B, RECOMMENDED) next chip = derived-cohomology feasibility survey.** Verify
+  whether mathlib's sheaf-cohomology API (`CategoryTheory/Sites/SheafCohomology`,
+  `Abelian`/`Grothendieck` derived functors) admits a **general Grothendieck-abelian
+  coefficient category** so that `Hⁿ(X, 𝒪_C)` can be computed as a right-derived
+  global-sections functor **valued in `ModuleCat k`** (𝒪_C viewed as a sheaf of
+  `k`-modules), with NO explicit finite cover. DONE WHEN: a written verdict in the
+  route doc (viable / not) with the exact API names; if viable, name the first
+  `def` chip (RⁿΓ valued in `ModuleCat k`). This sidesteps the cover gap and serves
+  M1c (`FiniteDimensional k H¹`) directly.
+- If B is NOT viable, escalate to Bryan: fork A (build curve-minus-point-affine,
+  multi-arc / mathlib-PR scale) vs reconsidering the genus route. Do NOT silently
+  start fork A — it is the `≥5k LOC ⇒ mathlib-PR` branch of the go/no-go.
+- M1a (`cechHZeroIsoEqualizer` etc.) STAYS as valid `H⁰`/sheaf-condition content
+  regardless; it is just no longer assumed to be the H¹/genus route.
+
+## (archive) Current phase: M1b (M0 + M1a-abstract done)
 
 **M1a abstract layer COMPLETE** (loop runs #2–#4): `cechComplexMod`, `cechH`,
 `cechHZeroIsoKernel`, `cechCosimpl`, `cechComplexMod_d_zero_one` (`d⁰=δ⁰−δ¹`),

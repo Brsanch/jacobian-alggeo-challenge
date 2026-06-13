@@ -210,3 +210,60 @@ deferred to its own milestone (only genus/RR need it).
   `lake build`s — then throttled `lake build` in alggeo, logs `bootstrap.log`).
   Until it finishes, CI on a branch is the gate; jacobian-lean-challenge's
   oleans are NOT reusable (its pin = v4.30.0-**rc1** / mathlib `8e3c9891`).
+
+## ⚠️ M1b survey result (2026-06-13, warm-cache mathlib grep) — the explicit two-affine cover is a MATHLIB GAP; pivot recommended
+
+Gate-6 mathlib-first survey at the pin (`5450b53e5ddc`), run against the now-warm
+local checkout. **Decisive finding: the route doc's M1b premise is falsified.**
+The premise (this file, M1 section) was "a smooth projective curve minus a point
+is affine — classical; verify the geometrically-irreducible-over-arbitrary-`k`
+form." Verified result: mathlib at this pin has **none** of the building blocks.
+
+**Present:** `Scheme.OpenCover`/`AffineOpenCover` (`Cover/Open.lean`, indexed by an
+arbitrary type `J0`, open immersions); `Proj ℬ`'s `mapAffineOpenCover` (Proj of a
+graded ring has an affine cover by `D(f)` charts); `StructureSheaf`;
+`PresheafOfModules`/`SheafOfModules` + `restrictScalars` change-of-rings; abstract
+`CategoryTheory/Sites/SheafCohomology` (Ext-based).
+
+**Absent (the gap):** "complement of a point/finite set is affine"; any Serre-type
+affineness criterion (`isAffine_of_*` hits are all about affine *morphisms*, not
+the minus-a-point result); `IsCurve`; a canonical *finite* affine cover of an
+*abstract* proper curve `C : Over (Spec k)` given only by its instances. The
+challenge curve is NOT handed to us as a `Proj`, so `mapAffineOpenCover` does not
+apply without first realizing `C` as a Proj (itself a gap).
+
+**Consequence.** M1b-as-written (instantiate the abstract Čech layer at the curve's
+explicit two-affine cover) is blocked behind a major AG sub-arc (construct the
+finite affine cover ⇐ "curve minus point affine" ⇐ projectivity + ample/Serre
+scaffolding mathlib lacks). This is the **M1 go/no-go signal arriving early** — and
+the cheap probe caught it before any cover code was written.
+
+### Route fork (decision needed before more M1 code)
+
+- **(A) Build the cover infrastructure** — prove "smooth proper curve minus a
+  closed point is affine" (or a finite affine cover exists) from scratch. Major,
+  mathlib-PR-scale; this is the literal `≥ ~5k LOC → convert to mathlib PR`
+  branch of the go/no-go. Likely multi-arc on its own.
+- **(B) PIVOT — derived-functor sheaf cohomology valued in `ModuleCat k`
+  (RECOMMENDED).** Compute `Hⁿ(X, 𝒪_C)` as the right-derived functor of global
+  sections, with `𝒪_C` presented as a sheaf of `k`-modules (it is one: forget the
+  ring structure, keep the `k`-vector-space structure). `ModuleCat k` is Grothendieck
+  abelian (has enough injectives) ⇒ derived functors exist and are **valued in
+  `ModuleCat k`** — no explicit finite cover needed, sidestepping the gap entirely.
+  The run-#1 encoding fork rejected `Sheaf.H` only because the AddCommGrp-specialized
+  form lacks the `k`-module structure; the general *Grothendieck-abelian-target*
+  derived-functor route was not considered and likely restores it. NEXT VERIFY: does
+  mathlib's sheaf-cohomology API admit a general Grothendieck-abelian coefficient
+  category (not just `AddCommGrp`), and does `ModuleCat k` satisfy its hypotheses?
+  If yes, M1 (genus = `dim_k H¹`) closes WITHOUT the cover gap, and the M1a Čech
+  layer becomes an optional `H⁰`-only convenience (still valid, just not the H¹ route).
+- **(C) Reconsider** whether genus/H¹ is reachable at this pin at all (hole 4 forces
+  the honest `g`, so "skip it" is not available — the comparator's universal property
+  is the no-cheating clamp).
+
+**Recommendation: B.** It is the only fork that doesn't front-load a multi-arc
+mathlib gap, and it directly serves the M1c DONE WHEN (`FiniteDimensional k H¹`).
+The next investigation chip is a *survey*, not code: confirm `ModuleCat k`-valued
+derived sheaf cohomology is expressible at the pin. If B is viable, M1a's
+`cechHZeroIsoEqualizer` is preserved as `H⁰` content but the H¹/genus route moves
+to derived functors.
