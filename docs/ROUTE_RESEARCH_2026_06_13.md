@@ -464,6 +464,33 @@ So the updated Wall-2 leap-queue item (i) is sharper: `smooth/field ⇒ reduced`
 (Serre finiteness / derived↔Čech) unchanged. All 9 holes remain OPEN — this brick certifies no
 hole; it is upstreamable mathlib content completing the regular-local-ring theory.
 
+### TOWER A — Stack-II brick: `ringKrullDim` invariant under integral extensions (2026-06-14, `tower/stack-II-serre` @ `8de1aca`, pushed)
+
+Leaf (1) of the remaining Wall-2 gap — **the finite-type-over-field dimension formula** — now has
+its hard half built: `Submission/Cohomology/IntegralKrullDim.lean` (full `lakelock lake build`
+green 8342 jobs; vacuity 0; axioms `propext`/`Classical.choice`/`Quot.sound`; sorry-free). It
+supplies the going-up/incomparability package that connects mathlib's Noether normalization
+(present, `exists_finite_inj_algHom_of_fg`) to a concrete Krull-dimension value — the bridge that
+was the absent piece.
+- `ringKrullDim_le_of_isIntegral` (`dim S ≤ dim R`, any integral ext): comap is **strictly
+  monotone** on `Spec` by incomparability (`Ideal.comap_lt_comap_of_integral_mem_sdiff`) ⇒
+  `krullDim_le_of_strictMono`.
+- `exists_ltSeries_lift_of_isIntegral`: the **arbitrary-length going-up chain lift** — exactly the
+  TODO mathlib leaves in `Ideal/GoingUp.lean` ("Version of going-up theorem with arbitrary length
+  chains, by induction"). `RelSeries.inductionOn'` lifting one prime at a time through the
+  single-step `exists_ideal_over_prime_of_isIntegral`; the lifted chain is strict because distinct
+  contractions force distinct primes. ⇒ `le_ringKrullDim_of_isIntegral_of_injective` and the
+  equality `ringKrullDim_eq_of_isIntegral_of_injective` (injective integral ⇒ `dim R = dim S`).
+- `exists_ringKrullDim_eq_of_finiteType`: **a nontrivial finite-type `k`-algebra has finite Krull
+  dimension** `= s`, the Noether-normalization rank (`MvPolynomial.ringKrullDim_of_isNoetherianRing`
+  + `ringKrullDim_eq_zero_of_field`). First absent leaf of the dimension formula, delivered.
+- **Remaining for leaf (1):** identify `s = trdeg`/rel-dim of the standard-smooth presentation
+  (sharper than `∃ s`). Leaf (2) (Zariski cotangent `finrank_κ(𝔪/𝔪²) = rel dim`) untouched. Once
+  both: `smooth ⇒ regular` via `IsRegularLocalRing.of_spanFinrank_maximalIdeal_le`. Wall 1 (Serre
+  finiteness) unchanged; all 9 holes OPEN — foundation, not a hole-fill.
+- **CI note:** GitHub Actions is failing at the **account billing** level (job never starts; same on
+  prior main `312204d`), so the local throttled full build is the authoritative gate here.
+
 ## 🅱️ TOWER B survey — Jacobian construction (holes 2,3,5,6,7,8): declaration-level inventory + priced Route-A-vs-B decision (2026-06-13)
 
 Tower B's mandate = **construct `Jacobian C` (= Pic⁰)** with group structure (hole 3),
