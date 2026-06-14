@@ -20,10 +20,13 @@ via the integrator role below; do NOT duplicate its Front-B / Serre work. Contro
 >   `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md`** — its top "BRICKS (1)–(3) DONE" § lists
 >   the reusable carrier-diamond techniques (single-universe, `respectTransparency`, inline-`homMk` for
 >   inherited smul, `appAt` native re-type).
-> - **Just integrated:** `tower/stack-II-serre` (+5: Tower-A smooth⇒regular for rel-dim-1 curves +
+> - **`main` is now @ `2f2692b`** (was `07c0766` at round-3 start). This session pushed I.1a piece (III)
+>   bricks 2–3 (above) and **integrated `tower/jacobian-r2`** (+1: Tower B `tensorPowMulEquiv`,
+>   `A^⊗d ⊗ A^⊗e ≃ₐ A^⊗(d+e)`, `Submission/Jacobian/TensorPowerAdd.lean`); integration gate green
+>   (8354 jobs, vacuity 0/39). Integrator queue clear as of push; `tower/abelian-variety-r2` 0-ahead.
+> - **(prior) Just integrated:** `tower/stack-II-serre` (+5: Tower-A smooth⇒regular for rel-dim-1 curves +
 >   scalar-transport; Front-B Mayer-Vietoris LES computing `H1 C` + `coeffSheaf ≅ k[⊤]`) → `main` @
->   `07c0766`, gate green (8353 jobs, vacuity 0). Towers `tower/jacobian-r2`/`tower/abelian-variety-r2`
->   are 0-ahead; the new Stack-II session works off `07c0766`.
+>   `07c0766`, gate green (8353 jobs, vacuity 0).
 > - **Integrator duty:** `git fetch`; for any `tower/*` branch with commits ahead of `main`, merge into
 >   an integration branch off `main`, run the solo gate (`~/.claude/bin/lakelock lake build` +
 >   `python3 scripts/lean_vacuity_lint.py Submission.lean Submission/ --max-findings 0`), confirm
