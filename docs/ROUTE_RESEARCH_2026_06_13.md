@@ -491,6 +491,43 @@ was the absent piece.
 - **CI note:** GitHub Actions is failing at the **account billing** level (job never starts; same on
   prior main `312204d`), so the local throttled full build is the authoritative gate here.
 
+### TOWER A — Stack-II brick: dimension formula `dim = trdeg` (2026-06-14, `tower/stack-II-serre` @ `96d3128`, pushed)
+
+Leaf (a) of Wall 2's `smooth ⇒ regular` — the finite-type-over-field dimension formula — now has its
+**global/affine half built**: `Submission/Cohomology/DimensionFormula.lean` (full throttled `lake
+build` green 8343 jobs; vacuity 0; axioms `propext`/`Classical.choice`/`Quot.sound`; sorry-free),
+the classical theorem `ringKrullDim A = trdeg k A` for a finite-type **domain** `A/k` (Atiyah–Macdonald
+ch. 11 / Eisenbud Thm A / Stacks 00OW + 030H). It upgrades the prior `IntegralKrullDim` leaf
+`exists_ringKrullDim_eq_of_finiteType` (`∃ s, dim = s`, non-canonical Noether rank) to the canonical
+birational invariant `trdeg` = relative dimension.
+- `exists_ringKrullDim_eq_trdeg` — common ℕ value `s` of `ringKrullDim A` and `Algebra.trdeg k A`.
+  Route: Noether normalization `k[Fin s] ↪ A` (`exists_integral_inj_algHom_of_fg`); the IntegralKrullDim
+  invariance `ringKrullDim_eq_of_isIntegral_of_injective` + `MvPolynomial.ringKrullDim_of_isNoetherianRing`
+  give `dim A = s`; `trdeg_add_eq` (Stacks 030H) tower additivity for `k → k[Fin s] → A` with
+  `trdeg_{k[Fin s]} A = 0` (integral ⇒ algebraic, `trdeg_eq_zero`) and `trdeg_k k[Fin s] = s`
+  (`MvPolynomial.trdeg_of_isDomain`) give `trdeg k A = s`.
+- `ringKrullDim_eq_trdeg_toNat` — direct equality `ringKrullDim A = (trdeg k A).toNat`.
+- **Universe note:** `trdeg_add_eq` forces `S` and `A` into the same universe (`{A : Type v}`,
+  `S : Type v`); stated `(k A : Type u)` — natural, since the coordinate rings of a `k`-scheme are
+  `Type u`.
+
+**Honest remaining map for `smooth ⇒ regular` (both genuine sub-arcs; this brick closes neither leaf):**
+1. **(a′) local-ring dimension at a point.** `smooth⇒regular` needs `dim 𝒪_{X,x}`, NOT the affine
+   `dim A`. At a closed point `dim 𝒪_{X,x} = dim A` via **catenarity / height+coheight**
+   `height 𝔭 + dim(A/𝔭) = dim A` for finite-type domains — mathlib status not yet probed
+   (`Ideal.height`, `IsCatenary`, `Order.height`).
+2. **(b) cotangent leaf `finrank_κ(𝔪/𝔪²) ≤ dim`** — **UPGRADE: mathlib HAS the Jacobi–Zariski /
+   `Algebra.H1Cotangent` machinery** (`RingTheory/Kaehler/JacobiZariski.lean`: `H1Cotangent.{δ,
+   exact_map_δ, exact_δ_mapBaseChange}`, `KaehlerDifferential.exact_mapBaseChange_map`,
+   `Cotangent.exact`) and the formally-smooth Jacobian criterion (`RingTheory/Smooth/Local.lean`,
+   smoothness ⟺ cotangent injectivity after `⊗κ`). The conormal `H1(k,κ) → 𝔪/𝔪² → κ⊗Ω[S/k] →
+   Ω[κ/k] → 0` is reachable; gaps are (i) `Algebra.H1Cotangent S κ ≅ 𝔪/𝔪²` + the
+   `IsLocalRing.CotangentSpace` ↔ `Extension.Cotangent` bridge (the two distinct `CotangentSpace`
+   notions), (ii) residue-field separability at smooth closed points. Intricate but no longer a
+   "nothing in mathlib" wall.
+
+Foundation, not a hole-fill — all 9 holes remain OPEN. Upstreamable mathlib content.
+
 ## 🅱️ TOWER B survey — Jacobian construction (holes 2,3,5,6,7,8): declaration-level inventory + priced Route-A-vs-B decision (2026-06-13)
 
 Tower B's mandate = **construct `Jacobian C` (= Pic⁰)** with group structure (hole 3),
