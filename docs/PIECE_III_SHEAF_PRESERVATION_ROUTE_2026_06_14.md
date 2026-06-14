@@ -43,7 +43,48 @@ Equivalently, two sub-facts: (III-a) `Presheaf.IsSheaf J (internalHom F H').pres
 `Submission/Cohomology/PresheafOfModulesInternalHom.lean`; the carrier-diamond idioms are
 documented there.
 
-## Route A — direct amalgamation mirror (self-contained, ~250–400 LOC)
+## ✅ ROUTE A CHOSEN (2026-06-14) — build as "sub-sheaf via separatedness", NOT a full re-derivation
+
+The naive Route A (re-derive `presheafHom_isSheafFor` for the linear hom, ~250–400 LOC) is
+**not** the way to build it. The tractable form (~150–250 LOC) **reuses mathlib's amalgamation
+as a black box** and adds only the linearity check, via H's *separatedness*:
+
+**The structure.** `(internalHom F H).presheaf` (the AbGrp of R₀-linear PMod-morphisms over
+slices) embeds as a **mono** `u` into the type/AbGrp sheaf `ambient := presheafHom (F.presheaf)
+(H.presheaf)` (all natural transformations of the underlying presheaves), `u` = `toPresheaf`
+on slice-homs (faithful ⇒ `u` injective at each X; alignment is `rfl`). A presheaf that is a
+mono sub-object of a sheaf, whose amalgamations land in the sub-object, is a sheaf. So:
+
+1. **`ambient` is a sheaf** — `Presheaf.IsSheaf.hom (F.presheaf) (H.presheaf) hH`
+   (`Sites/SheafHom.lean:209`), where `hH : Presheaf.IsSheaf J H.presheaf` (free from `H` a
+   SheafOfModules). [trivial, 1 line]
+2. **`u : (internalHom F H).presheaf ⋙ forget ⟶ ambient`**, mono. `u_X φ := (toPresheaf _).map φ`
+   under the `rfl` alignment `((restrict X).obj F).presheaf = (Over.forget X.unop).op ⋙ F.presheaf`.
+   Injective by `(toPresheaf _).Faithful` (`Presheaf.lean:164`).
+3. **The amalgamation lands in `im u` (the linearity check)** — THE content, but short. Given a
+   compatible family `x` in `(internalHom F H).presheaf` over a cover `S` of `X`, its `u`-image
+   amalgamates (in `ambient`, by step 1) to a unique `y : ambient.obj X` (a nat. transf.). Claim:
+   each component `y.app W : F(W.left) → H(W.left)` is R₀(W.left)-linear, so `y = u_X(φ)` for a
+   PMod-morphism `φ`. **Proof of linearity = H's separatedness:** `y.app W (r•m)` and `r•(y.app W m)`
+   are two elements of `H(W.left)`; they agree after restriction along the pullback cover
+   `S` (there `y` equals the *linear* family member `x_i`, via `IsAmalgamation`); a sheaf is
+   separated (`IsSheaf ⇒ IsSeparated`), so they are equal. Bundle the linear `y.app W` into a
+   `PresheafOfModules.Hom` (`app := the linear maps`, naturality from `y`'s).
+4. **Conclude.** `(internalHom F H).presheaf` is a sheaf: amalgamation = `u_X⁻¹ y` (exists by
+   step 3), unique by `u` mono / `ambient` separated. Use `isSheaf_iff_isSheaf_of_type`
+   (`Sites/Sheaf.lean:391`) / `isSheaf_iff_isSheaf_forget` to package the AbGrp-level
+   `Presheaf.IsSheaf`. Then (III-b): repackage as `(localInclusion α).obj _` via
+   `SheafOfModules.fullyFaithfulForget`.
+
+**Build bricks (commit each green):** (1) ambient sheaf lemma; (2) forgetful `u` + injectivity;
+(3) `internalHom_isSheaf : Presheaf.IsSheaf J H.presheaf → Presheaf.IsSheaf J (internalHom F H).presheaf`
+(the separatedness argument — the bulk); (4) III-b local-object packaging; (5) the short port
+(whiskerLeft/Right/IsMonoidal, see "short remainder" §). Mathlib hooks: `IsSheaf.amalgamate`
+(`Sites/Sheaf.lean:225`), `IsSheaf.isSeparated`/separatedness, `Presieve.IsSheafFor`.
+
+---
+
+### (superseded) naive Route A — direct amalgamation mirror (~250–400 LOC)
 
 Mirror `presheafHom_isSheafFor` (`Sites/SheafHom.lean:172`, with auxiliaries
 `exists_app:134`, `app:158`, `app_cond:161`, `PresheafHom.isAmalgamation_iff:104`). The
