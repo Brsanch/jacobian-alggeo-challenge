@@ -337,4 +337,75 @@ noncomputable def internalHom :
 
 end InternalHomObject
 
+/-! ## The internal hom as a functor in the second variable
+
+For fixed `F`, `H ↦ [F,H]` is a functor `PresheafOfModules R₀' ⥤ PresheafOfModules R₀'` (the
+right-adjoint candidate for the tensor-hom adjunction `Closed F`). On a morphism `ψ : H ⟶ H'` it
+acts by postcomposing slice-morphisms with `(restrict X).map ψ`. This is `R₀(X)`-linear because
+postcomposition commutes with the slice-scaling, and natural in `X` because the slice restriction of
+`ψ` is compatible with the `Over.map`-reindexing (`Over.mapForget_eq`, `rfl`).
+
+No `sorry`, no `axiom`, no `ω` binders. -/
+
+section InternalHomFunctor
+
+variable (F : PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat))
+
+/-- The action of `[F,-]` on a morphism `ψ : H ⟶ H'`, read at `X`: postcompose a slice-morphism with
+`(restrict X).map ψ`. `R₀(X)`-linear (postcomposition commutes with the slice-scaling, since
+`(restrict X).map ψ` is `R₀`-linear at each slice object). -/
+noncomputable def internalHomSndApp
+    {H H' : PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat)} (ψ : H ⟶ H') (X : Cᵒᵖ) :
+    internalHomObj F H X ⟶ internalHomObj F H' X :=
+  ModuleCat.ofHom
+    ({ toFun := fun φ => φ ≫ (restrict X).map ψ
+       map_add' := fun φ χ => Preadditive.add_comp _ _ _ φ χ ((restrict X).map ψ)
+       map_smul' := by
+         intro r φ
+         refine PresheafOfModules.hom_ext (fun W => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+         show (ψ.app (op W.unop.left)).hom ((internalSMulApp F H X r φ W).hom z)
+           = (internalSMulApp F H' X r (φ ≫ (restrict X).map ψ) W).hom z
+         rw [internalSMulApp_hom_apply, internalSMulApp_hom_apply, map_smul]
+         rfl } :
+      internalHomObj F H X →ₗ[R₀.obj X] internalHomObj F H' X)
+
+@[simp] lemma internalHomSndApp_hom_apply
+    {H H' : PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat)} (ψ : H ⟶ H') (X : Cᵒᵖ)
+    (φ : (restrict X).obj F ⟶ (restrict X).obj H) :
+    (internalHomSndApp F ψ X).hom φ = φ ≫ (restrict X).map ψ := rfl
+
+/-- The action of `[F,-]` on a morphism `ψ : H ⟶ H'`, as a morphism of presheaves of modules.
+Naturality is the reindex/postcompose commutation, which is free from `pushforward₀` functoriality
+and `Over.mapForget_eq` (`rfl`). -/
+noncomputable def internalHomMapSnd
+    {H H' : PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat)} (ψ : H ⟶ H') :
+    internalHom F H ⟶ internalHom F H' where
+  app X := internalHomSndApp F ψ X
+  naturality {X Y} f := by
+    refine ModuleCat.hom_ext (LinearMap.ext (fun φ => ?_))
+    show internalHomMap F H f φ ≫ (restrict Y).map ψ = internalHomMap F H' f (φ ≫ (restrict X).map ψ)
+    rfl
+
+@[simp] lemma internalHomMapSnd_app
+    {H H' : PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat)} (ψ : H ⟶ H') (X : Cᵒᵖ) :
+    (internalHomMapSnd F ψ).app X = internalHomSndApp F ψ X := rfl
+
+/-- The internal hom `[F,-] : PresheafOfModules R₀' ⥤ PresheafOfModules R₀'` as a functor in the
+second argument — the right-adjoint candidate for `Closed F`. -/
+noncomputable def internalHomFunctor :
+    PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat) ⥤
+      PresheafOfModules.{max u u' v'} (R₀ ⋙ forget₂ CommRingCat RingCat) where
+  obj H := internalHom F H
+  map ψ := internalHomMapSnd F ψ
+  map_id H := by
+    refine PresheafOfModules.hom_ext (fun X => ModuleCat.hom_ext (LinearMap.ext (fun φ => ?_)))
+    show φ ≫ (restrict X).map (𝟙 H) = φ
+    rw [CategoryTheory.Functor.map_id, Category.comp_id]
+  map_comp ψ ψ' := by
+    refine PresheafOfModules.hom_ext (fun X => ModuleCat.hom_ext (LinearMap.ext (fun φ => ?_)))
+    show φ ≫ (restrict X).map (ψ ≫ ψ') = (φ ≫ (restrict X).map ψ) ≫ (restrict X).map ψ'
+    rw [CategoryTheory.Functor.map_comp, Category.assoc]
+
+end InternalHomFunctor
+
 end JacobianAlggeo
