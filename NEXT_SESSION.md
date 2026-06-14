@@ -101,11 +101,18 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > then an explicit object-eq `hobj` (peel `id_comp`) **rewritten through the dependent `φ.app` position with
 > `rw [eq_of_heq (congr_arg_heq φ.app hobj)]`** (plain `rw`/`simp`/`▸`/`convert` all fail the motive; the
 > `congr_arg_heq`→`eq_of_heq` morphism-equality is motive-safe because it rewrites a *fixed-type* morphism).
-> **NEXT:** piece (III) sheaf-preservation (`IsSheaf H ⟹ IsSheaf (internalHom F H)`, mirror
-> `Presheaf.IsSheaf.hom`), then the ~30-line port to `(sheafificationW J R₀).IsMonoidal` (consumes
-> `closedObj` + `sheafificationW_eq_isLocal`/`sheafificationW.bijective_precomp` from
-> `PresheafOfModulesInternalHom.lean`). Full detail: `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD"
-> piece (II); `LEAP_QUEUE §6`.
+> **NEXT = piece (III), the ONLY remaining I.1a content — a genuine multi-session theorem
+> (Stacks 17.16; mathlib lacks any module-sheaf internal hom, confirmed 2026-06-14). ROUTE DOC
+> WRITTEN: `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md`** — read it first. Summary: the
+> cheap shortcuts are DEAD (`toPresheaf` is NOT monoidal — module ⊗ ≠ ℤ ⊗; `Presheaf.IsSheaf.hom`
+> only gives the *type* hom, not the R₀-linear sub-object). Two live routes: **(A)** mirror
+> `presheafHom_isSheafFor` (`Sites/SheafHom.lean:172`) threading R₀-linearity through the limit-lift;
+> **(B)** `(internalHom F H).presheaf ≅ equalizer(presheafHom(F,H) ⇉ presheafHom(R₀⊙F,H))` then
+> `Presheaf.isSheaf_of_isLimit` (`Sites/Limits.lean:136`, mathlib-backed) — the load-bearing step is
+> the iso "PMod-morphism ⟺ linear nat. transf." Once (III) lands, the whiskerLeft/Right/IsMonoidal
+> **port is short (~40-60 LOC)** and uses ONLY the already-built `closedObj` (its `Adjunction.homEquiv`
+> naturality is free) + `sheafificationW_eq_isLocal`/`bijective_precomp` (piece I) + the PMod braiding
+> — see the route doc's "short remainder" §. Full detail: that doc; `LEAP_QUEUE §6`.
 >
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
 > foundation first** (`docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`: Stack I sheaves→Pic→ample,
