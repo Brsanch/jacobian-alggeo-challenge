@@ -85,6 +85,54 @@ noncomputable def internalHomEval : F ⊗ internalHom F H ⟶ H where
     simp only [ModuleCat.comp_apply, ModuleCat.restrictScalars.map_apply, evalAppMap_tmul]
     exact key
 
+/-! ### The unit / coevaluation `G ⟶ [F, F ⊗ G]` -/
+
+variable (G : PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat))
+
+set_option backward.isDefEq.respectTransparency false in
+/-- For `g : G(X)` and a slice object `W`, the component `f'' ↦ f'' ⊗ G(W.hom)(g)` of the unit's
+slice-morphism (the "insert into the tensor" map). -/
+noncomputable def coevSliceApp (X : Cᵒᵖ) (g : G.obj X) (W : (Over (unop X))ᵒᵖ) :
+    F.obj (op (unop W).left) ⟶ (F ⊗ G).obj (op (unop W).left) :=
+  ModuleCat.ofHom
+    ((TensorProduct.mk (R₀.obj (op (unop W).left)) (F.obj (op (unop W).left))
+        (G.obj (op (unop W).left))).flip ((G.map (unop W).hom.op).hom g))
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma coevSliceApp_hom_apply (X : Cᵒᵖ) (g : G.obj X) (W : (Over (unop X))ᵒᵖ)
+    (f'' : F.obj (op (unop W).left)) :
+    (coevSliceApp F G X g W).hom f'' = f'' ⊗ₜ[R₀.obj (op (unop W).left)] (G.map (unop W).hom.op).hom g :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The unit's slice-morphism at `(X, g)`: the section `f'' ↦ f'' ⊗ G(W.hom)(g)` over the slice
+`Over X.unop`. Naturality across `W` is `G`'s restriction functoriality (`map_comp`) + the `Over`
+triangle. -/
+noncomputable def coevSlice (X : Cᵒᵖ) (g : G.obj X) :
+    (restrict X).obj F ⟶ (restrict X).obj (F ⊗ G) where
+  app W := coevSliceApp F G X g W
+  naturality {W W'} h := by
+    refine ModuleCat.hom_ext (LinearMap.ext (fun f'' => ?_))
+    rw [ModuleCat.comp_apply, ModuleCat.comp_apply, ModuleCat.restrictScalars.map_apply]
+    erw [coevSliceApp_hom_apply, coevSliceApp_hom_apply,
+      PresheafOfModules.Monoidal.tensorObj_map_tmul]
+    congr 1
+    erw [← PresheafOfModules.map_comp_apply]
+    apply PresheafOfModules.congr_map_apply
+    apply Quiver.Hom.unop_inj
+    simp [Over.w]
+
+/-! The unit `G ⟶ [F, F ⊗ G]` will assemble `coevSlice` into an `R₀(X)`-linear app `coevAppHom`
+(then naturality-in-X). NOTE for the next builder: the app `G.obj X ⟶ internalHomObj F (F ⊗ G) X`
+crosses the carrier diamond — `G.obj X` is over the *RingCat* `R₀'(X)` but `internalHomObj` is over
+the *CommRingCat* `R₀.obj X`, so a bare `ModuleCat.ofHom` of an `R₀.obj X`-linear map fails synthesis
+(`Module (R₀'(X)) (slice-hom-set)` not found). Resolve exactly as the internalHom *map* field did:
+route through `ModuleCat.semilinearMapAddEquiv` over the reduced `(𝟙)`/CommRingCat hom (carrier
+discipline) — see `PresheafOfModulesInternalHom.lean`'s `internalHomMapHom`. The per-component
+linearity proofs (`map_add'` via `map_add`+`TensorProduct.tmul_add`; `map_smul'` via
+`PresheafOfModules.map_smul`+`TensorProduct.tmul_smul`+`internalSMulApp_hom_apply`) and the
+naturality-in-X (`map_comp_apply` + `op_comp`, mirroring `coevSlice`'s naturality) are otherwise ready. -/
+
 end InternalHomClosed
 
 end JacobianAlggeo
