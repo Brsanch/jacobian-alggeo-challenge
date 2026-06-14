@@ -55,12 +55,27 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > internalHomMap_id/comp]; rfl` — the `restrictScalarsId'/Comp'App.inv` coherence isos are
 > identity-on-carrier by `rfl` (the carrier-diamond means the App-level simp lemmas DON'T fire, but
 > plain `rfl` at default transparency does).
-> **NEXT = (b) tensor-hom adjunction (`Closed F`):** `Hom_PMod(F ⊗ G, H) ≅ Hom_PMod(G, internalHom F H)`
-> natural in `G`, i.e. `MonoidalClosed`/`Closed F` (`Monoidal/Closed/Basic.lean`: `Closed X =
-> {rightAdj := internalHom F, adj}`). Build the unit/counit (or hom-equiv) concretely from
-> `internalHomObj`'s slice-morphism description. Then piece (III) sheaf-preservation
-> (`IsSheaf H ⟹ IsSheaf (internalHom F H)`, mirror `Presheaf.IsSheaf.hom`), then the ~30-line port to
-> `(sheafificationW J R₀).IsMonoidal`. Full detail:
+> **(b) tensor-hom adjunction (`Closed F`) — IN PROGRESS.** PMod's monoidal structure is the
+> POINTWISE tensor `(F ⊗ G).obj X = F.obj X ⊗ G.obj X` (`Presheaf/Monoidal.lean`), so `internalHom`
+> (slice-morphisms = the module `presheafHom`) is exactly its right adjoint — the adjunction is the
+> cartesian-closed-style presheaf curry/uncurry. **✅ rightAdj BUILT (2026-06-14, `main` @ `4c48e81`,
+> 8344 jobs, vacuity 0, axioms clean):** `internalHomFunctor F : PMod ⥤ PMod` (`internalHom F` made
+> functorial in `H`; `internalHomMapSnd` = postcompose slice-morphisms with `(restrict X).map ψ`).
+> **Lessons baked in (reuse for the homEquiv):** (1) the carrier diamond bites when applying a
+> morphism's `.app W` to a CommRing scalar — `map_smul` won't fire on `((restrict X).map ψ).app W`;
+> express it in the REDUCED form `ψ.app (op W.unop.left)` (= it by `rfl`, the `appAt` discipline) and
+> `map_smul`/`rw` work. (2) `Functor.map_id`/`map_comp` resolve to the *Monad* `Functor` class — use
+> `CategoryTheory.Functor.map_id`/`map_comp`. (3) when a simp lemma won't fire because a bound var's
+> type is defeq-but-not-syntactic (`φ : ↑((internalHom F H).obj X)` vs `internalHomObj F H X`), state
+> the defeq-reduced goal with `show` and bypass simp-matching.
+> **NEXT = the homEquiv** `(F ⊗ G ⟶ H) ≃ (G ⟶ internalHomFunctor F |>.obj H)` natural in `G`:
+> uncurry (evaluate the slice-morphism at the identity slice object `Over.mk (𝟙 _)`), curry (`α ↦`
+> slice-morphism `fun W f' ↦ α.app _ (f' ⊗ₜ G.map W.hom g)`), round-trip identities, then assemble
+> `tensorLeft F ⊣ internalHomFunctor F` via `Adjunction.mkOfHomEquiv` ⇒ `Closed F`. Work in the
+> single-universe regime (`C : Type u`, `Category.{u}` — the curve's opens site is `SmallCategory`) so
+> `internalHom F H : PMod.{u}` and `tensorLeft F`/`internalHomFunctor F` share `PMod.{u}`. Then piece
+> (III) sheaf-preservation (`IsSheaf H ⟹ IsSheaf (internalHom F H)`, mirror `Presheaf.IsSheaf.hom`),
+> then the ~30-line port to `(sheafificationW J R₀).IsMonoidal`. Full detail:
 > `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD" piece (II); `LEAP_QUEUE §6`.
 >
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
