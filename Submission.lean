@@ -17,6 +17,7 @@ import Submission.Cohomology.ConormalToOmega
 import Submission.Cohomology.CotangentInequality
 import Submission.Cohomology.CotangentSpaceTransport
 import Submission.Cohomology.DimensionOneRegular
+import Submission.Cohomology.MayerVietorisModuleCat
 import Submission.Jacobian.InvariantFiniteness
 import Submission.Jacobian.AffineInvariants
 import Submission.Jacobian.AffineQuotient

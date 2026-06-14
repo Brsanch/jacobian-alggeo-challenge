@@ -71,7 +71,19 @@ once the diagram is set up in the **k-linear** category (W1) over a **cover** th
 
 ## Located walls (reachability, hardest last)
 
-- **(W1) `ModuleCat k`-valued MV long exact sequence.** mathlib's MV LES is `AddCommGrpCat`-only; `H1 C`
+- **(W1) `ModuleCat k`-valued MV long exact sequence — ✅ BUILT 2026-06-14**
+  (`Submission/Cohomology/MayerVietorisModuleCat.lean`, full build 8351 jobs / vacuity 0 / axioms
+  clean). The port went through exactly as planned: the two `ModuleCat.free k` instances missing at the
+  pin (`IsLeftAdjoint` from `ModuleCat.adj`; `PreservesMonomorphisms` by the verbatim `AddCommGrpCat`
+  split-mono/empty-case proof) are supplied, then `isPushoutModuleCatFreeSheaf` / `shortComplex` /
+  `shortComplex_shortExact` mirror mathlib, and `mayerVietoris_ext_exact` applies the generic
+  `Abelian.Ext.contravariantSequence_exact` to get the 6-term exact MV LES
+  `Ext(k[X₄],F,n₀) → Ext(k[X₂]⊞k[X₃],F,n₀) → Ext(k[X₁],F,n₀) →δ Ext(k[X₄],F,n₁) → ⋯` in
+  `Sheaf J (ModuleCat k)`. The remaining connector to `H1 C` is the **`coeffSheaf ≅ k[⊤]`
+  identification** (constant sheaf `k` = sheafified free `k`-module on the terminal representable), so
+  `Ext(k[X₄=⊤], F, 1) = H1 C` — a follow-on lemma. Original plan notes preserved below:
+
+  mathlib's MV LES is `AddCommGrpCat`-only; `H1 C`
   is `Ext` in `Sheaf J (ModuleCat k)` (k-linear, the structure we need for `FiniteDimensional k`). Ext
   does **not** commute with the forgetful `Sheaf(ModuleCat k) → Sheaf(AddCommGrp)`, so the AddCommGrp
   sequence cannot be borrowed; the MV LES must be re-derived for `A = ModuleCat k`. **Concrete plan
