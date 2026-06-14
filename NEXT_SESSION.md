@@ -83,29 +83,29 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > by `tensor_ext` + `PresheafOfModules.naturality_apply φ (Over.homMk f.unop _).op f'` then
 > `exact key` (defeq bridges `((restrict X)·).map θ.op = ·.map f`); needed simp = just
 > `[ModuleCat.comp_apply, restrictScalars.map_apply, evalAppMap_tmul]`.
-> **UNIT IN PROGRESS — slice-morphism DONE (2026-06-14, `main` @ `ef24e8e`, 8345 jobs, vacuity 0,
-> axioms clean):** `coevSliceApp F G X g W = (f'' ↦ f'' ⊗ G(W.hom)(g))` (into-tensor via
-> `TensorProduct.mk.flip`; the `_hom_apply` lemma also needs the `respectTransparency` option because
-> the 2nd tmul factor is `restrictScalars`-wrapped) + `coevSlice F G X g : (restrict X).obj F ⟶
-> (restrict X).obj (F ⊗ G)` (slice-morphism, naturality-across-W via `← map_comp_apply` [use **`erw`**,
-> mixed coe forms] + `congr_map_apply` + `Quiver.Hom.unop_inj`/`simp [Over.w]`).
-> **NEXT (unit, remaining):** assemble **`coevAppHom X : G.obj X ⟶ internalHomObj F (F⊗G) X`** = the
-> `R₀(X)`-linear `g ↦ coevSlice g`. ⚠ This crosses the carrier diamond — `G.obj X` is over the RingCat
-> `R₀'(X)` but `internalHomObj` over the CommRingCat `R₀.obj X`, so a bare `ModuleCat.ofHom` of an
-> `R₀.obj X`-linear map fails (`Module (R₀'(X)) (slice-hom-set)` not synthesized). **Fix = route through
-> `ModuleCat.semilinearMapAddEquiv` exactly as `internalHomMapHom` did** (carrier discipline). The
-> per-component proofs are ready: `map_add'` via `map_add`+`TensorProduct.tmul_add`; `map_smul'` via
-> `PresheafOfModules.map_smul`+`TensorProduct.tmul_smul`+`internalSMulApp_hom_apply`. Then
-> **`internalHomCoev : G ⟶ internalHom F (F⊗G)`** (naturality-in-X mirrors `coevSlice`'s:
-> `map_comp_apply` + `op_comp`, the `(Over.map f.unop).obj V` reindex). Then the **two triangle
-> identities** (`whiskerLeft F η ≫ ε = 𝟙` reduces on `f'⊗g` to `G.map_id`; the other dually) ⇒
-> `Adjunction.mkOfUnitCounit ⟨η, ε := internalHomEval, …⟩` ⇒ `Closed F := {rightAdj :=
-> internalHomFunctor F, adj}`. (`internalHomEval`/`internalHomFunctor` must be packaged as NatTrans in
-> H/G for `mkOfUnitCounit` — naturality-in-the-object is the extra step; alternatively
-> `mkOfHomEquiv` with curry := `η ≫ map α`, uncurry := `whiskerLeft ≫ ε`.) Work single-universe. Then
-> piece (III) sheaf-preservation (`IsSheaf H ⟹ IsSheaf (internalHom F H)`, mirror
-> `Presheaf.IsSheaf.hom`), then the ~30-line port to `(sheafificationW J R₀).IsMonoidal`. Full detail:
-> `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD" piece (II); `LEAP_QUEUE §6`.
+> **✅ UNIT + `Closed F` DONE (2026-06-14, single-file green ~7s, vacuity 0, axioms clean
+> `[propext, Classical.choice, Quot.sound]`):** `PresheafOfModulesClosed.lean` now ends with
+> `instance closedObj : Closed F := { rightAdj := internalHomFunctor F, adj := internalHomAdjunction F }`.
+> Built (in order): `coevAppHom X` (`semilinearMapAddEquiv (RingHom.id (R₀.obj X))` — the *identity*
+> ring hom, so `restrictScalars`-codomain is defeq to the structure obj and `internalHomCoev.app := coevAppHom`
+> typechecks directly; `map_smul'` via `coevSliceApp_hom_apply` + `← TensorProduct.tmul_smul` + `congr 1`
+> + `erw [PresheafOfModules.map_smul]` to keep the CommRingCat scalar native to the tensor) → `internalHomCoev`
+> (naturality-in-X = `← map_comp_apply` then **`congr 1` closes outright**) → `internalHomEvalNat`
+> (counit NatTrans-in-H, naturality `rfl` after `hom_ext`+`tensor_ext`) → `internalHomCoevNat` (unit
+> NatTrans-in-G, naturality = `whiskerLeft_apply` + `(naturality_apply γ …).symm`) → `internalHomAdjunction`
+> (built **directly as `Adjunction`**, not `mkOfUnitCounit` — its `left/right_triangle_components` fields
+> ARE per-component). **Triangle lessons (reuse for piece III):** *left* reduces on `f'⊗g` to `G.map (𝟙 X) g = g`
+> — close with `show (G.map (𝟙 X)).hom g = g; rw [PresheafOfModules.map_id]; rfl` (the `(unop topSlice).hom.op = 𝟙 X`
+> retype is defeq via `show`); *right* reduces on `φ` to the `Over.map (𝟙)`/`topSlice` reindex `op (Over.mk (𝟙≫h)) = V`
+> — close via `erw [coevSliceApp_hom_apply, evalAppMap_tmul, internalHomMapHom_hom_apply, internalHomMap_app]`
+> then an explicit object-eq `hobj` (peel `id_comp`) **rewritten through the dependent `φ.app` position with
+> `rw [eq_of_heq (congr_arg_heq φ.app hobj)]`** (plain `rw`/`simp`/`▸`/`convert` all fail the motive; the
+> `congr_arg_heq`→`eq_of_heq` morphism-equality is motive-safe because it rewrites a *fixed-type* morphism).
+> **NEXT:** piece (III) sheaf-preservation (`IsSheaf H ⟹ IsSheaf (internalHom F H)`, mirror
+> `Presheaf.IsSheaf.hom`), then the ~30-line port to `(sheafificationW J R₀).IsMonoidal` (consumes
+> `closedObj` + `sheafificationW_eq_isLocal`/`sheafificationW.bijective_precomp` from
+> `PresheafOfModulesInternalHom.lean`). Full detail: `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD"
+> piece (II); `LEAP_QUEUE §6`.
 >
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
 > foundation first** (`docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`: Stack I sheaves→Pic→ample,
