@@ -690,11 +690,35 @@ route leap** (`LEAP_QUEUE §4`) and the FGA-grade Jacobian construction (holes 2
   `F|_{Over X} ⟶ H|_{Over X}`, restrictScalars-compatible restriction maps, and
   `Hom_PMod(F ⊗_R G, H) ≅ Hom_PMod(G, [F,H])` natural in `G` (= `Closed F` ⇒
   `MonoidalClosed (PMod R₀')`; def `Monoidal/Closed/Basic.lean`: `Closed X = {rightAdj, adj}`).
-  Over-restriction handles: `PresheafOfModules.pushforward`/`Sites/Over.lean`;
+  Over-restriction handles: `PresheafOfModules.pushforward₀`/`Sites/Over.lean`;
   `SheafOfModules/PushforwardContinuous.lean`'s `M.over X` (sheaf version) as a model. SAFT
   (`isLeftAdjoint_of_preservesColimits_of_isSeparating`, with `tensorLeft F` colimit-preserving +
   `freeYoneda` separator + `WellPowered`) gives the adjoint *abstractly* but formula-free → cannot
   feed piece (III); must build concretely.
+  - **✅ OBJECT DONE (2026-06-13, `main` @ `1a6d06e`, full build 8341 jobs, vacuity 0, axioms
+    clean).** `internalHomObj F H X : ModuleCat (R₀.obj X)` = `[F,H](X)` = the `R₀(X)`-module
+    `(restrict X).obj F ⟶ (restrict X).obj H` (slice-restrictions via `pushforward₀ (Over.forget
+    X.unop)`), with the full `Module (R₀.obj X)` instance. **THE INSTANCE-DIAMOND WALL FELL** (it was
+    the real blocker, not the slice machinery): scaling a `ModuleCat (R₀'.obj _)` morphism — OR its
+    underlying `LinearMap` — by a ring element fails `synthInstance`, because morphism-scaling needs
+    `SMulCommClass`/`Linear`/`Module S (LinearMap)` over the **RingCat** carrier `R₀'.obj _`, which is
+    not found (defeq-but-not-syntactic vs the canonical instance); whereas **element**-scaling is
+    mathlib-provided as `Module (R₀.obj X) (M.obj X)` (`Presheaf.lean`) over the **CommRingCat**
+    carrier. RESOLUTION = **carrier discipline**: build the scaled morphism `internalSMulApp`
+    *element-wise* as a `LinearMap` typed over the CommRingCat carrier `R₀.obj (op W.left)`
+    (`fun x => R₀(W.hom)(r) • φ.hom x`), where `map_smul'` closes by `smul_comm`. `internalHomSMul`
+    wraps it as a PMod-morphism; its naturality reduces to the scalar restriction-compat
+    `(S.map g)(R₀(W.hom)(r)) = R₀(W'.hom)(r)` (from `Over.w` / the slice triangle, via
+    `R₀.map_comp`) + `PresheafOfModules.naturality_apply` + `PresheafOfModules.map_smul`. The Module
+    axioms close by `PresheafOfModules.hom_ext`+`ModuleCat.hom_ext`+`LinearMap.ext` then `show` to the
+    defeq reduced (`appAt`) form + ring-hom lemmas. **Coercion notes for the next builder:** use
+    `ModuleCat.comp_apply` (coe, keeps `restrict` intact) NOT `hom_comp`; `erw` the `ofHom`/`appAt`
+    reductions (`ConcreteCategory.hom (ModuleCat.ofHom _)` is defeq- but not simp-reducible because
+    `ModuleCat.ofHom ≠ ConcreteCategory.ofHom` syntactically); `ModuleCat.restrictScalars.map_apply`.
+  - **NEXT (piece II remainder):** (a) restriction maps `[F,H].map (f : X⟶Y)` via `Over.map f.unop` /
+    `whiskerLeft` (`Over.mapForget_eq f : (Over.map f) ⋙ forget Y = forget X` is the on-the-nose
+    identification), `restrictScalars`-semilinear, + `map_id`/`map_comp` → `[F,H] : PresheafOfModules
+    R₀'`. (b) tensor-hom adjunction (`Closed F`). Both then feed piece (III) + the port.
 - **Port — `(sheafificationW J R₀).IsMonoidal`.** `whiskerLeft` (`W g ⟹ W (F ◁ g)`): convert
   `Hom(F⊗G_i, F.obj H) ≅ Hom(G_i, [F, F.obj H])` (closed, II), use `[F, F.obj H]` local (III) +
   `sheafificationW.bijective_precomp` (I). `whiskerRight` via the existing

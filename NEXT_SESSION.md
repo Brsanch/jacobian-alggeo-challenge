@@ -18,10 +18,21 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > `(sheafificationW J R₀).IsMonoidal` = build the **internal hom of presheaves of modules over a
 > varying ring** + sheaf-preservation, then port `whiskerLeft`/`whiskerRight`. File
 > `Submission/Cohomology/PresheafOfModulesInternalHom.lean`. **✅ Piece (I) DONE** (W = Bousfield
-> local class `isLocal (· ∈ range (localInclusion α).obj)`; `sheafificationW_eq_isLocal` +
-> consumable `sheafificationW.bijective_precomp`, `lake env lean`-clean). **NEXT = piece (II)**: the
-> concrete `[F,H]` object + tensor-hom adjunction (the bulk). Then piece (III) sheaf-preservation
-> (mirror `Presheaf.IsSheaf.hom`), then the port. Full decomposition + every mathlib handle:
+> local class). **✅ Piece (II) OBJECT DONE (`main` @ `1a6d06e`, pushed, full build 8341 jobs,
+> vacuity 0, axioms clean):** `internalHomObj F H X : ModuleCat (R₀.obj X)` = `[F,H](X)` — the
+> R₀(X)-module of slice-morphisms `(restrict X).obj F ⟶ (restrict X).obj H`, with the full
+> `Module (R₀.obj X)` instance (`internalSMulApp`/`internalHomSMul`/`internalHomModule`). **The
+> instance-diamond WALL FELL** (it was THE blocker): scaling a `ModuleCat (R₀'.obj _)` morphism by a
+> ring element fails synthesis (morphism-scaling needs `SMulCommClass`/`Linear` over the RingCat
+> carrier, not found), but *element*-scaling via mathlib's `Module (R₀.obj X) (M.obj X)` succeeds —
+> so build the scaled morphism **element-wise as a LinearMap over the CommRingCat carrier
+> `R₀.obj (op W.left)`** (carrier discipline). Naturality reduces to scalar restriction-compat (Over
+> triangle) + `φ.naturality` + `H` restriction semilinearity.
+> **NEXT = piece (II) PRESHEAF + adjunction**: (a) the restriction maps `[F,H].map f` (via
+> `Over.map`/`whiskerLeft`, `Over.mapForget_eq` is the on-the-nose composition) assembling the
+> `internalHomObj X` values into a `PresheafOfModules R₀` (`map_id`/`map_comp`); (b) the tensor-hom
+> adjunction `Hom(F⊗G,H) ≅ Hom(G,[F,H])` (= `Closed F`). Then piece (III) sheaf-preservation (mirror
+> `Presheaf.IsSheaf.hom`), then the ~30-line port. Full decomposition + every mathlib handle:
 > `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD"; `LEAP_QUEUE §6`.
 >
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
