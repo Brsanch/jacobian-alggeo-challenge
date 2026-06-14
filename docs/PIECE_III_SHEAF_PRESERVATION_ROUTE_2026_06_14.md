@@ -111,6 +111,37 @@ via the PMod braiding (`Presheaf/Monoidal.lean` gives `SymmetricCategory`) +
 discharging the `variable [...]` in `SheafOfModulesMonoidal.lean` and making
 `SheafOfModules.monoidalCategory` + I.1 unconditional.
 
+## Route-B kickoff — de-risking findings (2026-06-14, before any LOC)
+
+Validated against the warm cache:
+
+- **The forgetful map typechecks (alignment is `rfl`).** `pushforward₀CompToPresheaf`
+  (`Pushforward.lean:75`) is `Iso.refl`, so `((restrict X).obj F).presheaf =
+  (Over.forget X.unop).op ⋙ F.presheaf` definitionally. Hence `internalHom F H .obj X`
+  (PMod-morphisms) forgets via `toPresheaf` into `presheafHom (F.presheaf) (H.presheaf) .obj X`
+  with no coercion friction. ✓
+- **Route B's equalizer legs need infrastructure mathlib LACKS.** Encoding R₀-linearity as
+  `presheafHom(F,H) ⇉ presheafHom(R₀⊙F, H)` requires (i) the AbGrp-presheaf tensor `R₀⊙F`
+  and (ii) the module action `R₀⊙F ⟶ F` **as a single `Cᵒᵖ ⥤ AddCommGrp` morphism** — neither
+  is exposed (greps empty: no `MonoidalClosed`/tensor wrapper readily usable here, no bundled
+  action-as-presheaf-map). Both must be BUILT first (~100–150 LOC of setup) before the
+  equalizer even types. So Route B's "shorter via `isSheaf_of_isLimit`" advantage is
+  front-loaded with real new infra.
+- **⚠ Route A may actually be the cleaner tool.** It glues *PMod-morphisms directly* in the
+  module category, so the amalgamated section's components come from `H`'s **module-level**
+  descent (`(restrict X).obj H` a sheaf of modules ⇒ its slice descent lifts are
+  `ModuleCat` morphisms) — R₀-linearity of the glued section is then **automatic**, and NO
+  `R₀⊙F` tensor/action is needed. The cost is replicating the dense `presheafHom_isSheafFor`
+  glue (~250–400 LOC) rather than reusing it as a black box.
+
+**Recommended first sub-lemma (either route).** `Presheaf.IsSheaf J (presheafHom (F.presheaf)
+(H.presheaf))` from `Presheaf.IsSheaf.hom` + the forgetful `internalHom.presheaf ⟶ presheafHom(…)`
+mono — both surely-green from the `rfl` alignment — establishes the ambient sheaf and the
+embedding. Then the routes diverge: B builds `R₀⊙F` + the equalizer; A replicates the
+amalgamation in PMod. **Open decision for the build session:** B (mathlib `isSheaf_of_isLimit`
+hook, but `R₀⊙F` infra) vs A (no new infra, but re-derive the glue). Pick after pricing the
+`R₀⊙F` action-map construction against the amalgamation replication.
+
 ## DONE WHEN
 
 `instance : (sheafificationW J R₀).IsMonoidal` proved (no `sorry`/`axiom`, vacuity 0),
