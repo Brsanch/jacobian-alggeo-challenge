@@ -532,6 +532,72 @@ birational invariant `trdeg` = relative dimension.
 
 Foundation, not a hole-fill — all 9 holes remain OPEN. Upstreamable mathlib content.
 
+### TOWER A — leaf (b) scoped: `smooth ⇒ regular` via Jacobi–Zariski (2026-06-14, full API inventory)
+
+Full mathlib API inventory (5-agent + targeted reads) for the route `FormallySmooth k R ⟹
+IsRegularLocalRing R` (R = `𝒪_{X,x}`, Noetherian local, ess. finite type / a localization of the
+smooth k-algebra; residue field κ = R/𝔪). The plan: apply the Jacobi–Zariski sequence to `k → R → κ`
+and count `finrank_κ`.
+
+**The J-Z six-term sequence** (mathlib `RingTheory/Kaehler/JacobiZariski.lean`, exposed pieces),
+for `R_jz → S_jz → T_jz` ↦ `k → R → κ`:
+```
+H¹(L_{R/k})⊗κ → H¹(L_{κ/k}) →[map] H¹(L_{κ/R}) →[δ] κ⊗_R Ω[R/k] →[mapBaseChange] Ω[κ/k] → Ω[κ/R]=0
+```
+Exposed lemmas: `H1Cotangent.δ`, `H1Cotangent.exact_map_δ` (`Exact map δ`),
+`H1Cotangent.exact_δ_mapBaseChange` (`Exact δ mapBaseChange`),
+`KaehlerDifferential.exact_mapBaseChange_map` (`Exact mapBaseChange (map to Ω[κ/R])`),
+`KaehlerDifferential.map_surjective`. **The LEFT term `H¹(L_{R/k})⊗κ → H¹(L_{κ/k})` is NOT exposed
+as an exactness lemma** — only the sequence from `H¹(L_{κ/k})` rightward.
+
+**Sub-bricks + status:**
+- **(b1) conormal identification** `Algebra.H1Cotangent R (R⧸I) ≃ₗ` conormal `I/I²`
+  — **✅ BUILT 2026-06-14** (`Submission/Cohomology/ConormalH1Cotangent.lean`, `tower/stack-II-serre`
+  @ `0b31be7`, green 8344 jobs / vacuity 0 / axioms clean). Route-INDEPENDENT (no smoothness/
+  separability): `Extension.H1Cotangent.equiv` (`Extension/Cotangent/Basic.lean:425`) needs ONLY
+  mutual `Extension.Hom`s. Built the trivial extension `trivExt I := Extension.ofSurjective
+  (Ideal.Quotient.mkₐ R I)` (`Ring = R`); its `CotangentSpace = (R⧸I)⊗_R Ω[R⁄R] = 0` (`Ω[R⁄R]`
+  subsingleton via `KaehlerDifferential.subsingleton_of_surjective`), so `H1Cotangent = ker(0) = ⊤
+  ≃ Cotangent`; the canonical `Generators.self R (R⧸I)` maps both ways (`fwd` = `aeval` at the
+  section `(trivExt I).σ`; `bwd` = structure map), `H1Cotangent.equiv` finishes. Results:
+  `trivExt_ker` (`(trivExt I).ker = I`), `h1CotangentEquivTrivCotangent`. **Idiom note for the next
+  bricks:** the `Hom.ofAlgHom` compatibility square does NOT yield to `simp`/`show` at default
+  transparency (terms are defeq-collapsed behind the Extension-API irreducibility); prefix the def
+  with `set_option backward.isDefEq.respectTransparency false in` (the mathlib Extension idiom) and
+  then `MvPolynomial.algHom_ext` + `simp [Generators.algebraMap_apply, Generators.self_val]` fires.
+- **(b2) `Ω[R/k]` finite free of rank = rel dim** for smooth local R. `FormallySmooth.
+  projective_kaehlerDifferential` (`Smooth/Basic.lean:71`) gives `Module.Projective R Ω[R/k]`;
+  f.g.-projective-over-local ⟹ `Module.Free`; rank via `StandardSmoothCotangent` (`rank_S Ω = rel
+  dim`). Reachable, some plumbing (the `S`-module Ω vs the rel-dim bridge).
+- **(b3) δ injectivity — THE OBSTRUCTION, SEPARABILITY-GATED.** By `exact_map_δ`, `ker δ = im(map:
+  H¹(L_{κ/k}) → H¹(L_{κ/R}))`, so **δ injective ⟺ `map = 0`.** mathlib does NOT expose the left
+  exactness that would force `map=0` in general; the only clean handle is `map=0` ⟸ `H¹(L_{κ/k}) = 0`
+  ⟸ **κ/k formally smooth** (`FormallySmooth.subsingleton_h1Cotangent`, `Smooth/Basic.lean:72`) ⟸
+  **κ/k SEPARABLE** (`FormallySmooth.of_algebraicIndependent_of_isSeparable` / `of_perfectField`,
+  `Smooth/Field.lean`). **⟹ the J-Z route closes `smooth ⇒ regular` cleanly ONLY for separable
+  residue field κ/k** (covers: k perfect; rational points κ=k). **The inseparable-residue case
+  (imperfect k) is the genuine hard core** — δ-injectivity fails by this argument and the correct
+  proof needs the unexposed left J-Z term or a different (imperfect-base) argument. This is the
+  precise mathematical content of the route doc's earlier hand-wave "the `Ω_{κ/k}` correction for
+  non-separable κ/k".
+- **(b4) `finrank_κ Ω[κ/k]`** — mathlib has NO `Ω[κ/k]` rank/vanishing lemma. For the separable
+  case need `Ω[κ/k] = 0` (κ/k finite separable ⟹ unramified ⟹ `Subsingleton Ω`, via
+  `FormallyUnramified`); ABSENT as stated, but reachable. General (separably generated) needs `rank
+  Ω[κ/k] = trdeg`.
+- **(b5) assembly:** `finrank_κ(𝔪/𝔪²) = finrank(κ⊗Ω[R/k]) − finrank(Ω[κ/k]) = d − (trdeg κ)` by
+  δ-injective + `exact_δ_mapBaseChange` + mapBaseChange surjective; combine with `dim R` (leaf a/a′)
+  and feed `IsRegularLocalRing.of_spanFinrank_maximalIdeal_le` via
+  `spanFinrank_maximalIdeal_eq_finrank_cotangentSpace`.
+
+**Net:** the **separable-residue** `smooth ⇒ regular` is a reachable (if multi-brick) arc; the
+**inseparable-residue** case is a real wall (mathlib doesn't expose the needed left J-Z exactness).
+Standing built bricks: `regular ⇒ domain` (✓), `dim = trdeg` (✓), and now the **(b1) conormal
+identification** (✓ `0b31be7`). **Next concrete code brick = (b2)** (`Ω[R/k]` finite free of rank
+= rel dim for smooth local R) or (b4) (`Ω[κ/k] = 0` for finite-separable κ/k via `FormallyUnramified`);
+then (b3) δ-injectivity (separable) + (b5) assembly.
+
+Foundation scoping; certifies no hole.
+
 ## 🅱️ TOWER B survey — Jacobian construction (holes 2,3,5,6,7,8): declaration-level inventory + priced Route-A-vs-B decision (2026-06-13)
 
 Tower B's mandate = **construct `Jacobian C` (= Pic⁰)** with group structure (hole 3),
