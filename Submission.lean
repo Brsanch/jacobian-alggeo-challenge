@@ -7,6 +7,7 @@ import Submission.Cohomology.LinearH0
 import Submission.Cohomology.RegularLocalDomain
 import Submission.Cohomology.RegularLocalDomainGeneral
 import Submission.Cohomology.SheafOfModulesMonoidal
+import Submission.Cohomology.PresheafOfModulesInternalHom
 import Submission.Jacobian.InvariantFiniteness
 import Submission.Jacobian.AffineInvariants
 import Submission.Jacobian.AffineQuotient

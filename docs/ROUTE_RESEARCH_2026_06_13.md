@@ -599,3 +599,105 @@ quasi-projective `C^d`, ⇐ "an orbit lies in an affine open", absent) and **P5*
 `C` projective), then the birational group law (RR) and the no-rational-point descent. The affine
 stack is the foundation those glue onto, and is prime mathlib-PR material on its own (esp. the
 `S_d`-on-`A^{⊗d}` action and the affine finite-group quotient). Recorded for the human leap.
+
+## SHARED-FOUNDATION brick I.1a — the internal-hom wall, traced to its leaves (2026-06-13, warm cache)
+
+**Target.** Discharge `(sheafificationW J R₀).IsMonoidal` (the one undischarged hypothesis of
+`SheafOfModulesMonoidal.lean`'s `SheafOfModules.monoidalCategory`), making `MonoidalCategory
+(SheafOfModules R)` unconditional → unblocks I.2 (invertible sheaves → `Pic X`), the shared
+bottom of BOTH Jacobian routes.
+
+**What `IsMonoidal` actually requires.** By `IsMonoidal.mk'`
+(`Localization/Monoidal/Basic.lean:50`): for `f,g` morphisms of presheaves of modules with
+`toPresheaf f, toPresheaf g ∈ J.W`, show `toPresheaf (f ⊗ₘ g) ∈ J.W`. Equivalently the two
+whiskering fields `W g ⟹ W (F ◁ g)` and `W f ⟹ W (f ▷ G)`.
+
+**The general `inverseImage` instance does NOT apply.** `Localization/Monoidal/Basic.lean:71`
+gives `(W.inverseImage F).IsMonoidal` for FREE — *but only when `F` is a strong monoidal functor*
+(`[F.Monoidal]`). Here `F = PresheafOfModules.toPresheaf`, which is **not** monoidal: the tensor
+on `PresheafOfModules` is the pointwise `· ⊗[R.obj X] ·` over the ring, while the target's tensor
+is `⊗_ℤ`; `toPresheaf (M ⊗_R N) ≠ toPresheaf M ⊗_ℤ toPresheaf N`. (And the canonical surjection
+`M ⊗_ℤ N ↠ M ⊗_R N` is *not* in `J.W`, so 2-out-of-3 against the ab-group monoidality cannot
+bridge them.) This is exactly the gap.
+
+**What `J.W` IS, and why the clean route needs an internal hom** (`Sites/Localization.lean`:
+`J.W := ObjectProperty.isLocal (Presheaf.IsSheaf J)`). So `J.W g ↔ ∀ H, IsSheaf J H → Bijective
+(precompose g into H)` — orthogonality to sheaves. Mathlib's own `(J.W).IsMonoidal` instance
+(`Sites/Monoidal.lean:149`, for presheaves valued in a *braided closed* `A`) proves `whiskerLeft`
+(`:132`) precisely by this orthogonality + the **closed structure**: `Hom(F⊗Gᵢ, H) ≅ Hom(Gᵢ,
+[F,H])` and `[F,H]` is a sheaf when `H` is (`isSheaf_functorEnrichedHom`, `:102`). To replicate
+this for presheaves of modules I need the analogue: a **concrete internal hom `[F,H]` of
+presheaves of modules** + the tensor-hom adjunction + **`[F,H]` is a sheaf when `H` is**.
+
+**Absent at the pin, and deliberately so.** No `MonoidalClosed`/`ihom`/internal-hom on
+`PresheafOfModules` or `SheafOfModules` (grep, ModuleCat tree: only `ModuleCat/Monoidal/Closed.lean`,
+the *fixed-ring* internal hom). Mathlib's `Sites/Monoidal.lean` machinery (`Enriched.FunctorCategory`,
+`functorEnrichedHom`, `MonoidalClosed (Cᵒᵖ ⥤ A)`) is for **plain functor categories with constant
+enrichment** — it does not port to presheaves of modules, where the enriching ring `R.obj X`
+*varies with X*. The varying-ring internal hom is the single hardest object in sheaf-of-modules
+theory and is exactly what mathlib omits.
+
+**Two non-routes (checked, ruled out):**
+1. **SAFT shortcut → abstract `MonoidalClosed`.** `tensorLeft F` preserves all colimits
+   (`Presheaf/Monoidal.lean:237`); `PresheafOfModules` has a small separating set
+   (`Generator.lean:85`, `freeYoneda`) and is `WellPowered` (`:96`). So
+   `isLeftAdjoint_of_preservesColimits_of_isSeparating` (`Adjunction/AdjointFunctorTheorems.lean:119`,
+   modulo `WellPowered Cᵒᵖ`) yields a right adjoint to each `tensorLeft F` abstractly ⇒
+   `MonoidalClosed (PresheafOfModules R)` as a standalone instance. **But this does NOT discharge
+   I.1a:** the abstract SAFT adjoint carries *no formula*, and the whiskerLeft proof needs "`[F,H]`
+   is a sheaf", which is provable only from a *concrete* pointwise internal hom. The SAFT
+   `MonoidalClosed` is a clean, bounded, genuinely-new mathlib PR (fork II) — but it is **off the
+   critical path** for `W.IsMonoidal`.
+2. **Direct local-bijectivity route.** `J.W h ↔ IsLocallyInjective ∧ IsLocallySurjective`
+   (`J.WEqualsLocallyBijective`). Local *surjectivity* of `F ⊗ g` from `g` loc-surj is provable
+   (generators + cover refinement). Local *injectivity* of `F ⊗ g` is **FALSE in general** from
+   `g` loc-injective alone (tensor is not left exact: `·2 ⊗ ℤ/2` kills `ℤ/2`); it needs `g ∈ W`
+   (loc-*iso*), and the only non-circular way to use loc-iso here routes back through
+   sheafification-commutes-with-tensor — i.e. the theorem itself. Dead end without the internal hom.
+
+**Conclusion / entry point.** I.1a = **build the concrete internal hom of presheaves of modules
+over a varying commutative ring presheaf**: object `[F,H](U) := ` (homs of the restricted
+presheaves of modules over `R|_U`), the `R.obj U`-module + restriction-functoriality structure,
+the adjunction `Hom(F ⊗_R G, H) ≅ Hom(F, [G,H])`, and `IsSheaf H ⟹ IsSheaf [F,H]`. Then the
+~30-line port of `Sites/Monoidal.lean`'s `whiskerLeft`/`whiskerRight`/`monoidal`. This is a
+multi-hundred-LOC, multi-session foundational arc (genuinely new mathlib content, not a paraphrase
+or renamed `sorry`), and it reaches only as far as I.2 (`Pic X`) — still below the **deferred A-vs-B
+route leap** (`LEAP_QUEUE §4`) and the FGA-grade Jacobian construction (holes 2–9). Logged in
+`LEAP_QUEUE §6` for the build/pivot decision.
+
+### I.1a BUILD (Bryan: "Build I.1a now", 2026-06-13) — piece (I) DONE; decomposition + handles
+
+`Submission/Cohomology/PresheafOfModulesInternalHom.lean`. Proof mirrors mathlib's
+`GrothendieckTopology.W.monoidal` (`Sites/Monoidal.lean`). Three pieces + a port:
+
+- **✅ Piece (I) — `sheafificationW = ObjectProperty.isLocal (· ∈ range (localInclusion α).obj)`**
+  (`sheafificationW_eq_isLocal`) + the consumable form `sheafificationW.bijective_precomp`
+  (for `W g` and any sheaf-of-modules `H`, precomposition with `g` is a bijection into
+  `(localInclusion α).obj H`). `lake env lean`-clean, exit 0. KEY HANDLES:
+  `PresheafOfModules.inverseImage_W_toPresheaf_eq_inverseImage_isomorphisms`
+  (`SheafOfModules/Localization.lean`: `W = (isomorphisms).inverseImage (sheafification α)`)
+  + `ObjectProperty.isLocal_eq_inverseImage_isomorphisms` (`Localization/Bousfield.lean`)
+  applied to `sheafificationAdjunction α`, whose **right adjoint
+  `F = SheafOfModules.forget R ⋙ restrictScalars α` is fully faithful** (`Sheafification.lean`
+  lines 168–172, from `IsIso counit`). Local objects = exactly `F.obj H`, restrictions of sheaves.
+- **Piece (III) — `[F,H]` is a sheaf when `H` is.** Mirror `Presheaf.IsSheaf.hom`
+  (`Sites/SheafHom.lean`: `presheafHom F G` is a sheaf when `G` is, for *any* target category).
+  Underlying type-presheaf of `[F,H]` is (a sub, cut by `R`-linearity, of)
+  `presheafHom (toPresheaf F) (toPresheaf H)`; carry it through `forget`-reflects-limits.
+  Depends on the piece-(II) object.
+- **Piece (II) — concrete internal hom + tensor-hom adjunction (THE BULK).** Build
+  `[F,H] : PresheafOfModules R₀'` with `[F,H].obj X = R(X)`-module of PMod-morphisms
+  `F|_{Over X} ⟶ H|_{Over X}`, restrictScalars-compatible restriction maps, and
+  `Hom_PMod(F ⊗_R G, H) ≅ Hom_PMod(G, [F,H])` natural in `G` (= `Closed F` ⇒
+  `MonoidalClosed (PMod R₀')`; def `Monoidal/Closed/Basic.lean`: `Closed X = {rightAdj, adj}`).
+  Over-restriction handles: `PresheafOfModules.pushforward`/`Sites/Over.lean`;
+  `SheafOfModules/PushforwardContinuous.lean`'s `M.over X` (sheaf version) as a model. SAFT
+  (`isLeftAdjoint_of_preservesColimits_of_isSeparating`, with `tensorLeft F` colimit-preserving +
+  `freeYoneda` separator + `WellPowered`) gives the adjoint *abstractly* but formula-free → cannot
+  feed piece (III); must build concretely.
+- **Port — `(sheafificationW J R₀).IsMonoidal`.** `whiskerLeft` (`W g ⟹ W (F ◁ g)`): convert
+  `Hom(F⊗G_i, F.obj H) ≅ Hom(G_i, [F, F.obj H])` (closed, II), use `[F, F.obj H]` local (III) +
+  `sheafificationW.bijective_precomp` (I). `whiskerRight` via the existing
+  `PresheafOfModules.symmetricCategory` braiding (cf. `Sites/Monoidal.lean:144`). Assemble
+  `IsMonoidal` (`IsMonoidal.mk'`), then drop the `[…IsMonoidal]` hypothesis from
+  `SheafOfModules.monoidalCategory` → I.1 unconditional → unblocks I.2.

@@ -133,9 +133,27 @@ vacuity 0, independently re-verified):
   (Stacks 17.16 / EGA 0_I.4.1), traced to its leaf — absent at the pin (no
   `MonoidalClosed (PresheafOfModules)`, no sheafification-preserves-tensor lemma; `IsLeftAdjoint`
   alone is insufficient). **It is a genuine, separate, strictly-foundational classical theorem —
-  NOT circular with the conclusion.** Discharging it (a multi-hundred-LOC sub-arc: build
-  `MonoidalClosed (PresheafOfModules)` or the direct sheaf tensor) makes the monoidal structure
-  unconditional and unblocks I.2 (invertible sheaves → `Pic X`). **This is the next concrete brick.**
+  NOT circular with the conclusion.**
+- **I.1a obstruction TRACED TO LEAVES (2026-06-13, warm cache; route doc §"SHARED-FOUNDATION brick
+  I.1a", `LEAP_QUEUE §6`).** `J.W = ObjectProperty.isLocal (IsSheaf J)` (orthogonality to sheaves);
+  the clean discharge mirrors mathlib's `Sites/Monoidal.lean` and needs a **concrete internal hom
+  of presheaves of modules over a *varying* ring** + `IsSheaf H ⟹ IsSheaf [F,H]` + a ~30-line port.
+  Mathlib omits this (only the fixed-ring `ModuleCat/Monoidal/Closed.lean`; `Enriched.FunctorCategory`
+  is constant-enrichment only). **Two shortcuts ruled out:** (1) SAFT gives `MonoidalClosed
+  (PresheafOfModules)` abstractly (`tensorLeft F` preserves colimits + `freeYoneda` separator +
+  `WellPowered`) but the formula-free adjoint can't prove sheaf-preservation → **off critical path**
+  (still a clean fork-II PR); (2) the direct local-bijectivity route dies on tensor non-left-exactness.
+  ⇒ I.1a is a multi-hundred-LOC, multi-session build reaching only I.2 (`Pic`), **below the deferred
+  A-vs-B leap (§4)**. Build-vs-pivot is a human-leap decision (surfaced to Bryan 2026-06-13).
+- **I.1a BUILD STARTED — Bryan chose "Build I.1a now" (2026-06-13).**
+  `Submission/Cohomology/PresheafOfModulesInternalHom.lean`. Decomposition + every mathlib handle:
+  route doc §"I.1a BUILD". **✅ Piece (I) DONE** — `sheafificationW_eq_isLocal`
+  (`sheafificationW = ObjectProperty.isLocal (· ∈ range (localInclusion α).obj)`, the Bousfield
+  local-class form) + consumable `sheafificationW.bijective_precomp`. Via
+  `inverseImage_W_toPresheaf_eq_inverseImage_isomorphisms` + `isLocal_eq_inverseImage_isomorphisms`
+  on `sheafificationAdjunction α` (right adjoint `SheafOfModules.forget ⋙ restrictScalars α` is
+  fully faithful). **NEXT = piece (II)** (concrete internal hom `[F,H]` + tensor-hom adjunction,
+  the bulk), then piece (III) sheaf-preservation (mirror `Presheaf.IsSheaf.hom`), then the port.
 
 ### ✅ Segment 1 DONE (2026-06-13, `Submission/SheafCohomologyModuleCat.lean`, full-build green)
 

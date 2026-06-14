@@ -14,10 +14,20 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > absent at the pin. See `OPEN.md` §"Tower-A foundation (round 2)" +
 > `docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER A — round-2 brick" + LEAP_QUEUE §5.
 >
+> **I.1a IN PROGRESS (Bryan: "Build I.1a now", 2026-06-13).** Discharging
+> `(sheafificationW J R₀).IsMonoidal` = build the **internal hom of presheaves of modules over a
+> varying ring** + sheaf-preservation, then port `whiskerLeft`/`whiskerRight`. File
+> `Submission/Cohomology/PresheafOfModulesInternalHom.lean`. **✅ Piece (I) DONE** (W = Bousfield
+> local class `isLocal (· ∈ range (localInclusion α).obj)`; `sheafificationW_eq_isLocal` +
+> consumable `sheafificationW.bijective_precomp`, `lake env lean`-clean). **NEXT = piece (II)**: the
+> concrete `[F,H]` object + tensor-hom adjunction (the bulk). Then piece (III) sheaf-preservation
+> (mirror `Presheaf.IsSheaf.hom`), then the port. Full decomposition + every mathlib handle:
+> `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD"; `LEAP_QUEUE §6`.
+>
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
 > foundation first** (`docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`: Stack I sheaves→Pic→ample,
 > Stack II cohomology→Serre→RR; bottom brick I.1 = `SheafOfModules` monoidal, **scaffold DONE**,
-> reduced to I.1a = `W.IsMonoidal` = sheafification⊗tensor = Stacks 17.16, the next concrete brick).
+> reduced to I.1a = `W.IsMonoidal` = sheafification⊗tensor = Stacks 17.16, now IN PROGRESS).
 > Top-down roadmap from the COMPLETED Riemann-surface challenge (rkirov, solved end-to-end):
 > `docs/ROADMAP_FROM_COMPLETED_CHALLENGE_2026_06_13.md` — confirms the 9-hole shape + downstream
 > ordering (holes 3,4,5,6 fall out of hole 2's construction), but is **silent at hole 2** (the RS
