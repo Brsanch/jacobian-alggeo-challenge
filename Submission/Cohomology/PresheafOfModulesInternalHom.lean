@@ -93,4 +93,142 @@ theorem sheafificationW.bijective_precomp {X Y : PresheafOfModules.{u} (R₀ ⋙
   rw [sheafificationW_eq_isLocal α] at hg
   exact hg _ ⟨H, rfl⟩
 
+/-! ## Piece (II): the internal-hom object `[F,H]` valued in `R₀(X)`-modules
+
+For presheaves of modules `F H` over a presheaf of *commutative* rings `R₀`, the value of the
+internal hom at `X : Cᵒᵖ` is the module of morphisms between the restrictions of `F` and `H` to the
+slice `Over X.unop` (the module-theoretic lift of `CategoryTheory.presheafHom`). Concretely we take
+the `Hom`-set `(restrict X).obj F ⟶ (restrict X).obj H` in `PresheafOfModules` over the restricted
+ring presheaf and equip it with the `R₀(X)`-module structure obtained by *restriction of scalars*
+along the slice: `r : R₀(X)` acts on a slice-morphism `φ` by scaling `φ` at each slice object `W`
+by the restriction `R₀(W.hom)(r)` of `r`.
+
+The one non-trivial wall here is an instance diamond: scaling a `ModuleCat (R₀'.obj _)` morphism (or
+its underlying `LinearMap`) by a ring element fails synthesis, because morphism-scaling needs
+`SMulCommClass`/`Linear` over the RingCat carrier, which is not found, whereas *element*-scaling
+`Module (R₀.obj X) (M.obj X)` IS mathlib-provided. We resolve it by **carrier discipline**: the
+scaled morphism `internalSMulApp` is built *element-wise* as a `LinearMap` typed over the
+`CommRingCat` carrier `R₀.obj (op W.left)`, where all the scalings land on mathlib's provided
+element-module instance. The naturality of the action (`internalHomSMul`) reduces, via the
+restriction-compatibility of the scalar (`R₀(W'.hom)(r) = (S.map g)(R₀(W.hom)(r))`, from the `Over`
+triangle), to `φ.naturality` together with the semilinearity of `H`'s restriction maps.
+
+This builds `internalHomObj F H X : ModuleCat (R₀.obj X)`, the value `[F,H](X)`. The remaining pieces
+of I.1a are: the restriction maps assembling these values into a `PresheafOfModules R₀` (piece II,
+presheaf laws), the tensor-hom adjunction `Hom(F ⊗ G, H) ≅ Hom(G, [F,H])` (`Closed F`), the
+sheaf-preservation `IsSheaf H ⟹ IsSheaf [F,H]` (piece III), and the port to
+`(sheafificationW J R₀).IsMonoidal`.
+
+No `sorry`, no `axiom`, no `ω` binders. -/
+
+section InternalHomObject
+
+variable (F H : PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat))
+
+/-- The restriction of presheaves of modules over `R₀` to the slice `Over X.unop`, as the
+pushforward along the forgetful functor `Over X.unop ⥤ C`. The value `[F,H](X)` is built from the
+`Hom`-set between the restrictions of `F` and `H`. -/
+noncomputable abbrev restrict (X : Cᵒᵖ) :
+    PresheafOfModules.{u} (R₀ ⋙ forget₂ CommRingCat RingCat) ⥤
+      PresheafOfModules.{u} ((Over.forget X.unop).op ⋙ (R₀ ⋙ forget₂ CommRingCat RingCat)) :=
+  PresheafOfModules.pushforward₀ (Over.forget X.unop) (R₀ ⋙ forget₂ CommRingCat RingCat)
+
+/-- A slice-morphism `φ`, read off at the slice object `W` as a morphism `F(W.left) ⟶ H(W.left)`
+in the *reduced* `ModuleCat (R₀'(W.left))` form (defeq to `φ.app W`). Using this reduced form is
+what makes the `R₀`-scaling below land on mathlib's element-module instance. -/
+noncomputable abbrev appAt (X : Cᵒᵖ)
+    (φ : (restrict X).obj F ⟶ (restrict X).obj H) (W : (Over X.unop)ᵒᵖ) :
+    F.obj (op W.unop.left) ⟶ H.obj (op W.unop.left) := φ.app W
+
+/-- The action of `r : R₀(X)` on a slice-morphism `φ`, at the slice object `W`: scale `φ.app W` by
+the restriction `R₀(W.hom)(r)` of `r`. Built element-wise as a `LinearMap` over the `CommRingCat`
+carrier `R₀.obj (op W.left)` — the carrier discipline that sidesteps the morphism-scaling diamond. -/
+noncomputable def internalSMulApp (X : Cᵒᵖ) (r : R₀.obj X)
+    (φ : (restrict X).obj F ⟶ (restrict X).obj H) (W : (Over X.unop)ᵒᵖ) :
+    F.obj (op W.unop.left) ⟶ H.obj (op W.unop.left) :=
+  ModuleCat.ofHom
+    (({ toFun := fun x => (R₀.map W.unop.hom.op).hom r • (appAt F H X φ W).hom x
+        map_add' := by intro x y; rw [map_add, smul_add]
+        map_smul' := by
+          intro a x
+          simp only [map_smul, RingHom.id_apply]
+          exact smul_comm _ _ _ } :
+      F.obj (op W.unop.left) →ₗ[R₀.obj (op W.unop.left)] H.obj (op W.unop.left)))
+
+@[simp] lemma internalSMulApp_hom_apply (X : Cᵒᵖ) (r : R₀.obj X)
+    (φ : (restrict X).obj F ⟶ (restrict X).obj H) (W : (Over X.unop)ᵒᵖ)
+    (z : F.obj (op W.unop.left)) :
+    (internalSMulApp F H X r φ W).hom z
+      = (R₀.map W.unop.hom.op).hom r • (appAt F H X φ W).hom z := rfl
+
+/-- The action of `r : R₀(X)` on a slice-morphism `φ`, as a morphism of presheaves of modules.
+Its naturality is the restriction-compatibility of the scalar combined with `φ.naturality` and the
+semilinearity of the restriction maps of `H`. -/
+noncomputable def internalHomSMul (X : Cᵒᵖ) (r : R₀.obj X)
+    (φ : (restrict X).obj F ⟶ (restrict X).obj H) :
+    (restrict X).obj F ⟶ (restrict X).obj H where
+  app W := internalSMulApp F H X r φ W
+  naturality {W W'} g := by
+    have hcomp : (unop W).hom.op ≫ ((Over.forget (unop X)).map g.unop).op = (unop W').hom.op := by
+      apply Quiver.Hom.unop_inj; simp [Over.w]
+    have hmeq : R₀.map (unop W).hom.op ≫ R₀.map ((Over.forget (unop X)).map g.unop).op
+        = R₀.map (unop W').hom.op := (R₀.map_comp _ _).symm.trans (congrArg R₀.map hcomp)
+    have hcompat : ((((Over.forget X.unop).op ⋙ R₀ ⋙ forget₂ CommRingCat RingCat)).map g).hom
+        ((R₀.map W.unop.hom.op).hom r) = (R₀.map W'.unop.hom.op).hom r := by
+      show (R₀.map ((Over.forget (unop X)).map g.unop).op).hom
+          ((R₀.map (unop W).hom.op).hom r) = (R₀.map (unop W').hom.op).hom r
+      exact DFunLike.congr_fun (congrArg CommRingCat.Hom.hom hmeq) r
+    ext y
+    rw [ModuleCat.comp_apply, ModuleCat.comp_apply, ModuleCat.restrictScalars.map_apply]
+    erw [internalSMulApp_hom_apply, internalSMulApp_hom_apply]
+    simp only [appAt]
+    erw [PresheafOfModules.naturality_apply, PresheafOfModules.map_smul]
+    rw [hcompat]
+    rfl
+
+/-- The internal-hom value `[F,H](X)` carries an `R₀(X)`-module structure, with `r` acting by the
+slice-scaling `internalHomSMul`. The module axioms reduce (via the element-wise apply lemma) to the
+ring-hom properties of `R₀.map` and the module axioms over each slice object. -/
+noncomputable instance internalHomModule (X : Cᵒᵖ) :
+    Module (R₀.obj X) ((restrict X).obj F ⟶ (restrict X).obj H) where
+  smul r φ := internalHomSMul F H X r φ
+  one_smul φ := by
+    refine PresheafOfModules.hom_ext (fun W => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+    show (R₀.map W.unop.hom.op).hom 1 • (appAt F H X φ W).hom z = (appAt F H X φ W).hom z
+    rw [map_one, one_smul]
+  mul_smul a b φ := by
+    refine PresheafOfModules.hom_ext (fun W => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+    show (R₀.map W.unop.hom.op).hom (a * b) • (appAt F H X φ W).hom z
+      = (R₀.map W.unop.hom.op).hom a • (R₀.map W.unop.hom.op).hom b • (appAt F H X φ W).hom z
+    rw [map_mul, mul_smul]
+  smul_zero r := by
+    refine PresheafOfModules.hom_ext (fun W => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+    show (R₀.map W.unop.hom.op).hom r • (appAt F H X (0 : _ ⟶ _) W).hom z = 0
+    rw [show (appAt F H X (0 : _ ⟶ _) W).hom z = 0 from rfl, smul_zero]
+  zero_smul φ := by
+    refine PresheafOfModules.hom_ext (fun W => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+    show (R₀.map W.unop.hom.op).hom 0 • (appAt F H X φ W).hom z = 0
+    rw [map_zero, zero_smul]
+  smul_add r φ ψ := by
+    refine PresheafOfModules.hom_ext (fun W => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+    show (R₀.map W.unop.hom.op).hom r • (appAt F H X (φ + ψ) W).hom z
+      = (R₀.map W.unop.hom.op).hom r • (appAt F H X φ W).hom z
+        + (R₀.map W.unop.hom.op).hom r • (appAt F H X ψ W).hom z
+    rw [show (appAt F H X (φ + ψ) W).hom z
+      = (appAt F H X φ W).hom z + (appAt F H X ψ W).hom z from rfl, smul_add]
+  add_smul a b φ := by
+    refine PresheafOfModules.hom_ext (fun W => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+    show (R₀.map W.unop.hom.op).hom (a + b) • (appAt F H X φ W).hom z
+      = (R₀.map W.unop.hom.op).hom a • (appAt F H X φ W).hom z
+        + (R₀.map W.unop.hom.op).hom b • (appAt F H X φ W).hom z
+    rw [map_add, add_smul]
+
+/-- **The internal-hom object `[F,H](X)`**, as an `R₀(X)`-module: the module of morphisms between the
+slice-restrictions of `F` and `H`. This is the value, at `X`, of the internal hom of presheaves of
+modules being built towards `(sheafificationW J R₀).IsMonoidal`. -/
+noncomputable def internalHomObj (X : Cᵒᵖ) : ModuleCat (R₀.obj X) :=
+  ModuleCat.of (R₀.obj X) ((restrict X).obj F ⟶ (restrict X).obj H)
+
+end InternalHomObject
+
 end JacobianAlggeo
