@@ -229,6 +229,67 @@ modules being built towards `(sheafificationW J R₀).IsMonoidal`. -/
 noncomputable def internalHomObj (X : Cᵒᵖ) : ModuleCat (R₀.obj X) :=
   ModuleCat.of (R₀.obj X) ((restrict X).obj F ⟶ (restrict X).obj H)
 
+/-! ### The restriction maps of `[F,H]`
+
+For `f : X ⟶ Y`, the restriction map of the internal hom sends a slice-morphism over `X` to one over
+`Y`, via `Over.map f.unop` — and it is **free from `pushforward₀` functoriality**:
+`(pushforward₀ (Over.map f.unop) _).obj ((restrict X).obj F) = (restrict Y).obj F` holds by `rfl`, so
+naturality and additivity of the restriction map come for free. The `R₀(X)`-semilinearity (the map is
+a morphism `internalHomObj X ⟶ restrictScalars (R₀.map f) (internalHomObj Y)`) is the same
+scalar-restriction-compatibility as `internalHomObj`'s action.
+
+The carrier diamond that blocked assembly (the PMod `map` field's `restrictScalars` is over the
+RingCat presheaf `R₀⋙forget₂`, but `internalHomObj` lives over the CommRingCat carrier) is resolved
+**two ways at once**: (i) `ModuleCat.semilinearMapAddEquiv` turns the semilinear map into the morphism
+into `restrictScalars` without the carrier-collapse synthesis failure; (ii) the `restrictScalars` is
+written over `(R₀.map f).hom` (the CommRingCat hom, reduced) — defeq to `((R₀⋙forget₂).map f).hom`, so
+it still matches the PMod field type, but keeps the reduced carrier where the committed instances live.
+
+No `sorry`, no `axiom`, no `ω` binders. -/
+
+/-- The restriction of a slice-morphism from over `X` to over `Y` along `f : X ⟶ Y`, as the
+pushforward along `Over.map f.unop`. Naturality and additivity are free (it is a functor's `.map`). -/
+noncomputable abbrev internalHomMap {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    (φ : (restrict X).obj F ⟶ (restrict X).obj H) :
+    (restrict Y).obj F ⟶ (restrict Y).obj H :=
+  (PresheafOfModules.pushforward₀ (Over.map f.unop)
+    ((Over.forget X.unop).op ⋙ (R₀ ⋙ forget₂ CommRingCat RingCat))).map φ
+
+@[simp] lemma internalHomMap_app {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    (g : (restrict X).obj F ⟶ (restrict X).obj H) (V : (Over Y.unop)ᵒᵖ) :
+    (internalHomMap F H f g).app V = g.app (op ((Over.map f.unop).obj V.unop)) := rfl
+
+/-- The restriction map of `[F,H]` as a morphism `internalHomObj X ⟶ restrictScalars (R₀.map f)
+(internalHomObj Y)` — i.e. the `R₀(X)`-linear (`R₀.map f`-semilinear) map underlying `[F,H].map f`.
+Built through `ModuleCat.semilinearMapAddEquiv` over the reduced `(R₀.map f).hom` carrier. -/
+noncomputable def internalHomMapHom {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    internalHomObj F H X ⟶
+      (ModuleCat.restrictScalars ((R₀ ⋙ forget₂ CommRingCat RingCat).map f).hom).obj
+        (internalHomObj F H Y) :=
+  ModuleCat.semilinearMapAddEquiv (R₀.map f).hom (internalHomObj F H X) (internalHomObj F H Y)
+    ({ toFun := fun φ => internalHomMap F H f φ
+       map_add' := by intro φ ψ; rfl
+       map_smul' := by
+         intro a φ
+         refine PresheafOfModules.hom_ext (fun V => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+         have hop : ((Over.map f.unop).obj V.unop).hom.op = f ≫ V.unop.hom.op := by
+           show (V.unop.hom ≫ f.unop).op = f ≫ V.unop.hom.op
+           rw [op_comp]; rfl
+         have hsc : (R₀.map ((Over.map f.unop).obj V.unop).hom.op).hom a
+             = (R₀.map V.unop.hom.op).hom ((R₀.map f).hom a) := by
+           rw [hop]
+           exact DFunLike.congr_fun (congrArg CommRingCat.Hom.hom (R₀.map_comp f V.unop.hom.op)) a
+         show (internalSMulApp F H X a φ (op ((Over.map f.unop).obj V.unop))).hom z
+            = (internalSMulApp F H Y ((R₀.map f).hom a) (internalHomMap F H f φ) V).hom z
+         rw [internalSMulApp_hom_apply F H X a φ (op ((Over.map f.unop).obj V.unop)) z,
+           internalSMulApp_hom_apply F H Y ((R₀.map f).hom a) (internalHomMap F H f φ) V z, hsc]
+         rfl } :
+      ↑(internalHomObj F H X) →ₛₗ[(R₀.map f).hom] ↑(internalHomObj F H Y))
+
+@[simp] lemma internalHomMapHom_hom_apply {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    (φ : (restrict X).obj F ⟶ (restrict X).obj H) :
+    (internalHomMapHom F H f).hom φ = internalHomMap F H f φ := rfl
+
 end InternalHomObject
 
 end JacobianAlggeo
