@@ -28,12 +28,21 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > so build the scaled morphism **element-wise as a LinearMap over the CommRingCat carrier
 > `R₀.obj (op W.left)`** (carrier discipline). Naturality reduces to scalar restriction-compat (Over
 > triangle) + `φ.naturality` + `H` restriction semilinearity.
-> **NEXT = piece (II) PRESHEAF + adjunction**: (a) the restriction maps `[F,H].map f` (via
-> `Over.map`/`whiskerLeft`, `Over.mapForget_eq` is the on-the-nose composition) assembling the
-> `internalHomObj X` values into a `PresheafOfModules R₀` (`map_id`/`map_comp`); (b) the tensor-hom
-> adjunction `Hom(F⊗G,H) ≅ Hom(G,[F,H])` (= `Closed F`). Then piece (III) sheaf-preservation (mirror
-> `Presheaf.IsSheaf.hom`), then the ~30-line port. Full decomposition + every mathlib handle:
-> `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD"; `LEAP_QUEUE §6`.
+> **NEXT = piece (II) PRESHEAF + adjunction. The restriction map was SCOUTED 2026-06-14 (validated in
+> probe, not committed — blocked on a carrier diamond):** the restriction map is FREE from
+> `pushforward₀` functoriality — `internalHomMap f φ := (pushforward₀ (Over.map f.unop) _).map φ` is
+> `rfl`-typed as `(restrict Y).obj F ⟶ (restrict Y).obj H` (so naturality + additivity are free); the
+> presheaf lives in `PresheafOfModules.{max u u' v'}` (the Hom-set is universe-big; collapses to `.{u}`
+> when `u'≤u, v'≤u`, the port's setting). **WALL:** the PMod `map` field's `restrictScalars` is over the
+> RingCat presheaf, so assembling hits a CommRingCat↔RingCat Ring-instance diamond — `internalHomObj`
+> over `R₀.obj X` (CommRingCat, committed) fails the restrictScalars synth; over `(R₀⋙forget₂).obj X`
+> (RingCat) the restrictScalars works + axioms survive (with `erw [map_mul]`/`erw [map_add]`) but
+> `ModuleCat.of` hits a Ring-instance diamond. **Fix:** explicit-instance/`letI` navigation like
+> mathlib's `pushforward₀_obj` (`@LinearMap.ext … (_) (_)`), or package the whole presheaf via
+> `pushforward₀` pseudo-functoriality (`pushforwardId`/`pushforwardComp` + `Over.mapId`/`mapComp`,
+> mirroring `presheafHom`) so the diamond rides mathlib's workarounds. Then (b) tensor-hom adjunction
+> (`Closed F`), piece (III) sheaf-preservation, ~30-line port. Full detail + every handle:
+> `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD" piece (II) "NEXT"; `LEAP_QUEUE §6`.
 >
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
 > foundation first** (`docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`: Stack I sheaves→Pic→ample,
