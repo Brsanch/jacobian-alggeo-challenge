@@ -9,12 +9,17 @@ via the integrator role below; do NOT duplicate its Front-B / Serre work. Contro
 > - **I.1a piece (II) `Closed F` DONE** (tensor-hom adjunction `tensorLeft F ⊣ [F,-]`) —
 >   `Submission/Cohomology/PresheafOfModulesClosed.lean`, full build green, axioms clean. See the
 >   I.1a block further down.
-> - **I.1a piece (III) STARTED (Route A, "sub-sheaf via separatedness").** `brick (1) ambient_isSheaf`
->   DONE + wired (`Submission/Cohomology/PresheafOfModulesSheafHom.lean`). **brick (2)** (forgetful
->   mono `u`) is `rfl`-immediate math but blocked on a **Type-vs-TypeCat concrete-category coercion**
->   (`app` needs `TypeCat.ofHom`; align `forget AddCommGrpCat`/`presheafHom` targets) — exact obstruction
->   in that file's brick-(2)–(5) note. brick (3) = the separatedness argument (the bulk). **Drive from
->   `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md`** (Route A is the chosen, tractable spec).
+> - **I.1a piece (III) bricks (1)–(3) DONE (2026-06-14, Route A "sub-sheaf via separatedness").**
+>   `Submission/Cohomology/PresheafOfModulesSheafHom.lean` (single-universe to match piece II) now
+>   has, sorry/axiom-free + vacuity-0: `ambient_isSheaf` (brick 1, `Presheaf.IsSheaf.hom`), `toAmbient`
+>   + `toAmbient_app_injective` (brick 2, the forgetful mono — the Type-vs-TypeCat coercion is fixed by
+>   `TypeCat.ofHom`), and **`internalHom_isSheaf` (brick 3, the separatedness theorem = Stacks 17.16)**.
+>   **Remaining I.1a = brick (4)** repackage as `(localInclusion α).obj _` (bookkeeping via
+>   `SheafOfModules.fullyFaithfulForget`) **+ brick (5)** the short whiskerLeft/Right/IsMonoidal port
+>   (≈40–60 LOC, uses only `closedObj` + piece I + this `internalHom_isSheaf`). **Drive from
+>   `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md`** — its top "BRICKS (1)–(3) DONE" § lists
+>   the reusable carrier-diamond techniques (single-universe, `respectTransparency`, inline-`homMk` for
+>   inherited smul, `appAt` native re-type).
 > - **Just integrated:** `tower/stack-II-serre` (+5: Tower-A smooth⇒regular for rel-dim-1 curves +
 >   scalar-transport; Front-B Mayer-Vietoris LES computing `H1 C` + `coeffSheaf ≅ k[⊤]`) → `main` @
 >   `07c0766`, gate green (8353 jobs, vacuity 0). Towers `tower/jacobian-r2`/`tower/abelian-variety-r2`
