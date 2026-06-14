@@ -290,6 +290,51 @@ noncomputable def internalHomMapHom {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     (φ : (restrict X).obj F ⟶ (restrict X).obj H) :
     (internalHomMapHom F H f).hom φ = internalHomMap F H f φ := rfl
 
+/-! ### The presheaf laws of `[F,H]`
+
+`internalHomMap` reindexes a slice-morphism `φ` along `Over.map f.unop`, so its identity and
+composition laws are the `Over.mapId` / `Over.mapComp` naturalities of the *inner* morphism `φ`
+(exactly the combinatorics of `CategoryTheory.presheafHom`'s `map_id`/`map_comp`). We carry them out
+at the element level: the two slice objects differ by the `Over.mapId`/`Over.mapComp` iso whose
+underlying `C`-map is the identity, so the restriction maps of `(restrict X).obj F`/`H` along it are
+identities and `PresheafOfModules.naturality_apply` of `φ` closes the equation. -/
+
+/-- The restriction map of `[F,H]` along `𝟙 X` is the identity on slice-morphisms. -/
+lemma internalHomMap_id (X : Cᵒᵖ) (φ : (restrict X).obj F ⟶ (restrict X).obj H) :
+    internalHomMap F H (𝟙 X) φ = φ := by
+  refine PresheafOfModules.hom_ext (fun V => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+  rw [internalHomMap_app]
+  simpa [Over.mapId, PresheafOfModules.pushforward₀]
+    using PresheafOfModules.naturality_apply φ ((Over.mapId X.unop).hom.app V.unop).op z
+
+/-- The restriction map of `[F,H]` along `f ≫ g` is the composite of the restriction maps. -/
+lemma internalHomMap_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (φ : (restrict X).obj F ⟶ (restrict X).obj H) :
+    internalHomMap F H (f ≫ g) φ = internalHomMap F H g (internalHomMap F H f φ) := by
+  refine PresheafOfModules.hom_ext (fun V => ModuleCat.hom_ext (LinearMap.ext (fun z => ?_)))
+  rw [internalHomMap_app, internalHomMap_app, internalHomMap_app]
+  simpa [Over.mapComp, PresheafOfModules.pushforward₀]
+    using PresheafOfModules.naturality_apply φ ((Over.mapComp g.unop f.unop).hom.app V.unop).op z
+
+/-- **The internal hom `[F,H]` as a presheaf of modules over `R₀`.** Its value at `X` is the
+`R₀(X)`-module `internalHomObj F H X` of slice-morphisms, and its restriction maps are the free
+`pushforward₀`-reindexings `internalHomMapHom`. The presheaf coherences are `internalHomMap_id` /
+`internalHomMap_comp`, bridged to the `restrictScalarsId'`/`restrictScalarsComp'` coherence isos that
+appear in the `PresheafOfModules` `map_id`/`map_comp` fields — both isos are the identity on the
+underlying slice-morphisms. -/
+noncomputable def internalHom :
+    PresheafOfModules.{max u u' v'} (R₀ ⋙ forget₂ CommRingCat RingCat) where
+  obj X := internalHomObj F H X
+  map f := internalHomMapHom F H f
+  map_id X := by
+    refine ModuleCat.hom_ext (LinearMap.ext (fun φ => ?_))
+    rw [internalHomMapHom_hom_apply, internalHomMap_id]
+    rfl
+  map_comp {X Y Z} f g := by
+    refine ModuleCat.hom_ext (LinearMap.ext (fun φ => ?_))
+    rw [internalHomMapHom_hom_apply, internalHomMap_comp]
+    rfl
+
 end InternalHomObject
 
 end JacobianAlggeo

@@ -38,12 +38,29 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > map → restrictScalars morphism, avoids carrier-collapse) + (ii) `restrictScalars` written over
 > `(R₀.map f).hom` (reduced CommRingCat hom, defeq to `((R₀⋙forget₂).map f).hom`, keeps the reduced
 > carrier where instances live).
-> **NEXT = assemble `internalHom : PresheafOfModules.{max u u' v'} R₀'`** (`obj := internalHomObj`,
-> `map := internalHomMapHom`) with `map_id`/`map_comp` = the `restrictScalarsId'`/`Comp'` coherences via
-> `Over.mapId_eq`/`mapComp_eq` naturality, mirroring `presheafHom` (`simpa [Over.mapId] using
-> φ.naturality ((Over.mapId X).hom.app Y).op`). ⚠ the inner `φ.app A = φ.app B` is *dependent* — use
-> the naturality-across-the-iso route, NOT `rw [object_eq]` (motive-not-type-correct). Then (b)
-> tensor-hom adjunction (`Closed F`), piece (III) sheaf-preservation, ~30-line port. Full detail:
+> **✅ PRESHEAF ASSEMBLED — `internalHom : PresheafOfModules.{max u u' v'} R₀'` DONE (2026-06-14):**
+> `obj := internalHomObj`, `map := internalHomMapHom`, with `map_id`/`map_comp`. Full build green
+> (8342 jobs), vacuity 0, axioms clean (`[propext, Classical.choice, Quot.sound]`). **`[F,H]` is now a
+> presheaf of modules — piece (II) is COMPLETE.** Technique that worked (reuse for piece III): the
+> presheaf laws factor through two element-level helper lemmas on the underlying slice-morphisms —
+> `internalHomMap_id`/`internalHomMap_comp` — each closed by
+> `simpa [Over.mapId/mapComp, PresheafOfModules.pushforward₀] using PresheafOfModules.naturality_apply
+> φ ((Over.mapId/mapComp …).hom.app V.unop).op z` (the `presheafHom` iso-naturality pattern, element
+> level). **Two traps found & solved:** (a) you MUST unfold `PresheafOfModules.pushforward₀` (with the
+> namespace! bare `pushforward₀` is unknown) so the `((restrict X).obj F).map ι` wrappers reduce via
+> `pushforward₀_obj_map` → `F.map 𝟙 = 𝟙`; (b) `ModuleCat.Hom.hom` is an *abbrev* for
+> `ConcreteCategory.hom`, so `naturality_apply` (coe form) and the `ModuleCat.hom_ext`+`LinearMap.ext`
+> goal (`.hom` form) differ only by an abbrev — `simpa`'s final `exact` bridges them, no manual coe
+> rewriting needed. The structure fields then close by `rw [internalHomMapHom_hom_apply,
+> internalHomMap_id/comp]; rfl` — the `restrictScalarsId'/Comp'App.inv` coherence isos are
+> identity-on-carrier by `rfl` (the carrier-diamond means the App-level simp lemmas DON'T fire, but
+> plain `rfl` at default transparency does).
+> **NEXT = (b) tensor-hom adjunction (`Closed F`):** `Hom_PMod(F ⊗ G, H) ≅ Hom_PMod(G, internalHom F H)`
+> natural in `G`, i.e. `MonoidalClosed`/`Closed F` (`Monoidal/Closed/Basic.lean`: `Closed X =
+> {rightAdj := internalHom F, adj}`). Build the unit/counit (or hom-equiv) concretely from
+> `internalHomObj`'s slice-morphism description. Then piece (III) sheaf-preservation
+> (`IsSheaf H ⟹ IsSheaf (internalHom F H)`, mirror `Presheaf.IsSheaf.hom`), then the ~30-line port to
+> `(sheafificationW J R₀).IsMonoidal`. Full detail:
 > `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD" piece (II); `LEAP_QUEUE §6`.
 >
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared

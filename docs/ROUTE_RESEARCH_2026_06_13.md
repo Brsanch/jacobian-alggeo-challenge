@@ -770,15 +770,26 @@ route leap** (`LEAP_QUEUE §4`) and the FGA-grade Jacobian construction (holes 2
     - **(⚠ universe) the `[F,H]` presheaf lives in `PresheafOfModules.{max u u' v'}`** (the value is a
       Hom-SET over the slice `Over X.unop`, object universe `max u' v'`); collapses to `.{u}` when
       `u' ≤ u, v' ≤ u` (the single-universe application the port needs).
-    - **NEXT — assemble `internalHom : PresheafOfModules.{max u u' v'} R₀'`** with `obj X :=
-      internalHomObj`, `map f := internalHomMapHom f`, and the two remaining coherences:
-      `map_id` / `map_comp` = the `restrictScalarsId'` / `restrictScalarsComp'` coherences via
-      `Over.mapId_eq` / `Over.mapComp_eq` naturality, mirroring `presheafHom`'s `map_id`/`map_comp`
-      (`simpa [Over.mapId] using φ.naturality ((Over.mapId X).hom.app Y).op`). **The fiddly bit found
-      2026-06-14:** the inner `φ.app A = φ.app B` is a *dependent* app so plain `rw [object_eq]` fails
-      ("motive not type correct"); use the `φ.naturality`-across-the-iso route (presheafHom pattern),
-      not object-equality rewriting. After that it is a `PresheafOfModules`.
-    - then (b) tensor-hom adjunction (`Closed F`). Both then feed piece (III) + the port.
+    - **✅ PRESHEAF ASSEMBLED (2026-06-14, full build 8342 jobs, vacuity 0, axioms clean):**
+      `internalHom : PresheafOfModules.{max u u' v'} R₀'` with `obj X := internalHomObj`,
+      `map f := internalHomMapHom f`, `map_id`/`map_comp`. **Piece (II) is COMPLETE — `[F,H]` is a
+      presheaf of modules.** The presheaf laws factor through two element-level helper lemmas on the
+      underlying slice-morphisms, `internalHomMap_id`/`internalHomMap_comp`, each closed by
+      `simpa [Over.mapId/mapComp, PresheafOfModules.pushforward₀] using
+      PresheafOfModules.naturality_apply φ ((Over.mapId/mapComp …).hom.app V.unop).op z` — the
+      `presheafHom` iso-naturality pattern at element level (NOT object-equality `rw`, which fails
+      motive-not-type-correct on the dependent `φ.app A = φ.app B`). **Two traps solved:**
+      (a) unfold `PresheafOfModules.pushforward₀` **with the namespace** (bare `pushforward₀` is an
+      unknown identifier) so `((restrict X).obj F).map ι` reduces via `pushforward₀_obj_map` →
+      `F.map 𝟙 = 𝟙`; (b) `ModuleCat.Hom.hom` is an *abbrev* for `ConcreteCategory.hom`, so the
+      `naturality_apply` (coe) form and the `ModuleCat.hom_ext`+`LinearMap.ext` (`.hom`) goal differ
+      only by an abbrev — `simpa`'s final `exact` bridges them. The structure fields then close by
+      `rw [internalHomMapHom_hom_apply, internalHomMap_id/comp]; rfl` (the `restrictScalarsId'/Comp'App.inv`
+      coherence isos are identity-on-carrier by `rfl`; the carrier-diamond means the App-level simp
+      lemmas don't fire, but plain `rfl` at default transparency does).
+    - **NEXT — (b) tensor-hom adjunction (`Closed F`):** `Hom_PMod(F ⊗ G, H) ≅ Hom_PMod(G, internalHom F H)`
+      natural in `G` (`Monoidal/Closed/Basic.lean`: `Closed X = {rightAdj := internalHom F, adj}`), built
+      concretely from `internalHomObj`'s slice-morphism description. Then feeds piece (III) + the port.
 - **Port — `(sheafificationW J R₀).IsMonoidal`.** `whiskerLeft` (`W g ⟹ W (F ◁ g)`): convert
   `Hom(F⊗G_i, F.obj H) ≅ Hom(G_i, [F, F.obj H])` (closed, II), use `[F, F.obj H]` local (III) +
   `sheafificationW.bijective_precomp` (I). `whiskerRight` via the existing
