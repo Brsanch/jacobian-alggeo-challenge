@@ -116,4 +116,16 @@ theorem exists_ringKrullDim_eq_of_finiteType (k A : Type*) [Field k] [CommRing A
     MvPolynomial.ringKrullDim_of_isNoetherianRing, ringKrullDim_eq_zero_of_field k,
     Nat.card_eq_fintype_card, Fintype.card_fin, zero_add]
 
+/-- A nontrivial finite-type algebra over a field has **finite Krull dimension**
+(`FiniteRingKrullDim`), the typeclass mathlib's dimension API consumes. Immediate from
+`exists_ringKrullDim_eq_of_finiteType`: the dimension is a coerced natural number, hence neither
+`⊥` nor `⊤`. (Stated as a theorem, not an instance: the base field `k` is not inferable from `A`.) -/
+theorem finiteRingKrullDim_of_finiteType (k A : Type*) [Field k] [CommRing A] [Nontrivial A]
+    [Algebra k A] [Algebra.FiniteType k A] : FiniteRingKrullDim A := by
+  obtain ⟨s, hs⟩ := exists_ringKrullDim_eq_of_finiteType k A
+  rw [finiteRingKrullDim_iff_ne_bot_and_top, hs]
+  refine ⟨by simp, ?_⟩
+  rw [show ((s : WithBot ℕ∞)) = ((s : ℕ∞) : WithBot ℕ∞) by simp, Ne, WithBot.coe_eq_top]
+  exact ENat.coe_ne_top s
+
 end Submission.IntegralKrullDim
