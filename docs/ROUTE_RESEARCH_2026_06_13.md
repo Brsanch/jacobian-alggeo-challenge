@@ -599,21 +599,34 @@ as an exactness lemma** — only the sequence from `H¹(L_{κ/k})` rightward.
   `I = 𝔪`, separable residue: `𝔪/𝔪² ↪ κ⊗Ω[R⁄k]`. Idiom: do NOT declare `[Algebra k (R⧸I)]`/
   `[IsScalarTower k R (R⧸I)]` explicitly — the automatic quotient instances are what `δ` uses;
   declaring them creates a diamond and `IsScalarTower` synth fails.
-- **(b5)-finish (remaining):** turn the injection into `finrank_κ(𝔪/𝔪²) ≤ finrank_κ(κ⊗Ω) =
-  rank_R Ω[R⁄k] = rel dim` (`LinearMap.finrank_le_finrank_of_injective` + `Module.finrank_baseChange`,
-  needing `Module.Finite R Ω` ✓ and freeness/(b2) for the rank value); combine with the local-ring
-  `dim R` (leaf a/a′ catenarity) and feed `IsRegularLocalRing.of_spanFinrank_maximalIdeal_le` via
-  `spanFinrank_maximalIdeal_eq_finrank_cotangentSpace`. Plus the conormal-vs-`IsLocalRing.CotangentSpace`
-  transport (`(trivExt 𝔪).ker = 𝔪`, `trivExt_ker`).
+- **(b5)-finish, INEQUALITY half — ✅ BUILT 2026-06-14** (`Submission/Cohomology/CotangentInequality.lean`,
+  `tower/stack-II-serre` @ `cd9aa83`, full build green 8347 jobs / vacuity 0 / axioms clean).
+  `finrank_conormal_le_finrank_kaehler`: `finrank_κ((trivExt 𝔪).Cotangent) ≤ finrank_R Ω[R⁄k]`, via
+  `LinearMap.finrank_le_finrank_of_injective` (on (b5)-core's injection; codomain `κ⊗Ω` finite over κ)
+  + `Module.finrank_baseChange`. **Hypotheses are the curve's:** `[IsStandardSmooth k R]` (⟹ `Ω`
+  finite **free** — also what `finrank_baseChange` needs — via `IsStandardSmooth.free_kaehlerDifferential`)
+  and `[FormallySmooth k (R⧸𝔪)]` (separable residue, the (b3) gate). Since `(trivExt 𝔪).Cotangent ≅
+  𝔪/𝔪²` (b1) and `rank_R Ω = rel dim`, this IS `embedding dim ≤ rel dim`.
+- **(b5)-finish, residual to `IsRegularLocalRing` (2 glue steps):** (i) **transport**
+  `(trivExt 𝔪).Cotangent ≅ IsLocalRing.CotangentSpace R` — a `LinearEquiv` from `(trivExt 𝔪).ker = 𝔪`
+  (`trivExt_ker`), but it must cross the **`ResidueField R` ↔ `R⧸𝔪` scalar duality** (`ResidueField`
+  is a `def`, so its `Module` instance isn't found for the syntactic `R⧸𝔪` scalar of the conormal map;
+  needs a `RingEquiv`/`restrictScalars` bridge) — real friction, ~1 brick; then
+  `spanFinrank_maximalIdeal_eq_finrank_cotangentSpace` gives `spanFinrank 𝔪 ≤ rank Ω`. (ii) the
+  local-ring dimension `ringKrullDim R = rank_R Ω = rel dim` (leaf a′ **catenarity**, open) — then
+  `IsRegularLocalRing.of_spanFinrank_maximalIdeal_le` closes it.
 
 **Net:** the **separable-residue** `smooth ⇒ regular` is a reachable (if multi-brick) arc; the
 **inseparable-residue** case is a real wall (mathlib doesn't expose the needed left J-Z exactness).
 Standing built bricks: `regular ⇒ domain` (✓), `dim = trdeg` (✓), **(b1) conormal identification**
 (✓ `0b31be7`), **(b3) δ-injectivity / separability gate** (✓ `2e5aecf`), **(b5)-core conormal
-injection** (✓ `27cded0`); (b2) and (b4) both collapse to mathlib (for `IsStandardSmooth` / separable).
-**Next concrete code brick = (b5)-finish** — the `finrank` inequality + `dim R` + the
-`of_spanFinrank_maximalIdeal_le` discharge — modulo the local-ring dimension (leaf a′ catenarity) and
-the scheme-smooth ⟹ local-ring-`IsStandardSmooth` AG→CA bridge.
+injection** (✓ `27cded0`), **(b5)-finish inequality** `embed dim ≤ rel dim` (✓ `cd9aa83`); (b2) and
+(b4) both collapse to mathlib (for `IsStandardSmooth` / separable). **The separable-residue cotangent
+side of `smooth ⇒ regular` is now essentially assembled** — only two named glue pieces remain:
+(1) the `ResidueField ↔ R⧸𝔪` scalar-transport to `spanFinrank` (≈1 brick), and (2) the two genuine
+external inputs — **leaf a′ catenarity** (`dim R = rel dim`) and the **scheme-smooth ⟹ local-ring
+`IsStandardSmooth` AG→CA bridge** (to discharge the `[IsStandardSmooth k R]`/`[FormallySmooth k(R⧸𝔪)]`
+hypotheses from the curve's `SmoothOfRelativeDimension 1`).
 
 Foundation scoping; certifies no hole.
 
