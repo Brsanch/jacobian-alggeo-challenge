@@ -79,9 +79,14 @@ once the diagram is set up in the **k-linear** category (W1) over a **cover** th
   `shortComplex_shortExact` mirror mathlib, and `mayerVietoris_ext_exact` applies the generic
   `Abelian.Ext.contravariantSequence_exact` to get the 6-term exact MV LES
   `Ext(k[X₄],F,n₀) → Ext(k[X₂]⊞k[X₃],F,n₀) → Ext(k[X₁],F,n₀) →δ Ext(k[X₄],F,n₁) → ⋯` in
-  `Sheaf J (ModuleCat k)`. The remaining connector to `H1 C` is the **`coeffSheaf ≅ k[⊤]`
-  identification** (constant sheaf `k` = sheafified free `k`-module on the terminal representable), so
-  `Ext(k[X₄=⊤], F, 1) = H1 C` — a follow-on lemma. Original plan notes preserved below:
+  `Sheaf J (ModuleCat k)`. **W1 connector ✅ BUILT 2026-06-14**
+  (`Submission/Cohomology/CoeffSheafFreeTerminal.lean`, full build 8352 jobs / vacuity 0 / axioms
+  clean): `coeffSheafIsoFreeYonedaTerminal` — for `X` terminal, `k[X] ≅ coeffSheaf J k`. Route:
+  `yonedaTerminalIsoConstPUnit` (`yoneda X ≅ const PUnit`, naturality trivial since `PUnit` is a
+  subsingleton) → `isoWhiskerRight … (free k)` → `Functor.constComp` → `(PUnit →₀ k) ≅ k`
+  (`Finsupp.LinearEquiv.finsuppUnique`). So `Ext(k[X₄=⊤], F, 1) ≅ Ext(coeffSheaf, F, 1) = H1 C`: the
+  Mayer–Vietoris LES now computes `H1 C`. **The whole W1 spine is in place** — only the genuine walls
+  (W0 cover, W2 acyclicity, W3 finiteness) remain. Original plan notes preserved below:
 
   mathlib's MV LES is `AddCommGrpCat`-only; `H1 C`
   is `Ext` in `Sheaf J (ModuleCat k)` (k-linear, the structure we need for `FiniteDimensional k`). Ext
