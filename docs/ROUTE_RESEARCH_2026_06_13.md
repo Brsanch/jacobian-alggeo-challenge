@@ -565,36 +565,68 @@ as an exactness lemma** — only the sequence from `H¹(L_{κ/k})` rightward.
   transparency (terms are defeq-collapsed behind the Extension-API irreducibility); prefix the def
   with `set_option backward.isDefEq.respectTransparency false in` (the mathlib Extension idiom) and
   then `MvPolynomial.algHom_ext` + `simp [Generators.algebraMap_apply, Generators.self_val]` fires.
-- **(b2) `Ω[R/k]` finite free of rank = rel dim** for smooth local R. `FormallySmooth.
-  projective_kaehlerDifferential` (`Smooth/Basic.lean:71`) gives `Module.Projective R Ω[R/k]`;
-  f.g.-projective-over-local ⟹ `Module.Free`; rank via `StandardSmoothCotangent` (`rank_S Ω = rel
-  dim`). Reachable, some plumbing (the `S`-module Ω vs the rel-dim bridge).
-- **(b3) δ injectivity — THE OBSTRUCTION, SEPARABILITY-GATED.** By `exact_map_δ`, `ker δ = im(map:
-  H¹(L_{κ/k}) → H¹(L_{κ/R}))`, so **δ injective ⟺ `map = 0`.** mathlib does NOT expose the left
-  exactness that would force `map=0` in general; the only clean handle is `map=0` ⟸ `H¹(L_{κ/k}) = 0`
-  ⟸ **κ/k formally smooth** (`FormallySmooth.subsingleton_h1Cotangent`, `Smooth/Basic.lean:72`) ⟸
-  **κ/k SEPARABLE** (`FormallySmooth.of_algebraicIndependent_of_isSeparable` / `of_perfectField`,
-  `Smooth/Field.lean`). **⟹ the J-Z route closes `smooth ⇒ regular` cleanly ONLY for separable
-  residue field κ/k** (covers: k perfect; rational points κ=k). **The inseparable-residue case
-  (imperfect k) is the genuine hard core** — δ-injectivity fails by this argument and the correct
-  proof needs the unexposed left J-Z term or a different (imperfect-base) argument. This is the
-  precise mathematical content of the route doc's earlier hand-wave "the `Ω_{κ/k}` correction for
-  non-separable κ/k".
-- **(b4) `finrank_κ Ω[κ/k]`** — mathlib has NO `Ω[κ/k]` rank/vanishing lemma. For the separable
-  case need `Ω[κ/k] = 0` (κ/k finite separable ⟹ unramified ⟹ `Subsingleton Ω`, via
-  `FormallyUnramified`); ABSENT as stated, but reachable. General (separably generated) needs `rank
-  Ω[κ/k] = trdeg`.
-- **(b5) assembly:** `finrank_κ(𝔪/𝔪²) = finrank(κ⊗Ω[R/k]) − finrank(Ω[κ/k]) = d − (trdeg κ)` by
-  δ-injective + `exact_δ_mapBaseChange` + mapBaseChange surjective; combine with `dim R` (leaf a/a′)
-  and feed `IsRegularLocalRing.of_spanFinrank_maximalIdeal_le` via
-  `spanFinrank_maximalIdeal_eq_finrank_cotangentSpace`.
+- **(b2) `Ω[R/k]` finite free of rank = rel dim** — **collapses to mathlib for `IsStandardSmooth`,
+  not a genuine gap (probed 2026-06-14).** `instance IsStandardSmooth.free_kaehlerDifferential`
+  (`StandardSmoothCotangent.lean:302`) gives `Module.Free R Ω[R⁄k]` directly;
+  `IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential` (`:314`) gives `rank = rel dim`; and
+  `isStandardSmooth_localizationPreserves` (`RingHom/StandardSmooth.lean:163`) ⟹ the curve's local
+  rings (localizations of the standard-smooth coordinate ring) are `IsStandardSmooth`. (Weaker
+  `[FormallySmooth]+[EssFiniteType]` does NOT auto-derive `IsStandardSmooth`, so `Module.Free` is not
+  inferrable from those — but the standard-smooth hypothesis, which the curve supplies, makes it
+  free.) The genuine missing piece on this side is the **scheme-smooth ⟹ local-ring-`IsStandardSmooth`
+  bridge** (AG→CA), not the freeness itself.
+- **(b3) δ injectivity — THE OBSTRUCTION, SEPARABILITY-GATED — ✅ BUILT 2026-06-14**
+  (`Submission/Cohomology/CotangentDeltaInjective.lean`, `tower/stack-II-serre` @ `2e5aecf`, green
+  8345 jobs / vacuity 0 / axioms clean). By `exact_map_δ`, `ker δ = range(map: H¹(L_{κ/k}) →
+  H¹(L_{κ/R}))`, so **δ injective ⟺ `map = 0`.** `δ_injective_of_h1Cotangent_subsingleton`:
+  `Subsingleton (H1Cotangent k κ) ⟹ map = 0 ⟹ ker δ = ⊥ ⟹ δ injective` (`Exact.linearMap_ker_eq`
+  + `LinearMap.range_eq_bot`). `δ_injective_of_formallySmooth_residue`: `[FormallySmooth k κ] ⟹ δ
+  injective` (`FormallySmooth.subsingleton_h1Cotangent`). **The separability gate, machine-checked:**
+  `H¹(L_{κ/k})` subsingleton ⟸ κ/k formally smooth ⟸ κ/k SEPARABLE (`FormallyEtale.of_isSeparable`,
+  étale ⟹ smooth). mathlib does NOT expose the left J-Z exactness that would force `map=0` for
+  inseparable κ/k ⟹ **the J-Z route closes `smooth ⇒ regular` cleanly ONLY for separable residue**
+  (covers k perfect; κ=k rational points). The inseparable-residue (imperfect-k) case stays the
+  genuine hard core.
+- **(b4) `Ω[κ/k] = 0` for separable κ/k** — **collapses to a mathlib WRAPPER, not a standalone
+  brick:** `Algebra.FormallyUnramified.of_isSeparable k κ` (`RingTheory/Etale/Field.lean`) gives
+  `FormallyUnramified k κ ≡ Subsingleton Ω[κ⁄k]` directly. (General separably-generated needs `rank
+  Ω[κ/k] = trdeg`, still absent — only for the non-finite residue case.)
+- **(b5)-core — ✅ BUILT 2026-06-14** (`Submission/Cohomology/ConormalToOmega.lean`,
+  `tower/stack-II-serre` @ `27cded0`, full build green 8346 jobs / vacuity 0 / axioms clean).
+  Composes (b1)+(b3): `conormal_to_omega_injective` — for `k → R → R⧸I` with `R⧸I` formally smooth
+  over `k`, the conormal map `(trivExt I).Cotangent →[δ ∘ equiv.symm] (R⧸I)⊗_R Ω[R⁄k]` is
+  **injective** (`Function.Injective.comp` of (b3)'s δ-injectivity and (b1)'s equiv). Specialized to
+  `I = 𝔪`, separable residue: `𝔪/𝔪² ↪ κ⊗Ω[R⁄k]`. Idiom: do NOT declare `[Algebra k (R⧸I)]`/
+  `[IsScalarTower k R (R⧸I)]` explicitly — the automatic quotient instances are what `δ` uses;
+  declaring them creates a diamond and `IsScalarTower` synth fails.
+- **(b5)-finish, INEQUALITY half — ✅ BUILT 2026-06-14** (`Submission/Cohomology/CotangentInequality.lean`,
+  `tower/stack-II-serre` @ `cd9aa83`, full build green 8347 jobs / vacuity 0 / axioms clean).
+  `finrank_conormal_le_finrank_kaehler`: `finrank_κ((trivExt 𝔪).Cotangent) ≤ finrank_R Ω[R⁄k]`, via
+  `LinearMap.finrank_le_finrank_of_injective` (on (b5)-core's injection; codomain `κ⊗Ω` finite over κ)
+  + `Module.finrank_baseChange`. **Hypotheses are the curve's:** `[IsStandardSmooth k R]` (⟹ `Ω`
+  finite **free** — also what `finrank_baseChange` needs — via `IsStandardSmooth.free_kaehlerDifferential`)
+  and `[FormallySmooth k (R⧸𝔪)]` (separable residue, the (b3) gate). Since `(trivExt 𝔪).Cotangent ≅
+  𝔪/𝔪²` (b1) and `rank_R Ω = rel dim`, this IS `embedding dim ≤ rel dim`.
+- **(b5)-finish, residual to `IsRegularLocalRing` (2 glue steps):** (i) **transport**
+  `(trivExt 𝔪).Cotangent ≅ IsLocalRing.CotangentSpace R` — a `LinearEquiv` from `(trivExt 𝔪).ker = 𝔪`
+  (`trivExt_ker`), but it must cross the **`ResidueField R` ↔ `R⧸𝔪` scalar duality** (`ResidueField`
+  is a `def`, so its `Module` instance isn't found for the syntactic `R⧸𝔪` scalar of the conormal map;
+  needs a `RingEquiv`/`restrictScalars` bridge) — real friction, ~1 brick; then
+  `spanFinrank_maximalIdeal_eq_finrank_cotangentSpace` gives `spanFinrank 𝔪 ≤ rank Ω`. (ii) the
+  local-ring dimension `ringKrullDim R = rank_R Ω = rel dim` (leaf a′ **catenarity**, open) — then
+  `IsRegularLocalRing.of_spanFinrank_maximalIdeal_le` closes it.
 
 **Net:** the **separable-residue** `smooth ⇒ regular` is a reachable (if multi-brick) arc; the
 **inseparable-residue** case is a real wall (mathlib doesn't expose the needed left J-Z exactness).
-Standing built bricks: `regular ⇒ domain` (✓), `dim = trdeg` (✓), and now the **(b1) conormal
-identification** (✓ `0b31be7`). **Next concrete code brick = (b2)** (`Ω[R/k]` finite free of rank
-= rel dim for smooth local R) or (b4) (`Ω[κ/k] = 0` for finite-separable κ/k via `FormallyUnramified`);
-then (b3) δ-injectivity (separable) + (b5) assembly.
+Standing built bricks: `regular ⇒ domain` (✓), `dim = trdeg` (✓), **(b1) conormal identification**
+(✓ `0b31be7`), **(b3) δ-injectivity / separability gate** (✓ `2e5aecf`), **(b5)-core conormal
+injection** (✓ `27cded0`), **(b5)-finish inequality** `embed dim ≤ rel dim` (✓ `cd9aa83`); (b2) and
+(b4) both collapse to mathlib (for `IsStandardSmooth` / separable). **The separable-residue cotangent
+side of `smooth ⇒ regular` is now essentially assembled** — only two named glue pieces remain:
+(1) the `ResidueField ↔ R⧸𝔪` scalar-transport to `spanFinrank` (≈1 brick), and (2) the two genuine
+external inputs — **leaf a′ catenarity** (`dim R = rel dim`) and the **scheme-smooth ⟹ local-ring
+`IsStandardSmooth` AG→CA bridge** (to discharge the `[IsStandardSmooth k R]`/`[FormallySmooth k(R⧸𝔪)]`
+hypotheses from the curve's `SmoothOfRelativeDimension 1`).
 
 Foundation scoping; certifies no hole.
 
