@@ -551,14 +551,20 @@ Exposed lemmas: `H1Cotangent.δ`, `H1Cotangent.exact_map_δ` (`Exact map δ`),
 as an exactness lemma** — only the sequence from `H¹(L_{κ/k})` rightward.
 
 **Sub-bricks + status:**
-- **(b1) conormal identification** `Algebra.H1Cotangent R κ ≃ₗ IsLocalRing.CotangentSpace R` (= 𝔪/𝔪²)
-  — **route-INDEPENDENT, REACHABLE (no separability needed).** `Extension.H1Cotangent.equiv`
-  (`Extension/Cotangent/Basic.lean:425`) needs ONLY mutual `Extension.Hom`s — **no smoothness
-  hypothesis**. Use the trivial extension `Extension.ofSurjective (R ↠ κ)` (`P.Ring = R`); its
-  `CotangentSpace = κ⊗_R Ω[R/R] = 0` (`Ω[R⁄R]` subsingleton) so `H1Cotangent = ker(0-map) = ⊤ ≃
-  P.Cotangent = 𝔪.Cotangent`. Cost = building the two `Extension.Hom`s (`Hom.ofAlgHom`: forward =
-  `R → MvPolynomial κ R` structure map; backward = `MvPolynomial κ R → R` sending each generator to
-  a `Function.surjInv` lift). Bounded Generators/Extension-API plumbing.
+- **(b1) conormal identification** `Algebra.H1Cotangent R (R⧸I) ≃ₗ` conormal `I/I²`
+  — **✅ BUILT 2026-06-14** (`Submission/Cohomology/ConormalH1Cotangent.lean`, `tower/stack-II-serre`
+  @ `0b31be7`, green 8344 jobs / vacuity 0 / axioms clean). Route-INDEPENDENT (no smoothness/
+  separability): `Extension.H1Cotangent.equiv` (`Extension/Cotangent/Basic.lean:425`) needs ONLY
+  mutual `Extension.Hom`s. Built the trivial extension `trivExt I := Extension.ofSurjective
+  (Ideal.Quotient.mkₐ R I)` (`Ring = R`); its `CotangentSpace = (R⧸I)⊗_R Ω[R⁄R] = 0` (`Ω[R⁄R]`
+  subsingleton via `KaehlerDifferential.subsingleton_of_surjective`), so `H1Cotangent = ker(0) = ⊤
+  ≃ Cotangent`; the canonical `Generators.self R (R⧸I)` maps both ways (`fwd` = `aeval` at the
+  section `(trivExt I).σ`; `bwd` = structure map), `H1Cotangent.equiv` finishes. Results:
+  `trivExt_ker` (`(trivExt I).ker = I`), `h1CotangentEquivTrivCotangent`. **Idiom note for the next
+  bricks:** the `Hom.ofAlgHom` compatibility square does NOT yield to `simp`/`show` at default
+  transparency (terms are defeq-collapsed behind the Extension-API irreducibility); prefix the def
+  with `set_option backward.isDefEq.respectTransparency false in` (the mathlib Extension idiom) and
+  then `MvPolynomial.algHom_ext` + `simp [Generators.algebraMap_apply, Generators.self_val]` fires.
 - **(b2) `Ω[R/k]` finite free of rank = rel dim** for smooth local R. `FormallySmooth.
   projective_kaehlerDifferential` (`Smooth/Basic.lean:71`) gives `Module.Projective R Ω[R/k]`;
   f.g.-projective-over-local ⟹ `Module.Free`; rank via `StandardSmoothCotangent` (`rank_S Ω = rel
@@ -585,8 +591,10 @@ as an exactness lemma** — only the sequence from `H¹(L_{κ/k})` rightward.
 
 **Net:** the **separable-residue** `smooth ⇒ regular` is a reachable (if multi-brick) arc; the
 **inseparable-residue** case is a real wall (mathlib doesn't expose the needed left J-Z exactness).
-Both `regular ⇒ domain` (✓ built) and `dim = trdeg` (✓ built) already stand. **Next concrete code
-brick = (b1)**, route-independent and the keystone everything else consumes.
+Standing built bricks: `regular ⇒ domain` (✓), `dim = trdeg` (✓), and now the **(b1) conormal
+identification** (✓ `0b31be7`). **Next concrete code brick = (b2)** (`Ω[R/k]` finite free of rank
+= rel dim for smooth local R) or (b4) (`Ω[κ/k] = 0` for finite-separable κ/k via `FormallyUnramified`);
+then (b3) δ-injectivity (separable) + (b5) assembly.
 
 Foundation scoping; certifies no hole.
 
