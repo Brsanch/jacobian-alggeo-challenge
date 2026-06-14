@@ -513,9 +513,13 @@ birational invariant `trdeg` = relative dimension.
 
 **Honest remaining map for `smooth ⇒ regular` (both genuine sub-arcs; this brick closes neither leaf):**
 1. **(a′) local-ring dimension at a point.** `smooth⇒regular` needs `dim 𝒪_{X,x}`, NOT the affine
-   `dim A`. At a closed point `dim 𝒪_{X,x} = dim A` via **catenarity / height+coheight**
-   `height 𝔭 + dim(A/𝔭) = dim A` for finite-type domains — mathlib status not yet probed
-   (`Ideal.height`, `IsCatenary`, `Order.height`).
+   `dim A`. **Probed 2026-06-14:** mathlib HAS `Ideal.Height` (`RingTheory/Ideal/Height.lean`:
+   `IsLocalRing.maximalIdeal_height_eq_ringKrullDim` = `dim (local R) = height 𝔪`,
+   `primeHeight_le_ringKrullDim`, `height_le_ringKrullDim_of_ne_top`), so `dim 𝒪_{X,x} = dim A_𝔭
+   = height_A 𝔭` is available. **The gap is the catenary dimension formula** `height 𝔭 + dim(A/𝔭)
+   = dim A` for finite-type domains — `IsCatenary` is **ABSENT** from `RingTheory/` at the pin. So
+   pinning `dim 𝒪_{X,x} = 1` for the smooth curve still needs catenarity (a real sub-arc), unless
+   a smooth-morphism-specific fiber-dimension route avoids it.
 2. **(b) cotangent leaf `finrank_κ(𝔪/𝔪²) ≤ dim`** — **UPGRADE: mathlib HAS the Jacobi–Zariski /
    `Algebra.H1Cotangent` machinery** (`RingTheory/Kaehler/JacobiZariski.lean`: `H1Cotangent.{δ,
    exact_map_δ, exact_δ_mapBaseChange}`, `KaehlerDifferential.exact_mapBaseChange_map`,
