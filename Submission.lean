@@ -28,6 +28,7 @@ import Submission.Jacobian.TensorPowerPermAction
 import Submission.Jacobian.AffineSymmetricPower
 import Submission.Jacobian.AffineQuotientBase
 import Submission.Jacobian.AffineSymmetricPowerStructure
+import Submission.Jacobian.TensorPowerAdd
 import Submission.Jacobian.TensorPowerFiniteType
 import Submission.AbelianVariety
 
