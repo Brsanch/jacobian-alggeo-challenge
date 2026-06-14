@@ -1,9 +1,31 @@
-# 🟢 ROUND 2 ENTRY (2026-06-13) — INTEGRATOR + TOWER A, in this canonical checkout
+# 🟢 ROUND 3 ENTRY (2026-06-14) — INTEGRATOR + I.1a/TOWER-A, in this canonical checkout
 
-You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ `b6b2062`
-(all three towers' round-1 foundation integrated + pushed). Two parallel sessions run Tower B
-(`…/jacobian-alggeo-parallel/jacobian`, branch `tower/jacobian-r2`) and Tower C
-(`…/abvar`, branch `tower/abelian-variety-r2`). Control room: `…/jacobian-alggeo-parallel/PARALLEL_PLAN.md`.
+You are the fresh integrator + Tower-A/I.1a session, on `main` @ `07c0766` (clean tree, all pushed).
+A **parallel Stack-II / Serre-finiteness session is now running** (started 2026-06-14) — coordinate
+via the integrator role below; do NOT duplicate its Front-B / Serre work. Control room:
+`…/jacobian-alggeo-parallel/PARALLEL_PLAN.md`.
+
+> **ROUND-3 ENTRY STATE (2026-06-14, `main` @ `07c0766`):**
+> - **I.1a piece (II) `Closed F` DONE** (tensor-hom adjunction `tensorLeft F ⊣ [F,-]`) —
+>   `Submission/Cohomology/PresheafOfModulesClosed.lean`, full build green, axioms clean. See the
+>   I.1a block further down.
+> - **I.1a piece (III) STARTED (Route A, "sub-sheaf via separatedness").** `brick (1) ambient_isSheaf`
+>   DONE + wired (`Submission/Cohomology/PresheafOfModulesSheafHom.lean`). **brick (2)** (forgetful
+>   mono `u`) is `rfl`-immediate math but blocked on a **Type-vs-TypeCat concrete-category coercion**
+>   (`app` needs `TypeCat.ofHom`; align `forget AddCommGrpCat`/`presheafHom` targets) — exact obstruction
+>   in that file's brick-(2)–(5) note. brick (3) = the separatedness argument (the bulk). **Drive from
+>   `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md`** (Route A is the chosen, tractable spec).
+> - **Just integrated:** `tower/stack-II-serre` (+5: Tower-A smooth⇒regular for rel-dim-1 curves +
+>   scalar-transport; Front-B Mayer-Vietoris LES computing `H1 C` + `coeffSheaf ≅ k[⊤]`) → `main` @
+>   `07c0766`, gate green (8353 jobs, vacuity 0). Towers `tower/jacobian-r2`/`tower/abelian-variety-r2`
+>   are 0-ahead; the new Stack-II session works off `07c0766`.
+> - **Integrator duty:** `git fetch`; for any `tower/*` branch with commits ahead of `main`, merge into
+>   an integration branch off `main`, run the solo gate (`~/.claude/bin/lakelock lake build` +
+>   `python3 scripts/lean_vacuity_lint.py Submission.lean Submission/ --max-findings 0`), confirm
+>   `origin/main` unmoved, fast-forward + push, delete the integration branch.
+
+> **(superseded) ROUND 2 ENTRY (2026-06-13):** integrator + Tower-A, `main` @ `b6b2062`. Tower B/C
+> on `tower/jacobian-r2`/`tower/abelian-variety-r2`.
 
 > **ROUND-2 PROGRESS (2026-06-13, `main` @ `5d3a8ed`):** Tower-A landed `regular ⇒ domain` in
 > **ALL dimensions** (Stacks 00NP) — `Submission/Cohomology/RegularLocalDomainGeneral.lean`
