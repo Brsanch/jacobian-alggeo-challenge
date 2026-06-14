@@ -44,22 +44,33 @@ theorem ambient_isSheaf (hH : Presheaf.IsSheaf J H.presheaf) :
     Presheaf.IsSheaf J (presheafHom F.presheaf H.presheaf) :=
   Presheaf.IsSheaf.hom F.presheaf H.presheaf hH
 
-/-! ### Bricks (2)–(5): build state (2026-06-14)
+/-- **Brick (2): the forgetful embedding `toAmbient`.** The natural transformation
+`(internalHom F H).presheaf ⋙ forget AddCommGrpCat ⟶ presheafHom F.presheaf H.presheaf`
+that sends a slice-morphism `φ : (restrict X).obj F ⟶ (restrict X).obj H` (an element of
+`(internalHom F H).presheaf.obj X`, after `forget`) to its underlying natural transformation of
+abelian-group presheaves `(toPresheaf _).map φ` (an element of `(presheafHom F.presheaf
+H.presheaf).obj X`, by the `rfl` alignment `((restrict X).obj F).presheaf = (Over.forget X.unop).op ⋙
+F.presheaf`). The `app` lands in the `TypeCat`-style hom of `Cᵒᵖ ⥤ Type _` via `TypeCat.ofHom`, and
+naturality is `rfl` (both sides reindex along `Over.map f.unop`). -/
+noncomputable def toAmbient :
+    (internalHom F H).presheaf ⋙ forget AddCommGrpCat ⟶ presheafHom F.presheaf H.presheaf where
+  app X := TypeCat.ofHom
+    (fun (φ : (restrict X).obj F ⟶ (restrict X).obj H) => (PresheafOfModules.toPresheaf _).map φ)
+  naturality := by intro X Y f; rfl
 
-Brick (1) `ambient_isSheaf` above is COMPLETE — it reuses mathlib's heavy `presheafHom`
-amalgamation (`Presheaf.IsSheaf.hom`) to establish the ambient sheaf into which the linear hom
-embeds.
+@[simp] lemma toAmbient_app_apply (X : Cᵒᵖ) (φ : (restrict X).obj F ⟶ (restrict X).obj H) :
+    (toAmbient F H).app X φ = (PresheafOfModules.toPresheaf _).map φ := rfl
 
-**Brick (2) — the forgetful embedding `u : (internalHom F H).presheaf ⋙ forget ⟶ presheafHom
-F.presheaf H.presheaf`** (pointwise `φ ↦ (toPresheaf _).map φ`, injective by `toPresheaf` faithful)
-is mathematically immediate via the `rfl` alignment `((restrict X).obj F).presheaf =
-(Over.forget X.unop).op ⋙ F.presheaf`, but the **Lean obstruction is concrete-category coercion**:
-the source `(internalHom F H).presheaf ⋙ forget AddCommGrpCat` and target `presheafHom …` must land
-in the *same* hom-category (a `TypeCat`/`ConcreteCategory` `⟶`, not a bare function), so the `app`
-field needs the `TypeCat.ofHom` wrapper and the `forget AddCommGrpCat` target-category must be
-aligned with `presheafHom`'s `Cᵒᵖ ⥤ Type _`. Resolve the `Type` vs `TypeCat` target before the `app`
-typechecks; then `naturality` is `rfl` (both sides reindex along `(Over.map f.unop)`), and
-injectivity is `(toPresheaf _).map_injective`.
+/-- The embedding `toAmbient` is pointwise injective: `toPresheaf` is faithful, so distinct
+slice-morphisms have distinct underlying natural transformations. This makes
+`(internalHom F H).presheaf` a sub-object of the ambient sheaf `presheafHom F.presheaf H.presheaf`. -/
+lemma toAmbient_app_injective (X : Cᵒᵖ) : Function.Injective ((toAmbient F H).app X) :=
+  fun _ _ h => (PresheafOfModules.toPresheaf _).map_injective h
+
+/-! ### Bricks (3)–(5): build state (2026-06-14)
+
+Bricks (1) `ambient_isSheaf` and (2) `toAmbient`/`toAmbient_app_injective` above are COMPLETE: the
+linear hom embeds as a pointwise-injective sub-object of mathlib's `presheafHom` sheaf.
 
 **Brick (3) — `internalHom_isSheaf` (the bulk, the separatedness argument)**, **(4)** local-object
 packaging, **(5)** the whiskerLeft/Right/IsMonoidal port: see
