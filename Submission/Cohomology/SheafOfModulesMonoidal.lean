@@ -51,9 +51,20 @@ itself stated conditional on `[(J.W).IsMonoidal]`. This is *not* a renamed `sorr
 carry the real geometric content — see "The remaining leaf" below), not a `True`-valued
 stand-in.
 
-## The remaining leaf (`(sheafificationW J R₀).IsMonoidal`)
+## The remaining leaf (`(sheafificationW J R₀).IsMonoidal`) — ✅ DISCHARGED (2026-06-14)
 
-Discharging this unconditionally is exactly the classical theorem **"sheafification of
+This hypothesis is now **proved**: `JacobianAlggeo.sheafificationW_isMonoidal`
+(`Submission/Cohomology/SheafificationWMonoidal.lean`), the I.1a arc, builds the internal hom of
+presheaves of modules (pieces I–III) and mirrors mathlib's `GrothendieckTopology.W.monoidal` to show
+`whiskerLeft`/`whiskerRight`, sorry/axiom-free. It is stated single-universe (`C : Type u`,
+`Category.{u} C`), so at a single-universe instantiation — the geometric use case for the curve's
+structure sheaf — `SheafOfModules.monoidalCategory` becomes unconditional via
+`haveI := sheafificationW_isMonoidal α`. (That file is downstream of this one, so it is referenced
+here only by name to avoid an import cycle; the `variable` below is kept for multi-universe
+generality. See `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md` for the universe caveat.)
+
+The original obstruction, for the record: discharging this is exactly the classical theorem
+**"sheafification of
 presheaves of modules commutes with the tensor product"** (Stacks 17.16 / EGA 0_I.4.1):
 one must show that if `sheafification.map f` and `sheafification.map g` are isomorphisms
 then so is `sheafification.map (f ⊗ₘ g)`, equivalently that `tensorLeft X ⋙ sheafification`

@@ -43,7 +43,38 @@ Equivalently, two sub-facts: (III-a) `Presheaf.IsSheaf J (internalHom F H').pres
 `Submission/Cohomology/PresheafOfModulesInternalHom.lean`; the carrier-diamond idioms are
 documented there.
 
-## ✅✅ BRICKS (1)–(3) DONE (2026-06-14) — `internalHom_isSheaf` PROVED
+## ✅✅✅ I.1a COMPLETE (2026-06-14) — `(sheafificationW J R₀).IsMonoidal` PROVED
+
+All bricks done, sorry/axiom-free, vacuity 0. Bricks (4)–(5) are in the new single-universe file
+`Submission/Cohomology/SheafificationWMonoidal.lean`:
+- **(4) `mem_isoClosure_of_isSheaf`** — a PMod whose presheaf is a sheaf is a *local object* of
+  `sheafificationW` (up to iso). The route doc called this "bookkeeping"; it is actually a real
+  (short) lemma: the sheafification **unit is an iso on a sheaf**, because `toPresheaf` of the unit is
+  the AbGrp `toSheafify` (`PresheafOfModules.toPresheaf_map_sheafificationAdjunction_unit_app`, `rfl`),
+  which is iso for a sheaf (`CategoryTheory.isIso_toSheafify`), and `toPresheaf` *reflects* isos. So
+  the local objects of `sheafificationW` are exactly the PMod-sheaves — NOT just "restricted
+  R-modules" as feared; the R-action lift is free from the sheafification of the action.
+- **(5a) `sheafificationW_whiskerLeft`** — conjugate precomposition-by-`F ◁ g` through the tensor–hom
+  adjunction `homEquiv` (piece II) into precomposition-by-`g` into `[F,Z]`, which is local by (4) +
+  (3). Key Lean points: state the conjugation lambda with the goal's exact `F ⊗ Y₂` domain (not
+  `(tensorLeft F).obj Y₂`) so `rw` matches; use `Adjunction.homEquiv_naturality_left` +
+  `Equiv.symm_apply_apply`; pull `hg` to the iso-closure via `ObjectProperty.isoClosure_isLocal`.
+- **(5b) `sheafificationW_whiskerRight`** — `arrow_mk_iso_iff` + the PMod braiding `β_` (mirrors
+  mathlib `GrothendieckTopology.W.whiskerRight`).
+- **(5) `sheafificationW_isMonoidal : (sheafificationW J R₀).IsMonoidal`** — assembles (5a)+(5b).
+  Takes `α` explicitly (via `include α`), since `IsMonoidal` is a property of `sheafificationW`
+  (which depends only on `J, R₀`) but the proof needs the sheafification presentation `α : R₀' → R`.
+
+**Universe caveat (architectural, for Bryan):** this whole I.1a chain (pieces II, III, bricks 4–5)
+is **single-universe** (`C : Type u`, `Category.{u} C`), forced by `isSheaf_iff_isSheaf_forget`. The
+consumer `SheafOfModulesMonoidal.lean` is **multi-universe** with `variable
+[(sheafificationW J R₀).IsMonoidal]`. The single-universe `sheafificationW_isMonoidal α` discharges
+that hypothesis **at single-universe instantiations** (which is what the curve's structure-sheaf use
+case is) via `haveI := sheafificationW_isMonoidal α`. Literally *removing* the multi-universe
+`variable` would need a multi-universe `internalHom_isSheaf`, which hits the forget-sheaf universe
+wall — so it stays as harmless generality. The substantive content (`IsMonoidal` proved) is done.
+
+### (history) BRICKS (1)–(3) DONE (2026-06-14) — `internalHom_isSheaf` PROVED
 
 `Submission/Cohomology/PresheafOfModulesSheafHom.lean` now contains, sorry/axiom-free, vacuity-0:
 - **(1) `ambient_isSheaf`** — `Presheaf.IsSheaf.hom` black box.

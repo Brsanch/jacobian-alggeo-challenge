@@ -9,17 +9,23 @@ via the integrator role below; do NOT duplicate its Front-B / Serre work. Contro
 > - **I.1a piece (II) `Closed F` DONE** (tensor-hom adjunction `tensorLeft F ⊣ [F,-]`) —
 >   `Submission/Cohomology/PresheafOfModulesClosed.lean`, full build green, axioms clean. See the
 >   I.1a block further down.
-> - **I.1a piece (III) bricks (1)–(3) DONE (2026-06-14, Route A "sub-sheaf via separatedness").**
->   `Submission/Cohomology/PresheafOfModulesSheafHom.lean` (single-universe to match piece II) now
->   has, sorry/axiom-free + vacuity-0: `ambient_isSheaf` (brick 1, `Presheaf.IsSheaf.hom`), `toAmbient`
->   + `toAmbient_app_injective` (brick 2, the forgetful mono — the Type-vs-TypeCat coercion is fixed by
->   `TypeCat.ofHom`), and **`internalHom_isSheaf` (brick 3, the separatedness theorem = Stacks 17.16)**.
->   **Remaining I.1a = brick (4)** repackage as `(localInclusion α).obj _` (bookkeeping via
->   `SheafOfModules.fullyFaithfulForget`) **+ brick (5)** the short whiskerLeft/Right/IsMonoidal port
->   (≈40–60 LOC, uses only `closedObj` + piece I + this `internalHom_isSheaf`). **Drive from
->   `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md`** — its top "BRICKS (1)–(3) DONE" § lists
->   the reusable carrier-diamond techniques (single-universe, `respectTransparency`, inline-`homMk` for
->   inherited smul, `appAt` native re-type).
+> - **✅ I.1a COMPLETE (2026-06-14) — `(sheafificationW J R₀).IsMonoidal` PROVED**, sorry/axiom-free,
+>   vacuity-0, single-universe. All five bricks done:
+>   `Submission/Cohomology/PresheafOfModulesSheafHom.lean` = bricks 1–3 (`ambient_isSheaf`, `toAmbient`,
+>   **`internalHom_isSheaf`** = Stacks 17.16);
+>   `Submission/Cohomology/SheafificationWMonoidal.lean` = bricks 4–5
+>   (`mem_isoClosure_of_isSheaf` = PMod-sheaf⟹local-object, `sheafificationW_whiskerLeft`/`Right`,
+>   **`sheafificationW_isMonoidal`**). This **discharges the `[(sheafificationW J R₀).IsMonoidal]`
+>   hypothesis of `SheafOfModules.monoidalCategory`** (given the sheafification data `α`, via
+>   `haveI := sheafificationW_isMonoidal α`) → **I.1 (`SheafOfModules` monoidal) is now usable
+>   unconditionally** at single-universe sites (the curve's structure sheaf).
+>   **⚠ Universe caveat:** the I.1a chain is single-universe (forced by `isSheaf_iff_isSheaf_forget`);
+>   the consumer is multi-universe. The single-universe instance discharges it at single-universe
+>   instantiations (the actual use); literally removing the multi-universe `variable` would need
+>   multi-universe `internalHom_isSheaf` (hits the forget-sheaf universe wall). Detail + reusable
+>   carrier-diamond techniques: `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md` (top §).
+>   **NEXT in the Stack-I tower = I.2 (`Pic`):** Picard group of `SheafOfModules R` from the now-usable
+>   monoidal structure (invertible objects under `⊗`). See `docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`.
 > - **`main` is now @ `2f2692b`** (was `07c0766` at round-3 start). This session pushed I.1a piece (III)
 >   bricks 2–3 (above) and **integrated `tower/jacobian-r2`** (+1: Tower B `tensorPowMulEquiv`,
 >   `A^⊗d ⊗ A^⊗e ≃ₐ A^⊗(d+e)`, `Submission/Jacobian/TensorPowerAdd.lean`); integration gate green
