@@ -715,43 +715,42 @@ route leap** (`LEAP_QUEUE §4`) and the FGA-grade Jacobian construction (holes 2
     `ModuleCat.comp_apply` (coe, keeps `restrict` intact) NOT `hom_comp`; `erw` the `ofHom`/`appAt`
     reductions (`ConcreteCategory.hom (ModuleCat.ofHom _)` is defeq- but not simp-reducible because
     `ModuleCat.ofHom ≠ ConcreteCategory.ofHom` syntactically); `ModuleCat.restrictScalars.map_apply`.
-  - **NEXT (piece II remainder) — restriction maps → the `[F,H]` presheaf. PARTIALLY SCOUTED
-    2026-06-14 (validated in probe, NOT yet committed — blocked on a carrier diamond, see below):**
-    - **(✅ validated, `rfl`) the restriction map is FREE from `pushforward₀` functoriality:**
-      `internalHomMap (f : X⟶Y) φ := (pushforward₀ (Over.map f.unop) ((Over.forget X.unop).op ⋙ R₀')).map φ`
-      typechecks as `(restrict Y).obj F ⟶ (restrict Y).obj H` because
-      `(pushforward₀ (Over.map f.unop) _).obj ((restrict X).obj F) = (restrict Y).obj F` **by `rfl`**
-      (the `Over.map f.unop ⋙ Over.forget X.unop = Over.forget Y.unop` identity at the object level),
-      and `.app V = φ.app (op ((Over.map f.unop).obj V.unop))` by `rfl` (the presheafHom-style
-      restriction). **So naturality AND additivity of the restriction map come for free** (it's a
-      functor's `.map`); only the `R₀(X)`-semilinearity + `map_id`/`map_comp` need hand-proof.
-    - **(✅ scalar-compat known) semilinearity:** `internalHomMap f (a•φ) = R₀.map f a •' internalHomMap f φ`
-      via the SAME mechanism as the object — `R₀((mapObj V).hom.op)(a) = R₀(V.hom.op)(R₀.map f a)`
-      since `(mapObj V).hom = V.hom ≫ f.unop` and `(V.hom ≫ f.unop).op = f ≫ V.hom.op`.
-    - **(⚠ universe) the internal-hom presheaf lives in `PresheafOfModules.{max u u' v'}`**, NOT
-      `.{u}`: the value `(restrict X).obj F ⟶ (restrict X).obj H` is a Hom-SET indexed over the slice
-      `Over X.unop` (object universe `max u' v'`), so `internalHomObj X : ModuleCat.{max u u' v'}`.
-      This collapses to `.{u}` exactly when `u' ≤ u, v' ≤ u` (the single-universe application the port
-      needs). State `internalHom : PresheafOfModules.{max u u' v'} R₀'`; the port specializes.
-    - **🧱 THE WALL (why not committed): a CommRingCat↔RingCat Ring-instance diamond at the PMod `map`
-      field.** The `map` field type is `obj X ⟶ (restrictScalars ((R₀⋙forget₂).map f).hom).obj (obj Y)`,
-      whose `restrictScalars` is over the **RingCat** presheaf `R₀⋙forget₂`. Two carrier choices for
-      `internalHomObj`, each hits a different diamond:
-      (i) over **CommRingCat** `R₀.obj X` (the committed form): `(restrictScalars ψ).obj (internalHomObj Y)`
-          fails to synthesize `Module ↑((R₀⋙forget₂)(X)) ↑(restrictScalars…)` — `internalHomObj Y`
-          (over `R₀.obj Y`) fed to `restrictScalars` (over `R₀⋙forget₂`) doesn't provide the start module.
-      (ii) over **RingCat** `(R₀⋙forget₂).obj X` (refactor tried, reverted): the `restrictScalars` side
-          then works AND the 6 Module axioms survive (`mul_smul`/`add_smul` need `erw [map_mul]`/
-          `erw [map_add]` for the `*`/`+` carrier defeq), BUT `ModuleCat.of ((R₀⋙forget₂).obj X) (Hom)`
-          then fails to find `Module ↑((R₀⋙forget₂).obj X) (Hom)` — a `Ring`-instance diamond on the
-          RingCat carrier (`↑((R₀⋙forget₂).obj X)` has RingCat's `Ring` AND the Monoidal `CommRing`).
-      **Fix direction:** navigate with explicit instance arguments / `letI` to pin the `Ring`+`Module`
-      consistently, EXACTLY as mathlib's `pushforward₀_obj` does (`@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_)`
-      "Work around an instance diamond for `restrictScalarsId'`"). OR define the whole `internalHom`
-      presheaf via `pushforward₀` pseudo-functoriality (`pushforwardId`/`pushforwardComp` +
-      `Over.mapId`/`Over.mapComp`, mirroring `presheafHom`'s `map_id`/`map_comp`) so the restrictScalars
-      bookkeeping rides mathlib's own diamond-workarounds instead of being re-derived. This is
-      fresh-context work — the diamond is the crux, not the math.
+  - **✅ RESTRICTION MAP DONE (2026-06-14, `main` @ `4e5b000`, full build 8341 jobs, vacuity 0, axioms
+    clean): the carrier diamond is CRACKED.** `internalHomMapHom f : internalHomObj X ⟶
+    restrictScalars (R₀.map f) (internalHomObj Y)` — the `R₀(X)`-linear (`R₀.map f`-semilinear) map
+    underlying `[F,H].map f`.
+    - **(✅ `rfl`) the restriction is FREE from `pushforward₀` functoriality:** `internalHomMap f φ :=
+      (pushforward₀ (Over.map f.unop) _).map φ` typechecks as `(restrict Y).obj F ⟶ (restrict Y).obj H`
+      because `(pushforward₀ (Over.map f.unop) _).obj ((restrict X).obj F) = (restrict Y).obj F` **by
+      `rfl`**, and `.app V = φ.app (op ((Over.map f.unop).obj V.unop))` by `rfl`. **So naturality AND
+      additivity come free** (it is a functor's `.map`).
+    - **(✅ proven) semilinearity** via the same scalar-compat as the object (`R₀((mapObj V).hom.op)(a)
+      = R₀(V.hom.op)(R₀.map f a)`, from `(mapObj V).hom = V.hom ≫ f.unop` + `R₀.map_comp`).
+    - **🔓 THE CARRIER DIAMOND — RESOLVED TWO WAYS AT ONCE.** The PMod `map` field's `restrictScalars`
+      is over the **RingCat** presheaf `R₀⋙forget₂`, but `internalHomObj` lives over the **CommRingCat**
+      carrier `R₀.obj X`; the boundary broke synthesis (both carrier choices hit a different
+      diamond — see git history of this doc for the dead refactor). FIX:
+      (i) **`ModuleCat.semilinearMapAddEquiv (R₀.map f).hom M N`** turns a `→ₛₗ[(R₀.map f).hom]`
+          semilinear map into the morphism `M ⟶ (restrictScalars …).obj N` — sidesteps the
+          carrier-collapse synthesis failure that direct `ModuleCat.ofHom` of a `→ₗ` into
+          `↑(restrictScalars … (internalHomObj Y))` hit (its carrier collapses to `↑(internalHomObj Y)`,
+          so synth finds the R₀(Y)-module instead of the restrictScalars R₀(X)-module).
+      (ii) write `restrictScalars` over **`(R₀.map f).hom`** (the CommRingCat hom, *reduced* carrier) —
+          **defeq** to `((R₀⋙forget₂).map f).hom` (so `internalHomMapHom` still matches the PMod field
+          type), but keeps the reduced `↑(R₀.obj X)` carrier where the committed instances register.
+          (Root cause: instances register with the reduced carrier `↑(R₀.obj X)`; `(R₀⋙forget₂)`-based
+          queries keep the unreduced `↑((R₀⋙forget₂).obj X)` and miss them.)
+    - **(⚠ universe) the `[F,H]` presheaf lives in `PresheafOfModules.{max u u' v'}`** (the value is a
+      Hom-SET over the slice `Over X.unop`, object universe `max u' v'`); collapses to `.{u}` when
+      `u' ≤ u, v' ≤ u` (the single-universe application the port needs).
+    - **NEXT — assemble `internalHom : PresheafOfModules.{max u u' v'} R₀'`** with `obj X :=
+      internalHomObj`, `map f := internalHomMapHom f`, and the two remaining coherences:
+      `map_id` / `map_comp` = the `restrictScalarsId'` / `restrictScalarsComp'` coherences via
+      `Over.mapId_eq` / `Over.mapComp_eq` naturality, mirroring `presheafHom`'s `map_id`/`map_comp`
+      (`simpa [Over.mapId] using φ.naturality ((Over.mapId X).hom.app Y).op`). **The fiddly bit found
+      2026-06-14:** the inner `φ.app A = φ.app B` is a *dependent* app so plain `rw [object_eq]` fails
+      ("motive not type correct"); use the `φ.naturality`-across-the-iso route (presheafHom pattern),
+      not object-equality rewriting. After that it is a `PresheafOfModules`.
     - then (b) tensor-hom adjunction (`Closed F`). Both then feed piece (III) + the port.
 - **Port — `(sheafificationW J R₀).IsMonoidal`.** `whiskerLeft` (`W g ⟹ W (F ◁ g)`): convert
   `Hom(F⊗G_i, F.obj H) ≅ Hom(G_i, [F, F.obj H])` (closed, II), use `[F, F.obj H]` local (III) +

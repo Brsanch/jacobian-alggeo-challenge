@@ -28,21 +28,23 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > so build the scaled morphism **element-wise as a LinearMap over the CommRingCat carrier
 > `R₀.obj (op W.left)`** (carrier discipline). Naturality reduces to scalar restriction-compat (Over
 > triangle) + `φ.naturality` + `H` restriction semilinearity.
-> **NEXT = piece (II) PRESHEAF + adjunction. The restriction map was SCOUTED 2026-06-14 (validated in
-> probe, not committed — blocked on a carrier diamond):** the restriction map is FREE from
-> `pushforward₀` functoriality — `internalHomMap f φ := (pushforward₀ (Over.map f.unop) _).map φ` is
-> `rfl`-typed as `(restrict Y).obj F ⟶ (restrict Y).obj H` (so naturality + additivity are free); the
-> presheaf lives in `PresheafOfModules.{max u u' v'}` (the Hom-set is universe-big; collapses to `.{u}`
-> when `u'≤u, v'≤u`, the port's setting). **WALL:** the PMod `map` field's `restrictScalars` is over the
-> RingCat presheaf, so assembling hits a CommRingCat↔RingCat Ring-instance diamond — `internalHomObj`
-> over `R₀.obj X` (CommRingCat, committed) fails the restrictScalars synth; over `(R₀⋙forget₂).obj X`
-> (RingCat) the restrictScalars works + axioms survive (with `erw [map_mul]`/`erw [map_add]`) but
-> `ModuleCat.of` hits a Ring-instance diamond. **Fix:** explicit-instance/`letI` navigation like
-> mathlib's `pushforward₀_obj` (`@LinearMap.ext … (_) (_)`), or package the whole presheaf via
-> `pushforward₀` pseudo-functoriality (`pushforwardId`/`pushforwardComp` + `Over.mapId`/`mapComp`,
-> mirroring `presheafHom`) so the diamond rides mathlib's workarounds. Then (b) tensor-hom adjunction
-> (`Closed F`), piece (III) sheaf-preservation, ~30-line port. Full detail + every handle:
-> `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD" piece (II) "NEXT"; `LEAP_QUEUE §6`.
+> **✅ RESTRICTION MAP DONE (2026-06-14, `main` @ `4e5b000`): the carrier diamond is CRACKED.**
+> `internalHomMapHom f : internalHomObj X ⟶ restrictScalars (R₀.map f) (internalHomObj Y)` (the map
+> field of `[F,H]`), full build green, vacuity 0, axioms clean. The restriction is FREE from
+> `pushforward₀` functoriality (`internalHomMap f φ := (pushforward₀ (Over.map f.unop) _).map φ`, `rfl`
+> typed); semilinearity by the object's scalar-compat. **The diamond crack (reuse this):** the PMod
+> `map` field's `restrictScalars` is over the RingCat presheaf but `internalHomObj` is over the
+> CommRingCat carrier — resolve with (i) `ModuleCat.semilinearMapAddEquiv (R₀.map f).hom M N` (semilinear
+> map → restrictScalars morphism, avoids carrier-collapse) + (ii) `restrictScalars` written over
+> `(R₀.map f).hom` (reduced CommRingCat hom, defeq to `((R₀⋙forget₂).map f).hom`, keeps the reduced
+> carrier where instances live).
+> **NEXT = assemble `internalHom : PresheafOfModules.{max u u' v'} R₀'`** (`obj := internalHomObj`,
+> `map := internalHomMapHom`) with `map_id`/`map_comp` = the `restrictScalarsId'`/`Comp'` coherences via
+> `Over.mapId_eq`/`mapComp_eq` naturality, mirroring `presheafHom` (`simpa [Over.mapId] using
+> φ.naturality ((Over.mapId X).hom.app Y).op`). ⚠ the inner `φ.app A = φ.app B` is *dependent* — use
+> the naturality-across-the-iso route, NOT `rw [object_eq]` (motive-not-type-correct). Then (b)
+> tensor-hom adjunction (`Closed F`), piece (III) sheaf-preservation, ~30-line port. Full detail:
+> `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD" piece (II); `LEAP_QUEUE §6`.
 >
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
 > foundation first** (`docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`: Stack I sheaves→Pic→ample,
