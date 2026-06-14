@@ -14,6 +14,7 @@ import Submission.Cohomology.DimensionFormula
 import Submission.Cohomology.ConormalH1Cotangent
 import Submission.Cohomology.CotangentDeltaInjective
 import Submission.Cohomology.ConormalToOmega
+import Submission.Cohomology.CotangentInequality
 import Submission.Jacobian.InvariantFiniteness
 import Submission.Jacobian.AffineInvariants
 import Submission.Jacobian.AffineQuotient
