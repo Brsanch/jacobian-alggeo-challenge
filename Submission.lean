@@ -8,6 +8,7 @@ import Submission.Cohomology.RegularLocalDomain
 import Submission.Cohomology.RegularLocalDomainGeneral
 import Submission.Cohomology.SheafOfModulesMonoidal
 import Submission.Cohomology.PresheafOfModulesInternalHom
+import Submission.Cohomology.PresheafOfModulesClosed
 import Submission.Cohomology.IntegralKrullDim
 import Submission.Cohomology.DimensionFormula
 import Submission.Cohomology.ConormalH1Cotangent
