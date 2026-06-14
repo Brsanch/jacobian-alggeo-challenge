@@ -569,21 +569,22 @@ as an exactness lemma** — only the sequence from `H¹(L_{κ/k})` rightward.
   projective_kaehlerDifferential` (`Smooth/Basic.lean:71`) gives `Module.Projective R Ω[R/k]`;
   f.g.-projective-over-local ⟹ `Module.Free`; rank via `StandardSmoothCotangent` (`rank_S Ω = rel
   dim`). Reachable, some plumbing (the `S`-module Ω vs the rel-dim bridge).
-- **(b3) δ injectivity — THE OBSTRUCTION, SEPARABILITY-GATED.** By `exact_map_δ`, `ker δ = im(map:
-  H¹(L_{κ/k}) → H¹(L_{κ/R}))`, so **δ injective ⟺ `map = 0`.** mathlib does NOT expose the left
-  exactness that would force `map=0` in general; the only clean handle is `map=0` ⟸ `H¹(L_{κ/k}) = 0`
-  ⟸ **κ/k formally smooth** (`FormallySmooth.subsingleton_h1Cotangent`, `Smooth/Basic.lean:72`) ⟸
-  **κ/k SEPARABLE** (`FormallySmooth.of_algebraicIndependent_of_isSeparable` / `of_perfectField`,
-  `Smooth/Field.lean`). **⟹ the J-Z route closes `smooth ⇒ regular` cleanly ONLY for separable
-  residue field κ/k** (covers: k perfect; rational points κ=k). **The inseparable-residue case
-  (imperfect k) is the genuine hard core** — δ-injectivity fails by this argument and the correct
-  proof needs the unexposed left J-Z term or a different (imperfect-base) argument. This is the
-  precise mathematical content of the route doc's earlier hand-wave "the `Ω_{κ/k}` correction for
-  non-separable κ/k".
-- **(b4) `finrank_κ Ω[κ/k]`** — mathlib has NO `Ω[κ/k]` rank/vanishing lemma. For the separable
-  case need `Ω[κ/k] = 0` (κ/k finite separable ⟹ unramified ⟹ `Subsingleton Ω`, via
-  `FormallyUnramified`); ABSENT as stated, but reachable. General (separably generated) needs `rank
-  Ω[κ/k] = trdeg`.
+- **(b3) δ injectivity — THE OBSTRUCTION, SEPARABILITY-GATED — ✅ BUILT 2026-06-14**
+  (`Submission/Cohomology/CotangentDeltaInjective.lean`, `tower/stack-II-serre` @ `2e5aecf`, green
+  8345 jobs / vacuity 0 / axioms clean). By `exact_map_δ`, `ker δ = range(map: H¹(L_{κ/k}) →
+  H¹(L_{κ/R}))`, so **δ injective ⟺ `map = 0`.** `δ_injective_of_h1Cotangent_subsingleton`:
+  `Subsingleton (H1Cotangent k κ) ⟹ map = 0 ⟹ ker δ = ⊥ ⟹ δ injective` (`Exact.linearMap_ker_eq`
+  + `LinearMap.range_eq_bot`). `δ_injective_of_formallySmooth_residue`: `[FormallySmooth k κ] ⟹ δ
+  injective` (`FormallySmooth.subsingleton_h1Cotangent`). **The separability gate, machine-checked:**
+  `H¹(L_{κ/k})` subsingleton ⟸ κ/k formally smooth ⟸ κ/k SEPARABLE (`FormallyEtale.of_isSeparable`,
+  étale ⟹ smooth). mathlib does NOT expose the left J-Z exactness that would force `map=0` for
+  inseparable κ/k ⟹ **the J-Z route closes `smooth ⇒ regular` cleanly ONLY for separable residue**
+  (covers k perfect; κ=k rational points). The inseparable-residue (imperfect-k) case stays the
+  genuine hard core.
+- **(b4) `Ω[κ/k] = 0` for separable κ/k** — **collapses to a mathlib WRAPPER, not a standalone
+  brick:** `Algebra.FormallyUnramified.of_isSeparable k κ` (`RingTheory/Etale/Field.lean`) gives
+  `FormallyUnramified k κ ≡ Subsingleton Ω[κ⁄k]` directly. (General separably-generated needs `rank
+  Ω[κ/k] = trdeg`, still absent — only for the non-finite residue case.)
 - **(b5) assembly:** `finrank_κ(𝔪/𝔪²) = finrank(κ⊗Ω[R/k]) − finrank(Ω[κ/k]) = d − (trdeg κ)` by
   δ-injective + `exact_δ_mapBaseChange` + mapBaseChange surjective; combine with `dim R` (leaf a/a′)
   and feed `IsRegularLocalRing.of_spanFinrank_maximalIdeal_le` via
@@ -591,10 +592,12 @@ as an exactness lemma** — only the sequence from `H¹(L_{κ/k})` rightward.
 
 **Net:** the **separable-residue** `smooth ⇒ regular` is a reachable (if multi-brick) arc; the
 **inseparable-residue** case is a real wall (mathlib doesn't expose the needed left J-Z exactness).
-Standing built bricks: `regular ⇒ domain` (✓), `dim = trdeg` (✓), and now the **(b1) conormal
-identification** (✓ `0b31be7`). **Next concrete code brick = (b2)** (`Ω[R/k]` finite free of rank
-= rel dim for smooth local R) or (b4) (`Ω[κ/k] = 0` for finite-separable κ/k via `FormallyUnramified`);
-then (b3) δ-injectivity (separable) + (b5) assembly.
+Standing built bricks: `regular ⇒ domain` (✓), `dim = trdeg` (✓), **(b1) conormal identification**
+(✓ `0b31be7`), **(b3) δ-injectivity / separability gate** (✓ `2e5aecf`); (b4) is a mathlib wrapper.
+**Next concrete code brick = (b2)** (`Ω[R/k]` finite free of rank = rel dim for smooth local R:
+`FormallySmooth.projective_kaehlerDifferential` + f.g.-projective-over-local ⟹ free), then **(b5)
+assembly** — compose (b1)+(b3) to `𝔪/𝔪² ↪ κ⊗Ω[R/k]` injective, with (b2)+(b4) bound `finrank ≤ d`,
+feed `of_spanFinrank_maximalIdeal_le` (needs the local-ring `dim R`, i.e. (a′) catenarity).
 
 Foundation scoping; certifies no hole.
 
