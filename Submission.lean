@@ -10,6 +10,7 @@ import Submission.Cohomology.SheafOfModulesMonoidal
 import Submission.Cohomology.PresheafOfModulesInternalHom
 import Submission.Cohomology.IntegralKrullDim
 import Submission.Cohomology.DimensionFormula
+import Submission.Cohomology.ConormalH1Cotangent
 import Submission.Jacobian.InvariantFiniteness
 import Submission.Jacobian.AffineInvariants
 import Submission.Jacobian.AffineQuotient
