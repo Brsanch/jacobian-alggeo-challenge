@@ -68,14 +68,31 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > `CategoryTheory.Functor.map_id`/`map_comp`. (3) when a simp lemma won't fire because a bound var's
 > type is defeq-but-not-syntactic (`φ : ↑((internalHom F H).obj X)` vs `internalHomObj F H X`), state
 > the defeq-reduced goal with `show` and bypass simp-matching.
-> **NEXT = the homEquiv** `(F ⊗ G ⟶ H) ≃ (G ⟶ internalHomFunctor F |>.obj H)` natural in `G`:
-> uncurry (evaluate the slice-morphism at the identity slice object `Over.mk (𝟙 _)`), curry (`α ↦`
-> slice-morphism `fun W f' ↦ α.app _ (f' ⊗ₜ G.map W.hom g)`), round-trip identities, then assemble
-> `tensorLeft F ⊣ internalHomFunctor F` via `Adjunction.mkOfHomEquiv` ⇒ `Closed F`. Work in the
-> single-universe regime (`C : Type u`, `Category.{u}` — the curve's opens site is `SmallCategory`) so
-> `internalHom F H : PMod.{u}` and `tensorLeft F`/`internalHomFunctor F` share `PMod.{u}`. Then piece
-> (III) sheaf-preservation (`IsSheaf H ⟹ IsSheaf (internalHom F H)`, mirror `Presheaf.IsSheaf.hom`),
-> then the ~30-line port to `(sheafificationW J R₀).IsMonoidal`. Full detail:
+> **✅ COUNIT BUILT (2026-06-14, `main` @ `4722942`, 8345 jobs, vacuity 0, axioms clean):** new
+> single-universe file `Submission/Cohomology/PresheafOfModulesClosed.lean` (namespace
+> `InternalHomClosed`, `C : Type u`/`Category.{u}`). `internalHomEval F H : F ⊗ internalHom F H ⟶ H` =
+> the evaluation/counit: at `X`, `f' ⊗ φ ↦ φ(X)(f')` (`evalAppMap` via `ModuleCat.…tensorLift`).
+> **CRITICAL idioms discovered here (reuse for unit + the rest):** (a) **PMod's tensor lives over the
+> *CommRingCat* carrier `R₀.obj X`, NOT the RingCat `R₀'(X)`** (which isn't commutative ⇒ no
+> `MonoidalCategoryStruct`); every tensor-touching def needs `set_option
+> backward.isDefEq.respectTransparency false in` so `MonoidalCategoryStruct (ModuleCat (R₀'(X)))`
+> resolves via the `CommRing`-through-`forget₂` defeq. (b) The tensor factor must be written
+> `(internalHom F H).obj X` (structure carrier), not `internalHomObj F H X`. (c) `tensorLift` h₃ (add
+> in 2nd arg) closes by `rfl` (`PresheafOfModules.add_app` is `rfl`); `internalSMulApp_hom_apply` needs
+> `erw` (φ-carrier defeq); the `R₀(𝟙)`-scalar collapses via `R₀.map_id`. (d) Naturality-in-X reduces
+> by `tensor_ext` + `PresheafOfModules.naturality_apply φ (Over.homMk f.unop _).op f'` then
+> `exact key` (defeq bridges `((restrict X)·).map θ.op = ·.map f`); needed simp = just
+> `[ModuleCat.comp_apply, restrictScalars.map_apply, evalAppMap_tmul]`.
+> **NEXT = the unit** `η : G ⟶ internalHomFunctor F |>.obj (F ⊗ G)` (`= internalHom F (F⊗G)`): at `X`,
+> `g ↦` slice-morphism `W ↦ (f'' ↦ f'' ⊗ₜ G.map W.hom.op g)` (build the slice-morphism with its own
+> naturality across `W`, `R₀(X)`-linearity, then `η` naturality-in-X). Then the **two triangle
+> identities** (`whiskerLeft F η ≫ ε = 𝟙` reduces on `f'⊗g` to `G.map_id`; the other dually) ⇒
+> `Adjunction.mkOfUnitCounit ⟨η, ε := internalHomEval, …⟩` ⇒ `Closed F := {rightAdj :=
+> internalHomFunctor F, adj}`. (`internalHomEval`/`internalHomFunctor` must be packaged as NatTrans in
+> H/G for `mkOfUnitCounit` — naturality-in-the-object is the extra step; alternatively
+> `mkOfHomEquiv` with curry := `η ≫ map α`, uncurry := `whiskerLeft ≫ ε`.) Work single-universe. Then
+> piece (III) sheaf-preservation (`IsSheaf H ⟹ IsSheaf (internalHom F H)`, mirror
+> `Presheaf.IsSheaf.hom`), then the ~30-line port to `(sheafificationW J R₀).IsMonoidal`. Full detail:
 > `docs/ROUTE_RESEARCH_2026_06_13.md` §"I.1a BUILD" piece (II); `LEAP_QUEUE §6`.
 >
 > **PLAN DOCS (read these to drive):** the A-vs-B route leap is **deferred — build the shared
