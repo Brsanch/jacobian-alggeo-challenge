@@ -647,6 +647,44 @@ hypotheses from the curve's `SmoothOfRelativeDimension 1`).
 
 Foundation scoping; certifies no hole.
 
+### TOWER A — leaf a′ catenarity: general = going-down WALL; rel-dim-1 CLOSED (2026-06-14, `tower/stack-II-serre`)
+
+Probed leaf a′ (the local-ring dimension `finrank R Ω = ringKrullDim R`) to its bottom.
+
+**General `smooth ⇒ regular` (any rel dim) = WALL.** `finrank R Ω ≤ ringKrullDim R` for arbitrary
+relative dimension bottoms out in the dimension formula `height 𝔪 = ringKrullDim A` for finite-type
+`k`-domains, which is the **Krull going-down theorem for an integrally-closed (normal) base**. mathlib
+at the pin derives `Algebra.HasGoingDown` **only** `Ideal/GoingDown.lean:153` `of_flat`; the Noether
+normalization `k[x₁..x_d] ↪ A` is integral but **not flat** unless `A` is already Cohen–Macaulay —
+circular with regularity. `IsCatenary` is **absent** at the pin; no `ringKrullDim`-of-smooth /
+`-of-StandardSmooth` shortcut exists (probed `Smooth/`, `RingHom/StandardSmooth`, `Etale/`). So the
+general leaf needs the going-down theorem (or the dimension formula) built first — a substantial CA
+arc, a **leap-queue item**, not the near-term path.
+
+**Rel-dim-1 (the curve's case) = CLOSED, sidestepping the wall** — ✅ BUILT
+(`Submission/Cohomology/DimensionOneRegular.lean`, full build green 8350 jobs / vacuity 0 / axioms
+clean). `isRegularLocalRing_of_isStandardSmoothOfRelativeDimension_one`: a Noetherian local **domain**,
+standard smooth of **relative dimension 1** over `k`, separable residue ⟹ `IsRegularLocalRing`. The
+dimension is **derived, not assumed** (assuming `ringKrullDim R = 1` would be a renamed leaf a′):
+- field case ⟹ regular trivially (a field is a PID, `IsRegularLocalRing` instance fires);
+- otherwise `𝔪 ≠ ⊥`, so the chain `⊥ ⊊ 𝔪` gives `primeHeight 𝔪 ≥ 1` (`one_le_primeHeight_maximalIdeal`,
+  via `Ideal.primeHeight_eq_zero_iff` + `IsDomain.minimalPrimes_eq_singleton_bot`), hence
+  `1 ≤ ringKrullDim R` (`one_le_ringKrullDim`, via `IsLocalRing.maximalIdeal_height_eq_ringKrullDim` +
+  `Ideal.height_eq_primeHeight`); combined with `spanFinrank 𝔪 ≤ finrank R Ω[R⁄k] = 1`
+  (the `CotangentSpaceTransport` brick + `IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`,
+  `finrank` from `rank`), `spanFinrank 𝔪 ≤ 1 ≤ ringKrullDim R`, and
+  `IsRegularLocalRing.of_spanFinrank_maximalIdeal_le` closes it.
+Relative dimension `≥ 2` cannot be reached this way — `ringKrullDim R ≥ 2` is exactly the going-down
+content the elementary `⊥ ⊊ 𝔪` chain does not supply.
+
+**Net:** the **cotangent + dimension side of `smooth ⇒ regular` is COMPLETE for the curve**
+(separable residue, rel dim 1). The single remaining external input to connect it to the actual curve
+stalks is the **scheme-smooth ⟹ local-ring `IsStandardSmoothOfRelativeDimension 1` AG→CA bridge**
+(discharges the file hypotheses from the curve's `SmoothOfRelativeDimension 1`). The general going-down
+theorem is the separate leap-queue arc.
+
+Foundation; certifies no hole.
+
 ## 🅱️ TOWER B survey — Jacobian construction (holes 2,3,5,6,7,8): declaration-level inventory + priced Route-A-vs-B decision (2026-06-13)
 
 Tower B's mandate = **construct `Jacobian C` (= Pic⁰)** with group structure (hole 3),
