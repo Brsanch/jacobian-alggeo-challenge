@@ -83,9 +83,21 @@ You are the fresh integrator + Tower-A session (replacing round 1), on `main` @ 
 > by `tensor_ext` + `PresheafOfModules.naturality_apply φ (Over.homMk f.unop _).op f'` then
 > `exact key` (defeq bridges `((restrict X)·).map θ.op = ·.map f`); needed simp = just
 > `[ModuleCat.comp_apply, restrictScalars.map_apply, evalAppMap_tmul]`.
-> **NEXT = the unit** `η : G ⟶ internalHomFunctor F |>.obj (F ⊗ G)` (`= internalHom F (F⊗G)`): at `X`,
-> `g ↦` slice-morphism `W ↦ (f'' ↦ f'' ⊗ₜ G.map W.hom.op g)` (build the slice-morphism with its own
-> naturality across `W`, `R₀(X)`-linearity, then `η` naturality-in-X). Then the **two triangle
+> **UNIT IN PROGRESS — slice-morphism DONE (2026-06-14, `main` @ `ef24e8e`, 8345 jobs, vacuity 0,
+> axioms clean):** `coevSliceApp F G X g W = (f'' ↦ f'' ⊗ G(W.hom)(g))` (into-tensor via
+> `TensorProduct.mk.flip`; the `_hom_apply` lemma also needs the `respectTransparency` option because
+> the 2nd tmul factor is `restrictScalars`-wrapped) + `coevSlice F G X g : (restrict X).obj F ⟶
+> (restrict X).obj (F ⊗ G)` (slice-morphism, naturality-across-W via `← map_comp_apply` [use **`erw`**,
+> mixed coe forms] + `congr_map_apply` + `Quiver.Hom.unop_inj`/`simp [Over.w]`).
+> **NEXT (unit, remaining):** assemble **`coevAppHom X : G.obj X ⟶ internalHomObj F (F⊗G) X`** = the
+> `R₀(X)`-linear `g ↦ coevSlice g`. ⚠ This crosses the carrier diamond — `G.obj X` is over the RingCat
+> `R₀'(X)` but `internalHomObj` over the CommRingCat `R₀.obj X`, so a bare `ModuleCat.ofHom` of an
+> `R₀.obj X`-linear map fails (`Module (R₀'(X)) (slice-hom-set)` not synthesized). **Fix = route through
+> `ModuleCat.semilinearMapAddEquiv` exactly as `internalHomMapHom` did** (carrier discipline). The
+> per-component proofs are ready: `map_add'` via `map_add`+`TensorProduct.tmul_add`; `map_smul'` via
+> `PresheafOfModules.map_smul`+`TensorProduct.tmul_smul`+`internalSMulApp_hom_apply`. Then
+> **`internalHomCoev : G ⟶ internalHom F (F⊗G)`** (naturality-in-X mirrors `coevSlice`'s:
+> `map_comp_apply` + `op_comp`, the `(Over.map f.unop).obj V` reindex). Then the **two triangle
 > identities** (`whiskerLeft F η ≫ ε = 𝟙` reduces on `f'⊗g` to `G.map_id`; the other dually) ⇒
 > `Adjunction.mkOfUnitCounit ⟨η, ε := internalHomEval, …⟩` ⇒ `Closed F := {rightAdj :=
 > internalHomFunctor F, adj}`. (`internalHomEval`/`internalHomFunctor` must be packaged as NatTrans in
