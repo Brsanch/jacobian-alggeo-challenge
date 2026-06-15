@@ -139,6 +139,30 @@ multi-seam builds. **Seam-isolation cannot make W2 cheap, because W2 *is* a stat
 sheaf cohomology of mathlib's schemes — maximal coupling by nature.** W2 stays a genuine route-leap
 for Bryan (QC-sheaf cohomology vs the two-seam flasque bridge), not a grindable quick brick.
 
+## W2 flasque route — interior BUILT (2026-06-15), seam remains
+
+Per the seam-isolation strategy, the flasque⇒acyclic argument splits into a self-contained
+homological **interior** and a flasque/sheaf **seam**. The interior is **DONE**:
+`Submission/Cohomology/AcyclicClass.lean` (sorry/axiom-free, vacuity 0) — pure homological algebra in
+any abelian category with `HasExt`, no sheaves/flasque/schemes:
+- `acyclic_succ` — dimension shift (`Ext X Q (n+1)=0 ⟹ Ext X F (n+2)=0` for a SES `0→F→I→Q→0`, `I`
+  injective), via mathlib's covariant Ext LES `Ext.covariant_sequence_exact₁` + injective-dimension
+  vanishing.
+- `acyclic_one` — base case (`Ext X F 1 = 0`) from degree-0 Ext-surjectivity (Γ-exactness).
+- **`acyclic_of_class`** — a class `𝒮` closed under injective-embedding-with-`𝒮`-cokernel SES + the
+  Γ-surjectivity ⟹ every `F ∈ 𝒮` is Γ-acyclic (`Ext X F (n+1)=0 ∀n`). The **entire** flasque/sheaf
+  coupling is isolated into the one hypothesis `hres`.
+
+**Remaining W2 seam (the bridge brick), to discharge `hres` for `𝒮 = flasque` in
+`Sheaf (Opens.gt C.left) (ModuleCat k)`:** (a) a flasque object embeds in an injective with flasque
+cokernel — needs `injective ⇒ flasque` (or: enough injectives + the injective is flasque) and
+`flasque SES ⟹ cokernel flasque`; (b) Γ-exactness `Ext X I 0 → Ext X Q 0` surjective for a flasque
+SES — this is mathlib's `Flasque.of_shortExact_of_isFlasque₁₂`/`epi_of_shortExact`, **but only for
+`TopCat`-sheaves valued in `AddCommGrpCat`**, so it must be transported across the two category seams
+(`TopCat.Sheaf ↔ Sheaf (Opens.gt)`, `AddCommGrpCat ↔ ModuleCat k`). Then affine acyclicity
+`H¹(affine,𝒪)=0` follows from a flasque/Godement resolution of `𝒪` on the affine fed into
+`acyclic_of_class`. The interior no longer carries any of that seam.
+
 ## Decisive-regime verdict
 
 Front B is **reachable in architecture** (MV spine + cover-to-square are present and free) but **gated
