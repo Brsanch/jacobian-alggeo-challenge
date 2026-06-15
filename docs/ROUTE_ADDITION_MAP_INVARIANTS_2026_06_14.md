@@ -72,18 +72,36 @@ No global `[Field k] → Module.Flat k V` instance at the pin. Supply:
 
 ## Named obligations remaining (brick (c-ii) + assembly)
 
-1. `M^G = eqLocus δ c` (submodule equality; the `δ/c` `LinearMap`s + `SMulCommClass` linearity).
-2. The `G`-action on `N⊗M` as a `DistribMulAction` (instance from `lTensor N (toLinearMap g)`).
-3. `piRight` naturality `piRight ∘ lTensor N δ = δ'` (and for `c`) — the one genuinely fiddly step.
-4. Core `(N⊗M)^G ≅ N ⊗ M^G` (compose `tensorEqLocusEquiv` + `piRight`).
-5. Two-group `(M⊗N)^{S_d×S_e} = M^{S_d} ⊗ N^{S_e}` (apply core twice; the symmetric/`M`-factor form).
+**Core lemma (1)–(4) DONE 2026-06-14** — `Submission/Jacobian/InvariantsTensorField.lean`
+(`origin/tower/jacobian-r2` @ `11c3dbd`; full build 8357 jobs exit 0, vacuity 0, sorry/axiom-free,
+axioms = the standard three). Encoding notes for the assembly that consumes it:
+- `invariantSubmodule k G M := eqLocus (invDelta k G M) (invConst k G M)`, with
+  `mem_invariantSubmodule : m ∈ M^G ↔ ∀ g, g • m = m`. The `G`-action lives in
+  `DistribMulAction G M` + `SMulCommClass G k M` (exactly `permAction` + its `SMulCommClass`);
+  no `MulSemiringAction` needed for the core, but the perm action supplies it.
+- The `N⊗M` diagonal action is packaged WITHOUT a new `DistribMulAction` instance: it is
+  `tensorInvariantSubmodule k G M N := eqLocus (invDelta' …) (invConst' …)`, `invDelta'` built from
+  `LinearMap.lTensor N (DistribSMul.toLinearMap k M g)`, with
+  `mem_tensorInvariantSubmodule : x ∈ (N⊗M)^G ↔ ∀ g, lTensor N (g•·) x = x`. (For the bridge in (6),
+  relate this to the genuine diagonal `MulSemiringAction` on `A^{⊗d}⊗A^{⊗e}` via `lTensor`-of-`permEquiv`.)
+- `invariantsTensorEquiv k G M N : N ⊗[k] (invariantSubmodule k G M) ≃ₗ[k] tensorInvariantSubmodule k G M N`.
+  Field⟹flat supplied locally (`Module.Free.of_divisionRing` + `.of_free`) as in (c-i).
+
+1. ✅ `M^G = eqLocus δ c` — `invariantSubmodule` + `mem_invariantSubmodule`.
+2. ✅ `G`-action on `N⊗M` as `eqLocus δ' c'` (no instance; `δ'` via `lTensor`) — `tensorInvariantSubmodule`
+   + `mem_tensorInvariantSubmodule`.
+3. ✅ `piRight` naturality — `piRight_lTensor_invDelta_apply` / `piRight_lTensor_invConst_apply`
+   (pointwise by `TensorProduct.induction_on`; `tensorInvariantSubmodule_eq` matches the eqLoci).
+4. ✅ Core `(N⊗M)^G ≅ N ⊗ M^G` — `invariantsTensorEquiv`.
+5. Two-group `(M⊗N)^{S_d×S_e} = M^{S_d} ⊗ N^{S_e}` (apply core twice; the symmetric/`M`-factor form
+   via `TensorProduct.comm`).  ← NEXT
 6. Bridge to the repo's `FixedPoints.subalgebra k (TensorPow R A d) (Perm (Fin d))` (its underlying
-   submodule = `M^{S_d}`) and the diagonal `S_d×S_e` action on `A^{⊗d}⊗A^{⊗e}`.
+   submodule = `M^{S_d}` via `mem_invariantSubmodule`) and the diagonal `S_d×S_e` action on `A^{⊗d}⊗A^{⊗e}`.
 7. Assemble `φ` (corestrict `tensorPowMulEquiv.symm` along (c-i)+(5)) and `Spec φ` = the addition map;
    wire to `affineSymmetricPower` / `AffineQuotient`.
 
-Obligations 1–4 are the core lemma; 5–7 are assembly on top of present theorems. None require new
-mathlib *theory* — the flat-equalizer engine (`tensorEqLocusEquiv`) and `piRight` are present; this is
+Obligations 1–4 (the core lemma) are CLOSED; 5–7 are assembly on top of present theorems. None require
+new mathlib *theory* — the flat-equalizer engine (`tensorEqLocusEquiv`) and `piRight` are present; this is
 careful assembly, multi-session in volume but not a non-interpolative leap.
 
 ## Sources
