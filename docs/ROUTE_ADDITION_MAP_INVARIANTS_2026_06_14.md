@@ -93,16 +93,35 @@ axioms = the standard three). Encoding notes for the assembly that consumes it:
 3. ✅ `piRight` naturality — `piRight_lTensor_invDelta_apply` / `piRight_lTensor_invConst_apply`
    (pointwise by `TensorProduct.induction_on`; `tensorInvariantSubmodule_eq` matches the eqLoci).
 4. ✅ Core `(N⊗M)^G ≅ N ⊗ M^G` — `invariantsTensorEquiv`.
-5. Two-group `(M⊗N)^{S_d×S_e} = M^{S_d} ⊗ N^{S_e}` (apply core twice; the symmetric/`M`-factor form
-   via `TensorProduct.comm`).  ← NEXT
-6. Bridge to the repo's `FixedPoints.subalgebra k (TensorPow R A d) (Perm (Fin d))` (its underlying
-   submodule = `M^{S_d}` via `mem_invariantSubmodule`) and the diagonal `S_d×S_e` action on `A^{⊗d}⊗A^{⊗e}`.
-7. Assemble `φ` (corestrict `tensorPowMulEquiv.symm` along (c-i)+(5)) and `Spec φ` = the addition map;
-   wire to `affineSymmetricPower` / `AffineQuotient`.
+**Keystone for (5)–(7) DONE 2026-06-14** — `Submission/Jacobian/TensorSubspaceIntersection.lean`
+(`origin/tower/jacobian-r2` @ `7eb3d83`; full build 8358 jobs exit 0, vacuity 0, sorry/axiom-free).
+`tensorSubspace_inf : (p ⊗ N) ⊓ (M ⊗ q) = p ⊗ q` over a field (the three slabs as ranges of
+`p.subtype.rTensor N`, `q.subtype.lTensor M`, `TensorProduct.map p.subtype q.subtype`). This is the
+flatness gap, and it makes the rest **EQUIVARIANCE-FREE**: the original "apply core twice + transport a
+second action through the iso" route is replaced by an intersection of the two factor-wise fixed-point
+slabs. Revised plan:
 
-Obligations 1–4 (the core lemma) are CLOSED; 5–7 are assembly on top of present theorems. None require
-new mathlib *theory* — the flat-equalizer engine (`tensorEqLocusEquiv`) and `piRight` are present; this is
-careful assembly, multi-session in volume but not a non-interpolative leap.
+5. Two-group `(M⊗N)^{S_d×S_e} = range(incl)` via three submodule equalities + `tensorSubspace_inf`:  ← NEXT
+   - (F) product-group fixed points = intersection of factor fixed points:
+     `(M⊗N)^{S_d×S_e} = (M⊗N)^{S_d}_left ⊓ (M⊗N)^{S_e}_right` (since `(σ,τ) = (σ,1)·(1,τ)` and the two
+     actions commute). Left action = `rTensor N (σ•·)` on the `M`-factor; right = `lTensor M (τ•·)`.
+   - (R) right slab `(M⊗N)^{S_e}_right = range(q.subtype.lTensor M)`, `q = N^{S_e}` — this is exactly
+     `tensorInvariantSubmodule = range(lTensor N (M^G).subtype)`, the range of (c-ii)'s
+     `invariantsTensorEquiv` (bridge lemma: unfold its underlying map = `lTensor … subtype` corestricted).
+   - (L) left slab `(M⊗N)^{S_d}_left = range(p.subtype.rTensor N)`, `p = M^{S_d}` — the `rTensor` mirror of
+     (R); get it from (R) via `TensorProduct.comm` at the submodule level, OR a direct `rTensor` core.
+   - combine: `(M⊗N)^{S_d×S_e} = range(p.subtype.rTensor N) ⊓ range(q.subtype.lTensor M)
+     = range(map p.subtype q.subtype) = range(incl)` by `tensorSubspace_inf`.
+6. Bridge to the repo's `FixedPoints.subalgebra k (TensorPow R A d) (Perm (Fin d))` (its underlying
+   submodule = `M^{S_d}` via `mem_invariantSubmodule`) and the diagonal `S_d×S_e` action on `A^{⊗d}⊗A^{⊗e}`
+   (= `lTensor`/`rTensor` of `permEquiv`, matching the slab actions in (F)).
+7. Assemble `φ` (corestrict `tensorPowMulEquiv.symm` along (c-i)+(5): invariant `t` ⟹ `.symm t` is
+   `(S_d×S_e)`-invariant by brick (b) ⟹ in `range(incl)` by (5) ⟹ `incl⁻¹` defined by (c-i) injectivity)
+   and `Spec φ` = the addition map; wire to `affineSymmetricPower` / `AffineQuotient`.
+
+Obligations 1–4 (core lemma) and the (5)–(7) keystone (`tensorSubspace_inf`) are CLOSED. Remaining =
+(F)/(R)/(L) slab characterizations + the `FixedPoints.subalgebra` bridge + `Spec φ` assembly: plumbing on
+present theorems, no new mathlib *theory*, no non-interpolative leap.
 
 ## Sources
 - mathlib: `RingTheory/Flat/Equalizer.lean` (`tensorEqLocusEquiv`, `eqLocus_lTensor_eq`),
