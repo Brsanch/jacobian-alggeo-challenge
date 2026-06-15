@@ -114,7 +114,19 @@ Wall-2 gap **`smooth ⇒ regular local`** still bottoms out (compile-verified ab
 `rank_S Ω`, a different `CotangentSpace`). Wall 1 (Serre finiteness) unchanged; all 9 holes OPEN.
 Detail: `docs/ROUTE_RESEARCH_2026_06_13.md` §"TOWER A — round-2 brick".
 
-### 🟡 Shared-foundation brick I.1 (2026-06-13): `MonoidalCategory (SheafOfModules R)` — scaffold + reduction to ONE classical theorem
+### ✅ Stack-I bricks I.1 + I.2 BUILT (2026-06-14/15) — Pic of sheaves of modules exists
+
+> **UPDATE (2026-06-15):** I.1a is **DONE** (`sheafificationW_isMonoidal`, the internal-hom arc
+> pieces I–III + whiskering, `PresheafOfModulesSheafHom.lean` + `SheafificationWMonoidal.lean`), so
+> I.1 (`SheafOfModules` monoidal) is unconditional given `α`; and **I.2 is DONE** (`Picard.lean`:
+> `Pic D` for any monoidal category, `SheafOfModules.Pic α` a `CommGroup`). Stack I = I.0/I.1/I.2 ✓
+> of ~6; sorry/axiom-free, vacuity 0, single-universe. **All 9 holes still OPEN** — this is
+> foundation, and `Pic` here is the *abstract* group, not the *scheme* `Pic⁰` (Wall δ). The A-vs-B
+> route fork is now reachable. Driving docs: `NEXT_SESSION.md`,
+> `docs/{SHARED_FOUNDATION_ROUTE_2026_06_13,PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14}.md`. The
+> historical scaffold note below is superseded.
+
+### 🟡 (superseded) Shared-foundation brick I.1 (2026-06-13): `MonoidalCategory (SheafOfModules R)` — scaffold + reduction to ONE classical theorem
 
 A-vs-B route leap **deferred** (Bryan, 2026-06-13): build the foundation BOTH routes need
 first (`docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`). The bottom brick is the tensor structure
