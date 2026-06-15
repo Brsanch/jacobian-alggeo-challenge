@@ -12,6 +12,7 @@ import Submission.Cohomology.PresheafOfModulesClosed
 import Submission.Cohomology.PresheafOfModulesSheafHom
 import Submission.Cohomology.SheafificationWMonoidal
 import Submission.Cohomology.Picard
+import Submission.Cohomology.AcyclicClass
 import Submission.Cohomology.IntegralKrullDim
 import Submission.Cohomology.DimensionFormula
 import Submission.Cohomology.ConormalH1Cotangent
