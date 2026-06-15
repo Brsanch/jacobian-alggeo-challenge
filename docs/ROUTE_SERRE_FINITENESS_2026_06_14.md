@@ -121,6 +121,24 @@ once the diagram is set up in the **k-linear** category (W1) over a **cover** th
   a Noether-normalization / partial-fractions argument over the affine line). Real, but more
   self-contained than W2 once W0 gives the cover.
 
+## W2 falsification resolved (2026-06-15): the flasque route is seam-heavy, NOT a shortcut
+
+The open question "is flasque⇒acyclic reachable on the opens site, or is full QC cohomology
+unavoidable?" — probed against the warm cache. **Answer: flasque is not the seam-light interior.**
+- mathlib `Topology/Sheaves/Flasque.lean` has `IsFlasque` + the flasque short-exact behaviour
+  (`of_shortExact_of_isFlasque₁₂`, `epi_of_shortExact`) — but **only for `TopCat`-sheaves valued in
+  `AddCommGrpCat`**. `H1 C` is `Ext` in `Sheaf (Opens.gt C.left) (ModuleCat k)`.
+- `grep Flasque` across all of mathlib hits **only that one file** — there is **no** `flasque ⇒
+  acyclic`, no `injective ⇒ flasque`, no link from flasque to `Ext`/derived cohomology at all.
+
+So the flasque route requires **two category seams** (`TopCat.Sheaf ↔ Sheaf (Opens.gt)`, and
+`AddCommGrpCat ↔ ModuleCat k`) **plus** the full absent homological bridge (flasque resolution +
+dimension-shift acyclicity). That is high on *both* the seam axis and the new-infrastructure axis —
+i.e. it is **not** more self-contained than the QC-cohomology route; both are genuine multi-session,
+multi-seam builds. **Seam-isolation cannot make W2 cheap, because W2 *is* a statement about mathlib's
+sheaf cohomology of mathlib's schemes — maximal coupling by nature.** W2 stays a genuine route-leap
+for Bryan (QC-sheaf cohomology vs the two-seam flasque bridge), not a grindable quick brick.
+
 ## Decisive-regime verdict
 
 Front B is **reachable in architecture** (MV spine + cover-to-square are present and free) but **gated
