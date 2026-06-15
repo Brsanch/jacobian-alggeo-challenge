@@ -32,6 +32,7 @@ import Submission.Jacobian.TensorPowerAdd
 import Submission.Jacobian.TensorPowerAddEquivariant
 import Submission.Jacobian.TensorOverFieldInjective
 import Submission.Jacobian.InvariantsTensorField
+import Submission.Jacobian.TensorSubspaceIntersection
 import Submission.Jacobian.TensorPowerFiniteType
 import Submission.AbelianVariety
 
