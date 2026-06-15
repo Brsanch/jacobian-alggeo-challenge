@@ -31,8 +31,8 @@ projective + RR".
 | I.0 | `PresheafOfModules R` monoidal (tensor) | **✓** | `Algebra/Category/ModuleCat/Presheaf/Monoidal.lean` |
 | I.0 | `PresheafOfModules.sheafification` + adjunction; `SheafOfModules` abelian, colimits, quasicoherent | **✓** | `…/Sheaf/{Sheafification,Abelian,Colimits,Quasicoherent}.lean` |
 | I.0 | `CategoryTheory.Localization.Monoidal.*` (transport monoidal thru a localization) | **✓** | `CategoryTheory/Localization/Monoidal/{Basic,Functor,Braided}.lean` |
-| **I.1** | **`MonoidalCategory (SheafOfModules R)`** (sheafify the presheaf tensor) | **✗** | `Sheaf/` has NO `Monoidal.lean`. **= bottom brick** (transport I.0 monoidal thru the sheafification localization). |
-| I.2 | **Invertible sheaf** = ⊗-invertible object of `SheafOfModules`; `Pic X` = its iso-class group | **✗** | no `LocallyFree`/invertible-object/`Picard` for schemes (only Weierstrass-specific); needs I.1 + categorical "invertible objects of a monoidal cat" (also absent — only `Grp_`/invertible-*morphisms*). |
+| **I.1** | **`MonoidalCategory (SheafOfModules R)`** (sheafify the presheaf tensor) | **✓ BUILT (2026-06-14)** | `SheafOfModulesMonoidal.lean` (scaffold) + I.1a `sheafificationW_isMonoidal` (`PresheafOfModulesSheafHom.lean` + `SheafificationWMonoidal.lean`): internal hom of presheaves of modules (pieces I–III) + whiskerLeft/Right. Single-universe. |
+| I.2 | **Invertible sheaf** = ⊗-invertible object of `SheafOfModules`; `Pic X` = its iso-class group | **✓ BUILT (2026-06-15)** | `Picard.lean`: `Pic D` = units of mathlib's `Skeleton` monoid (the absent "invertible objects of a monoidal cat" = `(Skeleton D)ˣ`); `SheafOfModules.Pic α` a `CommGroup` (symmetric ⟹ abelian). **A-vs-B fork reachable here.** |
 | I.3 | `Proj ℬ` Serre twisting sheaf `𝒪(n)`; `𝒪(1)` ample | **✗** | `Proj ℬ` exists (`ProjectiveSpectrum/`) but NO twisting sheaf / `𝒪(n)`. |
 | I.4 | **ample / very-ample invertible sheaf**; closed immersion into `ℙⁿ_S` | **✗** | only `AmpleSet` (convex-geometry h-principle, unrelated). |
 | I.5 | **projective / quasi-projective morphism** of schemes | **✗** | none. (P5 not even *statable* until here — Tower-B leaf-obstruction.) |

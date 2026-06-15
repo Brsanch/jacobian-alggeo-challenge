@@ -24,8 +24,20 @@ via the integrator role below; do NOT duplicate its Front-B / Serre work. Contro
 >   instantiations (the actual use); literally removing the multi-universe `variable` would need
 >   multi-universe `internalHom_isSheaf` (hits the forget-sheaf universe wall). Detail + reusable
 >   carrier-diamond techniques: `docs/PIECE_III_SHEAF_PRESERVATION_ROUTE_2026_06_14.md` (top §).
->   **NEXT in the Stack-I tower = I.2 (`Pic`):** Picard group of `SheafOfModules R` from the now-usable
->   monoidal structure (invertible objects under `⊗`). See `docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`.
+> - **✅ I.2 (`Pic`) DONE (2026-06-15)** — `Submission/Cohomology/Picard.lean`, sorry/axiom-free,
+>   vacuity-0, single-universe. `JacobianAlggeo.Pic D` = Picard group of any monoidal category `D`
+>   (= units of mathlib's skeleton monoid; `Group`, and `CommGroup` when `D` is braided — reusable,
+>   mathlib-PR-grade). `SheafOfModules.Pic α` = the Picard group of sheaves of modules, a
+>   **commutative group**, unconditional given `α` (uses I.1a `sheafificationW_isMonoidal`; abelian
+>   because `SheafOfModules R` is symmetric monoidal — symmetric transports through the localization
+>   for free). Stack I now stands at **I.0 ✓ I.1 ✓ I.2 ✓** of ~6.
+>   **NEXT — the A-vs-B fork is now reachable** (the route doc says revisit it "once `Pic X` exists",
+>   which it now does). Then the shared deep walls, in rough order of leverage:
+>   **I.3/I.4/I.5 = ample line bundles + projective morphisms** (the single biggest *shared* blocker —
+>   gates Stack I *and* Tower B globalization P3/P5; mathlib has nothing) and **II.1 = Serre finiteness**
+>   `FiniteDimensional k (H1 C)` (gates genus-value/hole-1 + RR). Note I.2 gives `Pic` as an abstract
+>   group only — the *scheme* structure on `Pic⁰` (representability = the Jacobian, holes 2–9) is Wall δ,
+>   untouched. See `docs/SHARED_FOUNDATION_ROUTE_2026_06_13.md`.
 > - **`main` is now @ `2f2692b`** (was `07c0766` at round-3 start). This session pushed I.1a piece (III)
 >   bricks 2–3 (above) and **integrated `tower/jacobian-r2`** (+1: Tower B `tensorPowMulEquiv`,
 >   `A^⊗d ⊗ A^⊗e ≃ₐ A^⊗(d+e)`, `Submission/Jacobian/TensorPowerAdd.lean`); integration gate green
